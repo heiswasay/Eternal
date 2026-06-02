@@ -6,42 +6,111 @@
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
 import { ArrowRight, ChevronDown, Instagram, Twitter, Menu, X, Search, ShieldCheck, Truck, RotateCcw } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useLocation, useParams } from "react-router-dom";
+import { ProductStory } from "./components/ProductStory";
 import heroImage from "./images/hero.jpg";
 import heritageImage from "./images/blackoxford.jpg";
 import img1 from "./images/1.jpg";
 import img2 from "./images/2.jpg";
 import img3 from "./images/3.jpg";
 import img4 from "./images/4.jpg";
+import bo1Image from "./images/bo1.jpeg";
+import bo2Image from "./images/bo2.jpeg";
+import bo3Image from "./images/bo3.jpeg";
+import bo4Image from "./images/bo4.jpeg";
+import bo5Image from "./images/bo5.jpeg";
+import bo6Image from "./images/bo6.jpeg";
+import bo7Image from "./images/bo7.jpeg";
+import bo8Image from "./images/bo8.jpeg";
 import footerImg from "./images/footer.jpg";
 
-const COLLECTIONS = [
+interface SpecType {
+  type: string;
+  leather: string;
+  leatherDetail: string;
+  sole: string;
+  soleDetail: string;
+  laces: string;
+  lacesDetail: string;
+  lining: string;
+  construction: string;
+}
+
+interface CollectionItemInfo {
+  id: number;
+  name: string;
+  price: string;
+  image: string;
+  images: string[];
+  category: string;
+  slug: string;
+  description: string;
+  specs: SpecType;
+}
+
+const COLLECTIONS: CollectionItemInfo[] = [
   {
     id: 1,
     name: "Black Oxford Leather",
     price: "PKR 5,950",
     image: heritageImage,
+    images: [heritageImage, img1, img3, heroImage],
     category: "Hand Made",
     slug: "black-oxford-leather",
-    description: "Our signature piece, hand-stitched over 48 hours using the finest full-grain Italian calfskin."
+    description: "Our signature piece, hand-stitched over 48 hours using the finest full-grain Italian calfskin.",
+    specs: {
+      type: "Wholecut Bespoke Oxford",
+      leather: "Ultra-Premium Full-Grain Italian Box-Calf (Tuscan Tannery)",
+      leatherDetail: "Sourced from an antique artisan tannery in Tuscany, Italy. We select only the top 3% of unblemished aniline skins. Naturally supple and highly breathable, this pristine box-calf develops a beautiful deep mirror-like glaze with age.",
+      sole: "Hand-Stitched Closed-Channel Goodyear Welt Outsole with Fiddleback Waist",
+      soleDetail: "A multi-layered oak-bark tanned leather outsole with a traditional 270-degree hand-sewn welt. Features a hand-carved, highly defined fiddleback waist and a stacked solid leather heel for maximum stability.",
+      laces: "Flat-Braided Waxed Giza Cotton Laces",
+      lacesDetail: "Tightly-braided, extra-long-staple Egyptian Giza cotton fibres treated with an ultra-thin coating of natural organic beeswax for high tensile strength, fray prevention, and an enduring secure knot.",
+      lining: "Hand-Dyed Glove-Grade Italian Calf-Lining",
+      construction: "Handwelted Goodyear"
+    }
   },
   {
     id: 2,
     name: "Monk Strap",
     price: "PKR 5,950",
     image: img2,
+    images: [img2, img1, img3, img4],
     category: "Hand Made",
     slug: "monk-strap",
-    description: "A timeless classic in a rich cognac hue, featuring a hand-welted sole for unparalleled durability."
+    description: "A timeless classic in a rich cognac hue, featuring a hand-welted sole for unparalleled durability.",
+    specs: {
+      type: "Double Monk Strap Dress Shoe",
+      leather: "Aniline-Dyed Museum Calfskin (Cognac Brown Patina)",
+      leatherDetail: "Individually hand-burnished aniline-dyed calfskin with a distinctive marbleized museum effect. Prepared using organic tree bark extracts and finished with countless hand-applied layers of mineral cream wax.",
+      sole: "Hand-Welted Italian Oak-Bark Outsole with Stacked Leather Heel",
+      soleDetail: "Double-tanned dense oak-bark leather outsole that offers exceptional shock absorption and orthopedic flexibility. Hand-cut and polished edges with subtle hand-stamped decorative detailing on the waist.",
+      laces: "Double Brass Buckle Straps with Hidden Elastic Anchor Guards",
+      lacesDetail: "Instead of standard laces, this masterpiece is secured with two adjustable solid brass buckles individually cast in Florence, held securely by soft, heavy-grade hidden elastic segments to optimize standard flex.",
+      lining: "Hand-Selected Glove-Grade Milled Sheepskin Lining",
+      construction: "Rapid Blake stitch"
+    }
   },
   {
     id: 3,
     name: "Brown Oxford Leather",
     price: "PKR 5,950",
-    image: img4,
+    image: bo1Image,
+    images: [bo1Image, bo2Image, bo3Image, bo4Image, bo5Image, bo6Image, bo7Image, bo8Image],
     category: "Hand Made",
     slug: "brown-oxford-leather",
-    description: "The height of sartorial elegance, featuring hand-burnished leather and artisanal buckle detailing."
+    description: "The height of sartorial elegance, featuring hand-burnished leather and artisanal buckle detailing.",
+    specs: {
+      type: "Semi-Brogue Captoe Oxford",
+      leather: "Mahogany Burnished Alpine Calfskin",
+      leatherDetail: "Full-grain textured French Box-Calf leather featuring a magnificent, deep mahogany burnish. Selected for its highly resilient, dense grain structure that holds up wonderfully to moist weather.",
+      sole: "Double-Leather Oak Bark Outsole with Brass Pin Protection",
+      soleDetail: "Ultra-durable double-thickness sole, constructed of genuine oak-bark bend leather. Reinforced with 15 hand-driven solid brass pegs on the shank and a beautiful flush gold-plated steel toe-cap protection.",
+      laces: "Round-Braided Corded Egyptian Cotton Waxed Laces",
+      lacesDetail: "Meticulously braided round Egyptian cotton laces, deeply impregnated with natural wax. Slides smoothly and cleanly through nickel-plated metal eyelets without binding.",
+      lining: "Butter-Soft Full-Grain Tan Calf Lining",
+      construction: "270-Degree Goodyear Welt"
+    }
   }
 ];
 
@@ -148,7 +217,7 @@ const Nav = () => {
       </Link>
       
       {/* Right Links and Controls */}
-      <div className={`flex-1 flex gap-8 text-[10px] uppercase tracking-[0.3em] font-semibold justify-end items-center ${isSearchOpen && !window.innerWidth < 768 ? '' : ''}`}>
+      <div className="flex-1 flex gap-8 text-[10px] uppercase tracking-[0.3em] font-semibold justify-end items-center">
         <div className="relative flex items-center">
           <motion.div
             animate={{ x: isSearchOpen ? -170 : 0 }}
@@ -332,122 +401,138 @@ const Hero = () => {
   );
 };
 
+const CollectionItem = ({ item, index }: { item: CollectionItemInfo; index: number; key?: any }) => {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], [-50, 50]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+
+  return (
+    <motion.div 
+      ref={containerRef}
+      style={{ opacity }}
+      className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} gap-12 md:gap-32 items-center relative mb-32 md:mb-64`}
+    >
+      {/* Parallax Image Plate */}
+      <div className="w-full md:w-[55%] relative group overflow-hidden border border-soft shadow-2xl">
+        <div className="aspect-[4/5] overflow-hidden relative">
+          <motion.img 
+            style={{ y, scale: 1.1 }}
+            src={item.image} 
+            alt={item.name}
+            className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-125"
+          />
+          <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700" />
+        </div>
+        
+        {/* Floating ID Label */}
+        <div className={`absolute top-8 ${index % 2 === 0 ? 'right-8' : 'left-8'} mix-blend-difference`}>
+          <span className="text-[40px] md:text-[60px] serif italic leading-none opacity-40">0{index + 1}</span>
+        </div>
+      </div>
+
+      {/* Narrative Content */}
+      <div className="w-full md:w-[35%] flex flex-col pt-8 md:pt-0">
+        <motion.div
+          initial={{ opacity: 0, x: index % 2 === 0 ? 30 : -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-8 h-[1px] bg-white/30" />
+            <span className="text-[9px] uppercase tracking-[0.5em] text-zinc-500 font-medium">Original Series</span>
+          </div>
+          
+          <h3 className="serif text-4xl md:text-6xl mb-8 leading-tight tracking-tight">
+            {item.name.split(' ').slice(0, 1)} <br />
+            <span className="italic opacity-50 block pl-4 md:pl-8">{item.name.split(' ').slice(1).join(' ')}</span>
+          </h3>
+
+          <div className="h-24 md:h-32 border-l border-white/10 ml-2 mb-8 relative">
+            <div className="absolute top-0 left-0 p-4">
+              <p className="text-xs text-zinc-400 font-light leading-relaxed max-w-[280px]">
+                {item.description}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-8 group cursor-pointer w-fit">
+            <Link to={`/product/${item.slug}`} className="flex items-center gap-6">
+               <div className="w-10 h-10 rounded-full border border-soft flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-500">
+                  <ArrowRight size={14} strokeWidth={1} className="group-hover:translate-x-1 transition-transform" />
+               </div>
+               <span className="text-[10px] uppercase tracking-[0.4em] font-semibold border-b border-transparent group-hover:border-white transition-all pb-1">Enter Detail</span>
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+};
+
 const Collection = () => {
   return (
-    <section id="collection" className="bg-luxury-black text-luxury-white py-32 md:py-48 border-t border-white/5 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 md:px-10">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-32 md:mb-64">
-          <div className="max-w-2xl">
-            <motion.span 
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              className="text-[10px] uppercase tracking-[0.6em] text-zinc-500 mb-6 block font-mono"
-            >
-              Master-Works Series // 01-03
-            </motion.span>
-            <motion.h2 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="serif text-5xl md:text-[8rem] leading-[0.85] tracking-tighter"
-            >
+    <section id="collection" className="bg-luxury-black text-luxury-white pt-20 pb-32 md:pt-32 md:pb-64 relative overflow-hidden">
+      {/* Background Decorative Text */}
+      <div className="absolute top-1/2 left-0 w-full text-center opacity-[0.02] pointer-events-none select-none -translate-y-1/2">
+        <span className="serif text-[40vw] leading-none uppercase italic">Artisanal</span>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 md:px-10 relative z-10">
+        <div className="mb-32 md:mb-56">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.2 }}
+            className="flex flex-col items-center text-center"
+          >
+            <span className="text-[10px] uppercase tracking-[0.8em] text-zinc-500 mb-8 block">Selected Works</span>
+            <h2 className="serif text-6xl md:text-[9rem] leading-[0.85] tracking-tighter">
               Curated <br />
-              <span className="italic opacity-30 ml-[0.1em]">Originals</span>
-            </motion.h2>
-          </div>
-          <div className="hidden md:block pb-4">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-zinc-600 vertical-text origin-bottom-right rotate-90 translate-y-full">Scroll to Explore / Eternal Studio</p>
-          </div>
+              <span className="italic opacity-20">Originals</span>
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-24 mt-24 md:mt-40 max-w-5xl w-full">
+              {[
+                { title: "Pure Material", desc: "Sourced from the heart of Tuscany, our leathers represent the pinnacle of organic luxury.", code: "MAT-01" },
+                { title: "Time-Lost Process", desc: "A singular devotion to slow-craft methods that have remained unchanged for generations.", code: "PRC-44" },
+                { title: "Eternal Craft", desc: "Each piece is hand-lasted and finished with a unique signature that breathes life into form.", code: "CRT-99" }
+              ].map((value, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + (i * 0.1), duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                  viewport={{ once: true }}
+                  className="flex flex-col items-center md:items-start group relative"
+                >
+                  <div className="absolute -top-8 left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0 w-px h-6 bg-white/10 group-hover:h-12 group-hover:bg-white/30 transition-all duration-700" />
+                  <span className="text-[8px] font-mono text-zinc-600 mb-6 tracking-[0.5em] uppercase">{value.code}</span>
+                  <h4 className="serif text-xl md:text-2xl mb-5 group-hover:italic transition-all duration-500 tracking-tight">{value.title}</h4>
+                  <p className="text-[10px] text-zinc-500 leading-loose uppercase tracking-[0.25em] max-w-[240px] opacity-80 group-hover:opacity-100 transition-opacity">
+                    {value.desc}
+                  </p>
+                  <div className="w-8 group-hover:w-full h-[1px] bg-white/10 mt-8 transition-all duration-1000 ease-in-out"></div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
 
-        <div className="flex flex-col gap-48 md:gap-96">
+        <div className="flex flex-col items-center">
           {COLLECTIONS.map((item, idx) => (
-            <motion.div 
-              key={item.id}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 1 }}
-              viewport={{ once: true, margin: "-100px" }}
-              className={`flex flex-col ${idx % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} gap-12 md:gap-24 relative`}
-            >
-              {/* Technical Indicator */}
-              <div className={`absolute top-0 ${idx % 2 === 0 ? 'left-0' : 'right-0'} hidden xl:block -translate-y-full mb-8`}>
-                <div className="flex flex-col gap-2 opacity-20">
-                    <span className="text-[8px] font-mono uppercase tracking-widest">Model: Ref.{item.id}00X</span>
-                    <span className="text-[8px] font-mono uppercase tracking-widest">Origin: Florence, IT</span>
-                </div>
-              </div>
-
-              {/* Main Image Plate */}
-              <div className="w-full md:w-[60%] lg:w-[50%] relative group">
-                <motion.div 
-                  initial={{ clipPath: "inset(100% 0 0 0)" }}
-                  whileInView={{ clipPath: "inset(0% 0 0 0)" }}
-                  transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1] }}
-                  className="aspect-[3/4] bg-zinc-900 overflow-hidden border border-white/5"
-                >
-                  <img 
-                    src={item.image} 
-                    alt={item.name}
-                    className="w-full h-full object-cover transition-transform duration-[2s] ease-out group-hover:scale-110"
-                  />
-                </motion.div>
-                
-                {/* Image Overlay Label */}
-                <div className="absolute bottom-6 right-6 bg-black/80 backdrop-blur-md px-6 py-4 border border-white/10 hidden md:block group-hover:bg-white group-hover:text-black transition-all">
-                   <span className="text-[9px] uppercase tracking-[0.4em] font-bold">In Detail</span>
-                </div>
-              </div>
-
-              {/* Editorial Content */}
-              <div className="w-full md:w-[40%] flex flex-col justify-center relative translate-y-8 md:translate-y-24">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3, duration: 0.8 }}
-                >
-                  <div className="flex items-center gap-4 mb-8">
-                    <span className="text-[60px] serif italic opacity-5 leading-none">0{item.id}</span>
-                    <div className="h-[1px] flex-1 bg-white/10"></div>
-                  </div>
-                  
-                  <h3 className="serif text-4xl md:text-7xl mb-8 leading-[0.9] tracking-tight">
-                    {item.name.split(' ').slice(0, 1)} <br />
-                    <span className="italic text-zinc-600 block pl-[0.5em]">{item.name.split(' ').slice(1).join(' ')}</span>
-                  </h3>
-
-                  <div className="grid grid-cols-2 gap-8 mb-12 border-l border-white/10 pl-8">
-                    <div className="flex flex-col gap-2">
-                       <span className="text-[8px] uppercase tracking-widest text-zinc-500 font-mono">Artisinal Cost</span>
-                       <span className="serif text-xl">{item.price}</span>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                       <span className="text-[8px] uppercase tracking-widest text-zinc-500 font-mono">Series</span>
-                       <span className="serif text-xl italic">Originals</span>
-                    </div>
-                  </div>
-
-                  <p className="text-xs md:text-sm font-light text-zinc-400 leading-relaxed mb-12 italic max-w-sm">
-                    "{item.description}"
-                  </p>
-                  
-                  <Link to={`/product/${item.slug}`}>
-                    <button className="flex items-center gap-6 group">
-                      <span className="text-[10px] uppercase tracking-[0.6em] font-semibold">Discovery Series</span>
-                      <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:border-white group-hover:text-black transition-all duration-500">
-                        <ArrowRight size={16} strokeWidth={1} />
-                      </div>
-                    </button>
-                  </Link>
-                </motion.div>
-              </div>
-            </motion.div>
+            <CollectionItem key={item.id} item={item} index={idx} />
           ))}
         </div>
       </div>
     </section>
   );
 };
+
 
 const Heritage = () => {
   return (
@@ -572,21 +657,48 @@ const Footer = () => {
 };
 
 const ProductPage = () => {
-  const product = COLLECTIONS[0];
+  const { slug } = useParams();
+  const product = COLLECTIONS.find(p => p.slug === slug) || COLLECTIONS[0];
   const [activeImg, setActiveImg] = useState(0);
-  const images = [product.image, img1, img2, img3];
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string | null>("Sartorial Specs");
   
+  // Dynamic images based on selected product
+  const images = product.images || [product.image, img1, img2, img3];
+  const galleryImages = images.slice(0, 6);
+
+  // Reset image view on product change
+  useEffect(() => {
+    setActiveImg(0);
+    setSelectedSize(null);
+  }, [slug]);
+
   return (
     <div className="bg-luxury-black text-luxury-white min-h-screen">
       <div className="pt-24 md:pt-32 pb-20 md:pb-32 max-w-7xl mx-auto px-6 md:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
           
           {/* Product Image Slider Side */}
-          <div className="lg:col-span-7 flex flex-col gap-6">
-            <div className="relative aspect-[4/5] bg-zinc-900 overflow-hidden border border-soft">
+          <div className="lg:col-span-7 flex flex-col lg:flex-row gap-6 items-start">
+            
+            {/* Thumbnail Slide Gallery (Left on Desktop, Bottom on Mobile) */}
+            <div className="order-2 lg:order-1 flex lg:flex-col gap-3 w-full lg:w-16 xl:w-20 max-h-[580px] overflow-x-auto lg:overflow-y-auto pb-2 lg:pb-0 pr-0 lg:pr-1 shrink-0 scrollbar-none select-none">
+               {galleryImages.map((img, i) => (
+                 <button 
+                  key={i}
+                  onClick={() => setActiveImg(i)}
+                  className={`aspect-square w-14 sm:w-16 md:w-20 lg:w-full border transition-all duration-300 overflow-hidden shrink-0 bg-zinc-950 ${activeImg === i ? 'border-white ring-1 ring-white/20' : 'border-white/10 opacity-40 hover:opacity-100'}`}
+                 >
+                    <img src={img} className="w-full h-full object-cover" />
+                 </button>
+               ))}
+            </div>
+
+            {/* Main Product Display Image */}
+            <div className="order-1 lg:order-2 relative flex-1 w-full aspect-square bg-zinc-900 overflow-hidden border border-soft">
               <AnimatePresence mode="wait">
                 <motion.img 
-                  key={activeImg}
+                  key={`${slug}-${activeImg}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -597,7 +709,7 @@ const ProductPage = () => {
                 />
               </AnimatePresence>
               <div className="absolute bottom-6 left-6 flex gap-3">
-                {images.map((_, i) => (
+                {galleryImages.map((_, i) => (
                   <button 
                     key={i}
                     onClick={() => setActiveImg(i)}
@@ -606,18 +718,7 @@ const ProductPage = () => {
                 ))}
               </div>
             </div>
-            
-            <div className="grid grid-cols-4 gap-3 md:gap-4">
-               {images.map((img, i) => (
-                 <button 
-                  key={i}
-                  onClick={() => setActiveImg(i)}
-                  className={`aspect-square border transition-all overflow-hidden ${activeImg === i ? 'border-white' : 'border-soft opacity-50'}`}
-                 >
-                    <img src={img} className="w-full h-full object-cover" />
-                 </button>
-               ))}
-            </div>
+
           </div>
 
           {/* Product Detail Content Side */}
@@ -632,26 +733,26 @@ const ProductPage = () => {
                 <ChevronDown size={8} className="-rotate-90 flex-shrink-0" />
                 <Link to="/#collection">Collections</Link>
                 <ChevronDown size={8} className="-rotate-90 flex-shrink-0" />
-                <span className="text-white">Black Oxford</span>
+                <span className="text-white">{product.name}</span>
               </nav>
 
-              <h1 className="serif text-5xl md:text-7xl leading-none mb-6 tracking-tighter">
-                Black <br />
-                <span className="italic text-zinc-500">Oxford</span>
+              <h1 className="serif text-4xl md:text-6xl leading-none mb-6 tracking-tighter uppercase">
+                {product.name.split(' ')[0]} <br />
+                <span className="italic text-zinc-500 pl-4 md:pl-8 block normal-case">{product.name.split(' ').slice(1).join(' ')}</span>
               </h1>
               
               <div className="flex items-center gap-6 md:gap-8 mb-8 md:mb-10">
                  <span className="serif text-2xl md:text-3xl font-light text-white">{product.price}</span>
                  <div className="h-[1px] flex-1 bg-white/10"></div>
-                 <div className="text-[8px] md:text-[10px] uppercase tracking-widest text-zinc-500 font-mono">SKU: ET-OX-001</div>
+                 <div className="text-[8px] md:text-[10px] uppercase tracking-widest text-zinc-500 font-mono">SKU: ET-SH-{product.id}0{product.id}</div>
               </div>
 
               <div className="mb-10 md:mb-12">
                 <p className="text-[13px] md:text-sm font-light text-zinc-300 leading-relaxed mb-6 italic max-w-md">
-                  {product.description}
+                  "{product.description}"
                 </p>
                 <p className="text-[10px] md:text-[11px] text-zinc-500 leading-relaxed font-light max-w-sm">
-                  Precision-engineered with a traditional Goodyear-welted sole and crafted from a single piece of premium calfskin. A masterclass in artisanal integrity.
+                  Lovingly hand-crafted over forty-eight hours with a {product.specs.construction} system. Every design element represents an uncompromising dedication to bespoke luxury shoemaking.
                 </p>
               </div>
 
@@ -671,8 +772,12 @@ const ProductPage = () => {
                         { eu: '44', pk: '10' },
                         { eu: '45', pk: '11' }
                       ].map(size => (
-                        <button key={size.eu} className="group border border-soft py-3 px-2 flex flex-col items-center justify-center hover:border-white transition-all">
-                          <span className="text-[10px] text-white">EU {size.eu}</span>
+                        <button 
+                          key={size.eu} 
+                          onClick={() => setSelectedSize(size.eu)}
+                          className={`group border py-3 px-2 flex flex-col items-center justify-center transition-all ${selectedSize === size.eu ? 'border-white bg-white/10' : 'border-soft hover:border-white/50 bg-transparent'}`}
+                        >
+                          <span className="text-[11px] text-white">EU {size.eu}</span>
                           <span className="text-[8px] text-zinc-500 group-hover:text-zinc-300">PK {size.pk}</span>
                         </button>
                       ))}
@@ -690,56 +795,80 @@ const ProductPage = () => {
                 </button>
               </div>
 
-              {/* Details Toggles Style */}
+              {/* Interactive Details Accordions with detailed spec items */}
               <div className="flex flex-col border-t border-soft">
-                 {['Sartorial Specs', 'Shipping & Returns', 'Maintenance'].map((tab) => (
-                   <div key={tab} className="border-b border-soft py-5 md:py-6 flex justify-between items-center cursor-pointer group">
-                      <span className="text-[10px] uppercase tracking-[0.3em] font-semibold text-zinc-400 group-hover:text-white transition-colors">{tab}</span>
-                      <ChevronDown size={14} className="opacity-30 group-hover:opacity-100 transition-opacity" />
-                   </div>
-                 ))}
+                 {['Sartorial Specs', 'Shipping & Returns', 'Maintenance'].map((tab) => {
+                   const isExpanded = activeTab === tab;
+                   return (
+                     <div key={tab} className="border-b border-soft">
+                       <button 
+                         onClick={() => setActiveTab(isExpanded ? null : tab)}
+                         className="w-full py-5 md:py-6 flex justify-between items-center cursor-pointer group text-left outline-none"
+                       >
+                         <span className={`text-[10px] uppercase tracking-[0.3em] font-semibold transition-colors ${isExpanded ? 'text-white' : 'text-zinc-400 group-hover:text-white'}`}>{tab}</span>
+                         <ChevronDown size={14} className={`opacity-40 group-hover:opacity-100 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-white' : ''}`} />
+                       </button>
+
+                       {isExpanded && (
+                         <motion.div 
+                           initial={{ opacity: 0, height: 0 }}
+                           animate={{ opacity: 1, height: "auto" }}
+                           exit={{ opacity: 0, height: 0 }}
+                           transition={{ duration: 0.3 }}
+                           className="overflow-hidden pb-6"
+                         >
+                           {tab === 'Sartorial Specs' && (
+                             <div className="flex flex-col gap-6 text-xs font-light tracking-wide text-zinc-300">
+                               <div className="border-l border-white/10 pl-4 py-1">
+                                 <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-mono block mb-1">Leather Selection & Quality</span>
+                                 <h4 className="font-semibold text-white text-[11px] mb-2">{product.specs.leather}</h4>
+                                 <p className="text-zinc-400 leading-relaxed text-[10px] uppercase tracking-wider">{product.specs.leatherDetail}</p>
+                               </div>
+
+                               <div className="border-l border-white/10 pl-4 py-1">
+                                 <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-mono block mb-1">Sole & Edge Finishing</span>
+                                 <h4 className="font-semibold text-white text-[11px] mb-2">{product.specs.sole}</h4>
+                                 <p className="text-zinc-400 leading-relaxed text-[10px] uppercase tracking-wider">{product.specs.soleDetail}</p>
+                               </div>
+
+                               <div className="border-l border-white/10 pl-4 py-1">
+                                 <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-mono block mb-1">Functional Trims & Fastening</span>
+                                 <h4 className="font-semibold text-white text-[11px] mb-2">{product.specs.laces}</h4>
+                                 <p className="text-zinc-400 leading-relaxed text-[10px] uppercase tracking-wider">{product.specs.lacesDetail}</p>
+                               </div>
+
+                               <div className="border-l border-white/10 pl-4 py-1">
+                                 <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-mono block mb-1">Interior Specification</span>
+                                 <p className="text-zinc-400 leading-relaxed text-[10px] uppercase tracking-wider">{product.specs.lining}</p>
+                               </div>
+                             </div>
+                           )}
+
+                           {tab === 'Shipping & Returns' && (
+                             <div className="text-[11px] leading-relaxed text-zinc-400 uppercase tracking-widest">
+                               <p className="mb-4">Complimentary express shipping across Europe, the Americas, and Asia. Hand-delivered via private courier with full parcel tracking.</p>
+                               <p>Returns accepted within fourteen days of receipt. All protective outsole adhesives and stickers must remain entirely undisturbed for refund eligibility.</p>
+                             </div>
+                           )}
+
+                           {tab === 'Maintenance' && (
+                             <div className="text-[11px] leading-relaxed text-zinc-400 uppercase tracking-widest">
+                               <p className="mb-4">We advise brushing with a premium natural horsehair brush after every wear. Always store immediately in tailored solid-cedar shoe trees to preserve leather contours.</p>
+                               <p>Re-wax using organic beeswax creams thrice-annually to elevate the beautiful, hand-burnished depth of tone.</p>
+                             </div>
+                           )}
+                         </motion.div>
+                       )}
+                     </div>
+                   );
+                 })}
               </div>
             </motion.div>
           </div>
         </div>
 
-        {/* Detailed Breakdown Section */}
-        <div className="mt-40 md:mt-64 pt-20 md:pt-32 border-t border-soft">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 mb-24 md:mb-48">
-             <div className="flex flex-col justify-center order-2 md:order-1">
-                <span className="text-[10px] uppercase tracking-[0.5em] text-zinc-500 mb-6 font-mono">Process No. 01</span>
-                <h2 className="serif text-4xl md:text-7xl mb-8 md:mb-10 leading-tight">
-                  The Art of the <br />
-                  <span className="italic opacity-60">Wholecut Upper</span>
-                </h2>
-                <div className="w-20 h-[1px] bg-white opacity-20 mb-8 md:mb-10"></div>
-                <p className="font-light text-zinc-400 leading-relaxed mb-6 md:mb-8 text-[13px] md:text-sm italic">
-                  Unlike conventional footwear that utilizes multiple panels of leather, each Eternal Oxford is cut from a single, unblemished piece of hide. This "Wholecut" process requires an extraordinary level of skill and significantly higher leather wastage to ensure absolute structural perfection.
-                </p>
-                <p className="font-light text-zinc-400 leading-relaxed text-[13px] md:text-sm">
-                  Our master cutters spend years learning to identify the invisible grain flow of the skin, ensuring that every pair responds perfectly to the heat and pressure of the hand-lasting process.
-                </p>
-             </div>
-             <div className="aspect-[4/5] bg-zinc-900 border border-soft overflow-hidden grayscale opacity-80 order-1 md:order-2">
-                <img src={heritageImage} className="w-full h-full object-cover scale-110" />
-             </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
-             <div className="flex flex-col gap-4 md:gap-6">
-                <span className="serif text-2xl italic opacity-80">01. Selection</span>
-                <p className="text-[11px] md:text-xs text-zinc-500 leading-relaxed font-light">Only the top 3% of available calfskins from our Tuscan tannery are deemed suitable for the Eternal collection.</p>
-             </div>
-             <div className="flex flex-col gap-4 md:gap-6">
-                <span className="serif text-2xl italic opacity-80">02. Hand-Welt</span>
-                <p className="text-[11px] md:text-xs text-zinc-500 leading-relaxed font-light">A meticulous 270-degree Goodyear welt, stitched entirely by hand, allowing for indefinite resoling over the product's lifetime.</p>
-             </div>
-             <div className="flex flex-col gap-4 md:gap-6">
-                <span className="serif text-2xl italic opacity-80">03. Finishing</span>
-                <p className="text-[11px] md:text-xs text-zinc-500 leading-relaxed font-light">Each pair is finished with seven layers of hand-burnished wax, creating a deep, dimensional patina that matures exquisitely with age.</p>
-             </div>
-          </div>
-        </div>
+        {/* Long Detailed Editorial Product Story */}
+        <ProductStory product={product} images={images} />
       </div>
     </div>
   );
@@ -783,7 +912,7 @@ export default function App() {
         <Nav />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/product/black-oxford-leather" element={<ProductPage />} />
+          <Route path="/product/:slug" element={<ProductPage />} />
         </Routes>
         <Footer />
       </div>
