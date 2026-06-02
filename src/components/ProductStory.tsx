@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, Sparkles, Layers, ShieldCheck, Compass, Eye } from "lucide-react";
+import layersboImage from "../images/layersbo.png";
 
 interface SpecType {
   type: string;
@@ -37,62 +38,62 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
   const anatomyPoints = [
     {
       id: 1,
-      title: "Full-Grain Leather Upper",
+      title: "Aniline Full-Grain Upper",
       coord: { x: "25%", y: "30%" },
-      desc: "Selected from the upper 3% of Tuscan box-calf or museum calf skins. Kept completely uncorrected to ensure natural grain retention, breathability, and an exquisite organic patina development over its lifetime."
+      desc: "Selected from the premium 3% of French skins, left uncorrected to breathe and patina gracefully with age."
     },
     {
       id: 2,
-      title: `${product.specs.construction} Welt Chamber`,
+      title: `${product.specs.construction} Welt`,
       coord: { x: "40%", y: "65%" },
-      desc: `Our signature ${product.specs.construction.toLowerCase()} construction. Uses an ultra-dense flax thread fully saturated with pitch pine tar to form an impermeable organic barrier preventing moisture from breaching the interior.`
+      desc: "Stitched with wax-infused flax thread to form an enduring, moisture-resistant barrier."
     },
     {
       id: 3,
-      title: "Natural Cork Filling & Steel Shank",
+      title: "Granulated Oak Cork Bed",
       coord: { x: "65%", y: "45%" },
-      desc: "A hand-packed cavity of premium granulated Portuguese cork that slowly compresses under warmth and pressure to conform exactly to your foot’s unique orthopaedic profile, supported by a tempered steel alignment shank."
+      desc: "A pure organic cork midfill that custom-molds perfectly to your footprint over time."
     },
     {
       id: 4,
-      title: "Stacked Leather Heel & Oak Outsole",
+      title: "Stacked Solid Leather Heel",
       coord: { x: "85%", y: "75%" },
-      desc: "A heavy-grade dense oak-bark-tanned outsole. Every lift of the heel is individually hand-stacked, aligned, nailed with high-tensile brass pegs, and edge-shaved to a pristine, dense, glass-smooth editorial gleam."
+      desc: "Individually hand-stacked leather lifts anchored securely with solid high-tensile brass pegs."
     }
   ];
 
   return (
-    <div className="mt-24 md:mt-48">
+    <div className="mt-12 md:mt-20">
       {/* 1. Visual Structural Anatomy Panel */}
-      <section className="border-t border-white/5 pt-0 pb-16 md:pb-24">
-        <div className="text-center mb-16 md:mb-24">
+      <section className="border-t border-white/5 pt-0 pb-10 md:pb-14">
+        <div className="text-center mb-10 md:mb-14">
           <span className="text-[10px] uppercase tracking-[0.6em] text-zinc-500 mb-4 block">Engineered Anatomy</span>
           <h2 className="serif text-3.5xl md:text-5xl tracking-tight leading-none mb-4">
             Structural <span className="italic opacity-60">Anatomy</span>
           </h2>
-          <div className="w-16 h-[1px] bg-white/25 mx-auto mt-6"></div>
+          <div className="w-16 h-[1px] bg-white/20 mx-auto mt-6"></div>
         </div>
 
         {/* Dynamic Interactive Anatomy Map & Side panels */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
           {/* Detailed Specifications Column (Left) */}
-          <div className="lg:col-span-5 flex flex-col gap-8 md:gap-10">
-            <span className="text-[9px] uppercase tracking-[0.4em] text-zinc-400 border-l border-white/20 pl-4 block">Visual Schematic Indicators</span>
+          <div className="lg:col-span-12 xl:col-span-5 flex flex-col gap-6">
+            <span className="text-[9px] uppercase tracking-[0.4em] text-zinc-500 border-l border-white/20 pl-4 block font-mono">Visual Schematic Indicators</span>
             
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
               {anatomyPoints.map((point, index) => (
                 <div 
                   key={point.id}
                   onMouseEnter={() => setHoveredPoint(point.id)}
                   onMouseLeave={() => setHoveredPoint(null)}
-                  className={`p-6 border transition-all duration-300 cursor-pointer ${hoveredPoint === point.id ? 'border-white bg-white/5 scale-[1.02]' : 'border-white/5 hover:border-white/20 bg-transparent'}`}
+                  className={`p-5 border rounded-sm transition-all duration-300 cursor-pointer ${hoveredPoint === point.id ? 'border-white/30 bg-white/[0.03]' : 'border-white/5 hover:border-white/10 bg-transparent'}`}
                 >
-                  <div className="flex items-center gap-4 mb-3">
-                    <span className="font-mono text-[9px] px-2 py-0.5 border border-white/20 text-zinc-400">0{index + 1}</span>
-                    <h4 className="serif text-base text-white tracking-wide">{point.title}</h4>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="font-mono text-[8px] px-2 py-0.5 border border-white/10 text-zinc-500 font-bold uppercase">0{index + 1}</span>
+                    <h4 className="serif text-sm text-zinc-200 tracking-wide font-medium">{point.title}</h4>
                   </div>
-                  <p className="text-[11px] text-zinc-400 leading-relaxed uppercase tracking-widest">{point.desc}</p>
+                  <p className="text-[11px] text-zinc-400 tracking-wide leading-relaxed font-light pl-9">{point.desc}</p>
                 </div>
               ))}
             </div>
@@ -100,7 +101,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
 
           {/* Interactive Artwork Chassis Frame (Right/Center) */}
           <div className="lg:col-span-12 xl:col-span-7 relative flex justify-center items-center">
-            <div className="relative w-full aspect-[4/3] bg-zinc-950/80 border border-soft p-6 overflow-hidden flex items-center justify-center rounded-sm">
+            <div className="relative w-full aspect-[4/3] bg-zinc-950/80 border border-soft p-4 sm:p-6 overflow-hidden flex items-center justify-center rounded-sm">
               
               {/* Decorative Tech Grid */}
               <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4vw_4vw]" />
@@ -114,80 +115,17 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                 <img 
                   src={images[1] || images[0]} 
                   alt="Anatomy Overlay" 
-                  className="w-full h-full object-contain ease-out transition-transform duration-700 hover:scale-105" 
+                  className="w-full h-full object-contain" 
                 />
-                
-                {/* Overlay Lines Connecting Points */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none z-20">
-                  {hoveredPoint === 1 && (
-                    <motion.path 
-                      initial={{ pathLength: 0 }} 
-                      animate={{ pathLength: 1 }} 
-                      d="M 125 150 L 190 120" 
-                      stroke="white" 
-                      strokeWidth="1" 
-                      strokeDasharray="2,2" 
-                      fill="none" 
-                    />
-                  )}
-                  {hoveredPoint === 2 && (
-                    <motion.path 
-                      initial={{ pathLength: 0 }} 
-                      animate={{ pathLength: 1 }} 
-                      d="M 195 240 L 260 210" 
-                      stroke="white" 
-                      strokeWidth="1" 
-                      strokeDasharray="2,2" 
-                      fill="none" 
-                    />
-                  )}
-                  {hoveredPoint === 3 && (
-                    <motion.path 
-                      initial={{ pathLength: 0 }} 
-                      animate={{ pathLength: 1 }} 
-                      d="M 315 180 L 370 170" 
-                      stroke="white" 
-                      strokeWidth="1" 
-                      strokeDasharray="2,2" 
-                      fill="none" 
-                    />
-                  )}
-                  {hoveredPoint === 4 && (
-                    <motion.path 
-                      initial={{ pathLength: 0 }} 
-                      animate={{ pathLength: 1 }} 
-                      d="M 400 270 L 415 230" 
-                      stroke="white" 
-                      strokeWidth="1" 
-                      strokeDasharray="2,2" 
-                      fill="none" 
-                    />
-                  )}
-                </svg>
-
-                {/* Hotspot Pins */}
-                {anatomyPoints.map((point) => (
-                  <button
-                    key={point.id}
-                    onMouseEnter={() => setHoveredPoint(point.id)}
-                    onMouseLeave={() => setHoveredPoint(null)}
-                    style={{ left: point.coord.x, top: point.coord.y }}
-                    className="absolute -translate-x-1/2 -translate-y-1/2 z-30 flex items-center justify-center"
-                  >
-                    <span className="absolute inline-flex h-6 w-6 rounded-full bg-white/20 animate-ping opacity-75"></span>
-                    <span className={`relative inline-flex rounded-full h-3 w-3 items-center justify-center transition-all ${hoveredPoint === point.id ? 'bg-white scale-125' : 'bg-white/60'}`} />
-                  </button>
-                ))}
               </div>
 
               {/* Technical Spec Labels in Corner */}
-              <div className="absolute bottom-6 left-6 flex flex-col gap-1 z-20 pointer-events-none">
+              <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 flex flex-col gap-1 z-20 pointer-events-none">
                 <span className="text-[7px] font-mono tracking-[0.3em] uppercase opacity-35">Chassis Calibration</span>
                 <span className="text-[8px] font-mono tracking-[0.2em] text-zinc-400">REF: ETN-SH-{product.id}-D99</span>
               </div>
-              <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
-                <Eye size={10} className="text-zinc-500 animate-pulse" />
-                <span className="text-[7px] font-mono tracking-[0.3em] uppercase opacity-35">Interactive Wireframe</span>
+              <div className="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center gap-2 z-20">
+                <span className="text-[7px] font-mono tracking-[0.3em] uppercase opacity-35">Visual Schematic Chamber</span>
               </div>
             </div>
           </div>
@@ -195,19 +133,19 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
       </section>
 
       {/* 2. Deep Dive: Material Origins with Parallax Image Cards */}
-      <section className="border-t border-white/5 py-24 md:py-36">
-        <div className="max-w-4xl mx-auto text-center mb-16 md:mb-28">
-          <span className="text-[10px] uppercase tracking-[0.7em] text-zinc-500 mb-6 block">Sourcing & Pedigree</span>
-          <h2 className="serif text-4xl md:text-5xl leading-tight mb-8">
+      <section className="border-t border-white/5 py-12 md:py-16">
+        <div className="max-w-4xl mx-auto text-center mb-10 md:mb-14">
+          <span className="text-[10px] uppercase tracking-[0.7em] text-zinc-500 mb-4 block">Sourcing & Pedigree</span>
+          <h2 className="serif text-4xl md:text-5xl leading-tight mb-4">
             Pristine <span className="italic font-light">Materials</span>
           </h2>
-          <p className="text-[12px] uppercase tracking-widest text-zinc-400 font-light max-w-xl mx-auto leading-relaxed">
+          <p className="text-[11px] uppercase tracking-widest text-zinc-400 font-light max-w-lg mx-auto leading-relaxed">
             Beautiful creations are born of nature's premium masterpieces. We select only pristine elements containing natural characteristics and unmatched structural resilience.
           </p>
         </div>
 
         {/* Long Editorial Story Blocks with dynamic product specs & big descriptive illustrations */}
-        <div className="flex flex-col gap-24 md:gap-40">
+        <div className="flex flex-col gap-12 md:gap-16">
           
           {/* Leather Story Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
@@ -217,10 +155,10 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                 <img 
                   src={images[2] || images[0]} 
                   alt="Leather Tannery Crafting" 
-                  className="w-full h-full object-cover transition-transform duration-[1.8s] group-hover:scale-110" 
+                  className="w-full h-full object-cover" 
                 />
               </div>
-              <div className="absolute top-6 left-6 p-4 bg-black/60 backdrop-blur-md border border-white/10">
+              <div className="absolute top-4 left-4 p-3 md:top-6 md:left-6 md:p-4 bg-black/60 backdrop-blur-md border border-white/10">
                 <span className="text-[8px] font-mono tracking-[0.2em] text-zinc-300">TUSCAN ARTISANAL PROCESS</span>
               </div>
             </div>
@@ -260,10 +198,10 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                 <img 
                   src={images[7] || images[3] || images[1]} 
                   alt="Sole Cutting & Stitching" 
-                  className="w-full h-full object-cover transition-transform duration-[1.8s] group-hover:scale-110" 
+                  className="w-full h-full object-cover" 
                 />
               </div>
-              <div className="absolute top-6 right-6 p-4 bg-black/60 backdrop-blur-md border border-white/10">
+              <div className="absolute top-4 right-4 p-3 md:top-6 md:right-6 md:p-4 bg-black/60 backdrop-blur-md border border-white/10">
                 <span className="text-[8px] font-mono tracking-[0.2em] text-zinc-300">DOUBLE OAK-BARK EMBOSSING</span>
               </div>
             </div>
@@ -277,10 +215,10 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                 <img 
                   src={images[6] || images[4] || images[0]} 
                   alt="Sartorial Trims Finishing" 
-                  className="w-full h-full object-cover transition-transform duration-[1.8s] group-hover:scale-110" 
+                  className="w-full h-full object-cover" 
                 />
               </div>
-              <div className="absolute top-6 left-6 p-4 bg-black/60 backdrop-blur-md border border-white/10">
+              <div className="absolute top-4 left-4 p-3 md:top-6 md:left-6 md:p-4 bg-black/60 backdrop-blur-md border border-white/10">
                 <span className="text-[8px] font-mono tracking-[0.2em] text-zinc-300">AUTHENTIC TRIMS OR FABRIC</span>
               </div>
             </div>
@@ -302,9 +240,110 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
         </div>
       </section>
 
+      {/* Exploded Construction Layers Exhibition */}
+      <section className="border-t border-white/5 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-4xl mx-auto text-center mb-10 md:mb-14">
+            <span className="text-[10px] uppercase tracking-[0.7em] text-zinc-500 mb-6 block">Structural Composition</span>
+            <h2 className="serif text-4xl md:text-5xl leading-tight text-white mb-6">
+              The <span className="italic font-light">Layers of Excellence</span>
+            </h2>
+            <p className="text-[11px] uppercase tracking-[0.25em] text-zinc-400 font-light max-w-lg mx-auto leading-relaxed">
+              Every millimeter is carefully modeled, layered, and stitched. Explore the architecture of our masterpiece.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-20 items-center">
+            
+            {/* Left Column: Majestic Exploded Image Display */}
+            <div className="lg:col-span-6 flex justify-center items-center w-full">
+              <div className="relative border border-white/5 bg-zinc-950/50 p-4 sm:p-6 md:p-12 overflow-hidden rounded-sm w-full flex justify-center items-center group">
+                {/* Subtle blueprint grid overlay */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+                
+                {/* Visual architectural framing details */}
+                <div className="absolute top-4 left-4 w-4 h-4 border-t border-l border-white/10" />
+                <div className="absolute top-4 right-4 w-4 h-4 border-t border-r border-white/10" />
+                <div className="absolute bottom-4 left-4 w-4 h-4 border-b border-l border-white/10" />
+                <div className="absolute bottom-4 right-4 w-4 h-4 border-b border-r border-white/10" />
+
+                <motion.img 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                  src={layersboImage} 
+                  alt="Bespoke Shoe Structured Layers" 
+                  className="max-h-[380px] md:max-h-[500px] w-auto h-auto object-contain select-none transition-all duration-700 relative z-10"
+                />
+
+                {/* Vertical blueprint measurements */}
+                <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1 opacity-25 z-0 pointer-events-none text-right hidden sm:flex">
+                  <span className="text-[7px] font-mono tracking-widest text-zinc-500 uppercase rotate-90 my-12">Y-AXIS STACK</span>
+                  <div className="w-px h-24 bg-white/20" />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Layer Specs / Exploded Stack details */}
+            <div className="lg:col-span-6 flex flex-col gap-6 w-full">
+              <span className="text-[9px] uppercase tracking-[0.4em] text-zinc-500 border-l border-white/20 pl-4 block mb-2 font-mono">Structural Composition Callout</span>
+              
+              <div className="flex flex-col border-t border-white/5">
+                {[
+                  {
+                    level: "Level 1",
+                    name: "Aniline Box-Calf Upper Skin",
+                    desc: "Sourced from premier European tanneries, left entirely uncorrected to age with natural elegance and deep patina."
+                  },
+                  {
+                    level: "Level 2",
+                    name: "Curried Double-Leather Insole",
+                    desc: "An organic 5mm vegetable-tanned leather shoulder that channels moisture and anchors the entire welt."
+                  },
+                  {
+                    level: "Level 3",
+                    name: "Granulated Portuguese Cork Fill",
+                    desc: "A hand-packed cavity formulation that dynamically heat-molds to your foot contour for natural padding."
+                  },
+                  {
+                    level: "Level 4",
+                    name: "Oak-Bark Tanned Leather Outsole",
+                    desc: "Pressed and wax-infused ground-contact leather pit-tanned for 12 months. Incredible resilience and flexibility."
+                  }
+                ].map((layer, index) => (
+                  <motion.div 
+                    key={index}
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1, duration: 0.5 }}
+                    className="group flex flex-col py-5 border-b border-white/5 hover:border-white/20 transition-all cursor-default"
+                  >
+                    <div className="flex flex-col sm:flex-row justify-between sm:items-baseline gap-1 sm:gap-4 mb-2">
+                      <div className="flex items-center gap-3">
+                        <span className="font-mono text-[8px] text-zinc-600 tracking-wider font-bold shrink-0">{layer.level}</span>
+                        <h4 className="serif text-sm text-zinc-300 group-hover:text-white transition-colors duration-300 font-medium">
+                          {layer.name}
+                        </h4>
+                      </div>
+                      <span className="text-[7px] font-mono tracking-widest text-zinc-600 uppercase whitespace-nowrap pl-8 sm:pl-0">100% Bespoke</span>
+                    </div>
+                    <p className="text-[10px] uppercase tracking-widest text-zinc-500 font-light leading-relaxed pl-8 sm:pl-11">
+                      {layer.desc}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {/* 3. The 48-Hour Bespoke Journey Steps */}
-      <section className="border-t border-white/5 pt-20 md:pt-32 pb-12 md:pb-24">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 md:mb-32">
+      <section className="border-t border-white/5 pt-12 md:pt-16 pb-10 md:pb-14">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-14">
           <div className="max-w-xl">
             <span className="text-[10px] uppercase tracking-[0.6em] text-zinc-500 mb-4 block">Chronicles Of Devotion</span>
             <h2 className="serif text-4xl md:text-6xl tracking-tight leading-none">
@@ -339,9 +378,9 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
             }
           ].map((item, idx) => (
             <div key={idx} className="flex flex-col border-t border-white/5 pt-8 group cursor-default">
-              <div className="flex justify-between items-baseline mb-6">
+              <div className="flex flex-col sm:flex-row justify-between sm:items-baseline gap-2 mb-4 sm:mb-6">
                 <span className="serif text-lg italic text-zinc-600 group-hover:text-white transition-colors duration-500">{item.step} // {item.title}</span>
-                <span className="text-[8px] font-mono text-zinc-700 font-bold uppercase">{item.caption}</span>
+                <span className="text-[8px] font-mono text-zinc-700 font-bold uppercase tracking-wider">{item.caption}</span>
               </div>
               <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-widest mb-6">
                 "{item.desc}"
@@ -356,24 +395,24 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
       </section>
 
       {/* 4. Atelier Legacy Credentials / Guarantees Banner */}
-      <section className="bg-white/5 border border-white/10 p-8 md:p-16 mt-20 md:mt-32 relative overflow-hidden">
+      <section className="bg-white/5 border border-white/10 p-6 sm:p-10 md:p-12 mt-12 md:mt-16 relative overflow-hidden rounded-sm">
         <div className="absolute -top-1/2 -right-1/4 w-[60%] h-[200%] bg-gradient-to-l from-white/[0.02] to-transparent rounded-full rotate-45 pointer-events-none" />
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start lg:items-center relative z-10">
           <div className="lg:col-span-8">
-            <div className="flex gap-4 items-center mb-6">
-              <ShieldCheck className="text-white opacity-80" size={24} strokeWidth={1} />
-              <span className="text-[10px] uppercase tracking-[0.6em] text-zinc-400 font-medium">Eternal Studio Pledge</span>
+            <div className="flex gap-4 items-center mb-5">
+              <ShieldCheck className="text-white opacity-80" size={20} strokeWidth={1} />
+              <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.6em] text-zinc-400 font-medium">Eternal Studio Pledge</span>
             </div>
-            <h3 className="serif text-3xl md:text-5xl tracking-tight leading-none mb-4">
+            <h3 className="serif text-3xl sm:text-4xl md:text-5xl tracking-tight leading-none mb-4">
               Lifetime <span className="italic font-light">Recrafting</span>
             </h3>
             <p className="text-zinc-400 max-w-xl leading-relaxed font-light text-[11px] uppercase tracking-wider">
               We pledge to preserve the legacy of your purchase. Bring back your worn down soles to our atelier in the future; our shoemakers will seamlessly strip, rebuild, and re-last the leather using original techniques.
             </p>
           </div>
-          <div className="lg:col-span-4 flex justify-end">
-            <button className="flex items-center gap-6 group hover:text-white text-zinc-400 border border-white/10 px-6 py-4 transition-all hover:bg-white hover:text-black">
+          <div className="lg:col-span-4 flex justify-start lg:justify-end w-full">
+            <button className="flex items-center justify-between sm:justify-start gap-6 group hover:text-white text-zinc-400 border border-white/10 px-6 py-4 transition-all hover:bg-white hover:text-black w-full sm:w-auto">
               <span className="text-[10px] uppercase tracking-[0.4em] font-semibold">Learn Atelier Service</span>
               <ArrowRight size={14} strokeWidth={1} className="group-hover:translate-x-1 transition-transform" />
             </button>

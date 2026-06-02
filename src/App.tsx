@@ -4,11 +4,13 @@
  */
 
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
-import { ArrowRight, ChevronDown, Instagram, Twitter, Menu, X, Search, ShieldCheck, Truck, RotateCcw } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { ArrowRight, ChevronDown, Instagram, Twitter, Menu, X, Search, ShieldCheck, Truck, RotateCcw, ChevronLeft, ChevronRight, Sliders, Sparkles, Check, Compass, Clock, Activity } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link, useLocation, useParams } from "react-router-dom";
 import { ProductStory } from "./components/ProductStory";
+import AtelierPage from "./components/AtelierPage";
 import heroImage from "./images/hero.jpg";
+import hero1Image from "./images/hero1-1.jpeg";
 import heritageImage from "./images/blackoxford.jpg";
 import img1 from "./images/1.jpg";
 import img2 from "./images/2.jpg";
@@ -23,6 +25,8 @@ import bo6Image from "./images/bo6.jpeg";
 import bo7Image from "./images/bo7.jpeg";
 import bo8Image from "./images/bo8.jpeg";
 import footerImg from "./images/footer.jpg";
+import box1Image from "./images/box1.jpeg";
+import bo9Image from "./images/bo9.jpeg";
 
 interface SpecType {
   type: string;
@@ -51,23 +55,23 @@ interface CollectionItemInfo {
 const COLLECTIONS: CollectionItemInfo[] = [
   {
     id: 1,
-    name: "Black Oxford Leather",
+    name: "Brown Oxford Leather",
     price: "PKR 5,950",
-    image: heritageImage,
-    images: [heritageImage, img1, img3, heroImage],
+    image: bo1Image,
+    images: [bo1Image, bo2Image, bo3Image, bo4Image, bo5Image, bo6Image, bo7Image, bo8Image],
     category: "Hand Made",
-    slug: "black-oxford-leather",
-    description: "Our signature piece, hand-stitched over 48 hours using the finest full-grain Italian calfskin.",
+    slug: "brown-oxford-leather",
+    description: "The height of sartorial elegance, featuring hand-burnished leather and artisanal buckle detailing.",
     specs: {
-      type: "Wholecut Bespoke Oxford",
-      leather: "Ultra-Premium Full-Grain Italian Box-Calf (Tuscan Tannery)",
-      leatherDetail: "Sourced from an antique artisan tannery in Tuscany, Italy. We select only the top 3% of unblemished aniline skins. Naturally supple and highly breathable, this pristine box-calf develops a beautiful deep mirror-like glaze with age.",
-      sole: "Hand-Stitched Closed-Channel Goodyear Welt Outsole with Fiddleback Waist",
-      soleDetail: "A multi-layered oak-bark tanned leather outsole with a traditional 270-degree hand-sewn welt. Features a hand-carved, highly defined fiddleback waist and a stacked solid leather heel for maximum stability.",
-      laces: "Flat-Braided Waxed Giza Cotton Laces",
-      lacesDetail: "Tightly-braided, extra-long-staple Egyptian Giza cotton fibres treated with an ultra-thin coating of natural organic beeswax for high tensile strength, fray prevention, and an enduring secure knot.",
-      lining: "Hand-Dyed Glove-Grade Italian Calf-Lining",
-      construction: "Handwelted Goodyear"
+      type: "Semi-Brogue Captoe Oxford",
+      leather: "Mahogany Burnished Alpine Calfskin",
+      leatherDetail: "Full-grain textured French Box-Calf leather featuring a magnificent, deep mahogany burnish. Selected for its highly resilient, dense grain structure that holds up wonderfully to moist weather.",
+      sole: "Double-Leather Oak Bark Outsole with Brass Pin Protection",
+      soleDetail: "Ultra-durable double-thickness sole, constructed of genuine oak-bark bend leather. Reinforced with 15 hand-driven solid brass pegs on the shank and a beautiful flush gold-plated steel toe-cap protection.",
+      laces: "Round-Braided Corded Egyptian Cotton Waxed Laces",
+      lacesDetail: "Meticulously braided round Egyptian cotton laces, deeply impregnated with natural wax. Slides smoothly and cleanly through nickel-plated metal eyelets without binding.",
+      lining: "Butter-Soft Full-Grain Tan Calf Lining",
+      construction: "270-Degree Goodyear Welt"
     }
   },
   {
@@ -93,23 +97,23 @@ const COLLECTIONS: CollectionItemInfo[] = [
   },
   {
     id: 3,
-    name: "Brown Oxford Leather",
+    name: "Black Oxford Leather",
     price: "PKR 5,950",
-    image: bo1Image,
-    images: [bo1Image, bo2Image, bo3Image, bo4Image, bo5Image, bo6Image, bo7Image, bo8Image],
+    image: heritageImage,
+    images: [heritageImage, img1, img3, heroImage],
     category: "Hand Made",
-    slug: "brown-oxford-leather",
-    description: "The height of sartorial elegance, featuring hand-burnished leather and artisanal buckle detailing.",
+    slug: "black-oxford-leather",
+    description: "Our signature piece, hand-stitched over 48 hours using the finest full-grain Italian calfskin.",
     specs: {
-      type: "Semi-Brogue Captoe Oxford",
-      leather: "Mahogany Burnished Alpine Calfskin",
-      leatherDetail: "Full-grain textured French Box-Calf leather featuring a magnificent, deep mahogany burnish. Selected for its highly resilient, dense grain structure that holds up wonderfully to moist weather.",
-      sole: "Double-Leather Oak Bark Outsole with Brass Pin Protection",
-      soleDetail: "Ultra-durable double-thickness sole, constructed of genuine oak-bark bend leather. Reinforced with 15 hand-driven solid brass pegs on the shank and a beautiful flush gold-plated steel toe-cap protection.",
-      laces: "Round-Braided Corded Egyptian Cotton Waxed Laces",
-      lacesDetail: "Meticulously braided round Egyptian cotton laces, deeply impregnated with natural wax. Slides smoothly and cleanly through nickel-plated metal eyelets without binding.",
-      lining: "Butter-Soft Full-Grain Tan Calf Lining",
-      construction: "270-Degree Goodyear Welt"
+      type: "Wholecut Bespoke Oxford",
+      leather: "Ultra-Premium Full-Grain Italian Box-Calf (Tuscan Tannery)",
+      leatherDetail: "Sourced from an antique artisan tannery in Tuscany, Italy. We select only the top 3% of unblemished aniline skins. Naturally supple and highly breathable, this pristine box-calf develops a beautiful deep mirror-like glaze with age.",
+      sole: "Hand-Stitched Closed-Channel Goodyear Welt Outsole with Fiddleback Waist",
+      soleDetail: "A multi-layered oak-bark tanned leather outsole with a traditional 270-degree hand-sewn welt. Features a hand-carved, highly defined fiddleback waist and a stacked solid leather heel for maximum stability.",
+      laces: "Flat-Braided Waxed Giza Cotton Laces",
+      lacesDetail: "Tightly-braided, extra-long-staple Egyptian Giza cotton fibres treated with an ultra-thin coating of natural organic beeswax for high tensile strength, fray prevention, and an enduring secure knot.",
+      lining: "Hand-Dyed Glove-Grade Italian Calf-Lining",
+      construction: "Handwelted Goodyear"
     }
   }
 ];
@@ -200,7 +204,7 @@ const Nav = () => {
             </AnimatePresence>
           </div>
           <Link to="/#heritage" className="hover:opacity-50 transition-opacity py-2">Bespoke</Link>
-          <Link to="/#contact" className="hover:opacity-50 transition-opacity py-2">The Atelier</Link>
+          <Link to="/atelier" className="hover:opacity-50 transition-opacity py-2">The Atelier</Link>
         </div>
       </div>
 
@@ -283,7 +287,7 @@ const Nav = () => {
                 <Link onClick={() => setIsOpen(false)} to="/" className="text-xs uppercase tracking-[0.4em] hover:text-zinc-400 transition-all">Home</Link>
                 <Link onClick={() => setIsOpen(false)} to="/#collection" className="text-xs uppercase tracking-[0.4em] hover:text-zinc-400 transition-all">Collections</Link>
                 <Link onClick={() => setIsOpen(false)} to="/#heritage" className="text-xs uppercase tracking-[0.4em] hover:text-zinc-400 transition-all">Heritage</Link>
-                <Link onClick={() => setIsOpen(false)} to="/#contact" className="text-xs uppercase tracking-[0.4em] hover:text-zinc-400 transition-all">Atelier</Link>
+                <Link onClick={() => setIsOpen(false)} to="/atelier" className="text-xs uppercase tracking-[0.4em] hover:text-zinc-400 transition-all">Atelier</Link>
               </div>
 
               <div className="mt-auto pt-10 border-t border-soft">
@@ -303,306 +307,606 @@ const Nav = () => {
 
 const Hero = () => {
   const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const y = useTransform(scrollYProgress, [0, 1], [0, 150]);
 
   return (
-    <header className="relative min-h-screen w-full px-6 md:px-12 py-12 flex flex-col justify-between overflow-hidden">
-      <div className="absolute top-0 right-0 p-8 flex flex-col items-end opacity-5 md:opacity-10 pointer-events-none z-0">
-        <span className="serif text-[40vw] md:text-[28vw] leading-none -mr-8 md:-mr-12 -mt-8 md:-mt-12">E</span>
+    <header className="relative min-h-screen w-full flex flex-col justify-between overflow-hidden">
+      {/* Background Image: hero1.jpeg fully covering the hero section */}
+      <div className="absolute inset-0 z-0">
+        <motion.div style={{ y }} className="w-full h-full">
+          <img 
+            src={hero1Image} 
+            alt="Savor The Luxury - Artisanal Shoemaking"
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              // Graceful fallback to heroImage
+              e.currentTarget.src = heroImage;
+            }}
+            className="w-full h-full object-cover scale-105 opacity-150"
+          />
+        </motion.div>
+        {/* Deep, rich, multi-stop dark overlay for extreme luxury look and solid text contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/45 to-zinc-950" />
+        <div className="absolute inset-0 bg-radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.4))" />
       </div>
 
-      <main className="flex-1 flex flex-col md:flex-row mt-12 relative z-10">
-        <div className="w-full md:w-1/3 flex flex-col justify-end pb-12 order-2 md:order-1">
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mb-8"
-          >
-            <span className="text-[10px] uppercase tracking-[0.4em] text-zinc-500 mb-2 block">Hand-Stitched</span>
-            <h2 className="serif text-5xl md:text-6xl leading-tight">The Oxford <br /><span className="italic">Heritage</span></h2>
-          </motion.div>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.4 }}
-            className="text-xs text-zinc-400 leading-relaxed max-w-[240px] mb-8 font-light"
-          >
-            Meticulously crafted over forty-eight hours. Using only the finest full-grain calfskin from the heart of Tuscany.
-          </motion.p>
-          <Link to="/#collection" className="w-fit">
-            <motion.button 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="w-full border border-white py-4 px-10 text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-colors duration-300"
-            >
-              View Collection
-            </motion.button>
+      {/* Floating atelier location parameters */}
+      <div className="absolute top-24 right-6 md:right-12 font-mono text-[8px] sm:text-[9px] tracking-[0.4em] text-zinc-400 uppercase z-10 hidden sm:block">
+        BY INVITATION ONLY
+      </div>
+
+      {/* Center main immersive layout with left alignment */}
+      <main className="flex-1 flex flex-col justify-center items-start px-6 md:px-16 lg:px-24 xl:px-32 relative z-10 text-left max-w-4xl mr-auto space-y-6 md:space-y-8 mt-24">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="space-y-4"
+        >
+          <span className="text-[10px] sm:text-xs uppercase tracking-[0.8em] text-zinc-500 block font-mono">
+            ESTABLISHED 1924, VENETO
+          </span>
+          <h1 className="serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white leading-none tracking-tight font-light">
+            Savor The <br />
+            <span className="italic font-light text-zinc-300">Luxury</span>
+          </h1>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="w-16 h-px bg-white/20 ml-0 mr-auto"
+        />
+
+        <motion.p
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.7 }}
+          className="text-zinc-400 max-w-md mr-auto font-light text-[11px] sm:text-xs uppercase tracking-[0.25em] leading-relaxed"
+        >
+          An uncompromising commitment to bespoke shoemaking. Crafted solely by hand, single-needle stitched, finished with organic bee wax.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.9 }}
+          className="pt-6"
+        >
+          <Link to="/#collection">
+            <button className="border border-white/40 bg-zinc-950/20 backdrop-blur-md text-white hover:bg-white hover:text-black py-4 px-10 text-[10px] uppercase tracking-[0.4em] font-semibold transition-all duration-300 rounded-sm cursor-pointer">
+              Explore The Craft
+            </button>
           </Link>
-        </div>
-
-        <div className="md:absolute left-1/2 top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full md:w-[500px] h-[350px] md:h-[600px] border border-soft p-4 flex items-center justify-center order-1 md:order-2 mb-12 md:mb-0">
-          <div className="w-full h-full bg-zinc-900/50 flex items-center justify-center relative overflow-hidden">
-            <motion.div 
-              style={{ y }}
-              className="absolute inset-0 opacity-40 grayscale pointer-events-none"
-            >
-              <img 
-                src={heroImage} 
-                alt="Luxury Shoemaking"
-                className="w-full h-full object-cover"
-              />
-            </motion.div>
-            <div className="z-10 flex flex-col items-center text-center">
-              <div className="w-48 md:w-64 h-[1px] bg-white opacity-20 mb-4"></div>
-              <span className="serif italic text-2xl md:text-3xl opacity-80">EST. 1924</span>
-              <div className="w-48 md:w-64 h-[1px] bg-white opacity-20 mt-4"></div>
-            </div>
-            <div className="absolute bottom-6 right-6 text-right">
-              <span className="text-[40px] md:text-[60px] serif leading-none opacity-10">Nº 01</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full md:w-1/3 flex flex-col items-end justify-start pt-12 md:pt-24 hidden md:flex order-3">
-          <div className="vertical-text text-[10px] uppercase tracking-[0.5em] text-zinc-500 mb-8 opacity-60">
-            Handmade in Florence, Italy
-          </div>
-          <div className="flex flex-col gap-12 mt-auto pb-12">
-            <div className="text-right">
-              <span className="block text-[10px] uppercase tracking-[0.2em] text-zinc-600 mb-1">Material</span>
-              <span className="block text-xs serif">Cognac Box-Calf</span>
-            </div>
-            <div className="text-right">
-              <span className="block text-[10px] uppercase tracking-[0.2em] text-zinc-600 mb-1">Waitlist</span>
-              <span className="block text-xs serif">Est. 6 Months</span>
-            </div>
-          </div>
-        </div>
+        </motion.div>
       </main>
 
-      <footer className="flex justify-between items-end border-t border-soft pt-6 hidden md:flex">
-        <div className="text-[9px] uppercase tracking-[0.3em] text-zinc-500 opacity-60">© 2024 ETERNAL CALZOLAI S.R.L.</div>
+      {/* Footer layout updated with sleek minimalist contact info & copyright */}
+      <footer className="w-full relative z-10 px-6 md:px-12 pb-8 sm:pb-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-white/5 bg-zinc-950/25 backdrop-blur-sm">
+        {/* Left: Minimal studio contact details */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 text-center sm:text-left">
+          <div className="space-y-1">
+            <span className="block text-[8px] font-mono tracking-widest text-zinc-600 uppercase">ATELIER CONTACTS</span>
+            <span className="block text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+              +39 (041) 522-1924 &bull; concierge@eternal.com
+            </span>
+          </div>
+          <div className="hidden sm:block w-px h-6 bg-white/10" />
+          <div className="space-y-1">
+            <span className="block text-[8px] font-mono tracking-widest text-zinc-600 uppercase">LOCATION</span>
+            <span className="block text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+              VENETO &bull; MILAN &bull; TOKYO
+            </span>
+          </div>
+        </div>
+
+        {/* Center: Scroll indicator */}
         <motion.div 
           animate={{ y: [0, 5, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="flex flex-col items-center gap-2 cursor-pointer opacity-30"
+          className="flex flex-col items-center gap-2 cursor-pointer opacity-40 hover:opacity-100 transition-opacity"
+          onClick={() => {
+            const el = document.getElementById("collection");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }}
         >
-          <span className="text-[8px] uppercase tracking-[0.2em]">Explore</span>
-          <ChevronDown size={12} strokeWidth={1} />
+          <span className="text-[8px] uppercase tracking-[0.2em] text-zinc-400 font-mono">explore</span>
+          <ChevronDown size={12} strokeWidth={1} className="text-white" />
         </motion.div>
-        <div className="flex gap-12 text-[9px] uppercase tracking-[0.3em] text-zinc-500 opacity-60">
-          <span>Terms</span>
-          <span>Privacy</span>
-          <span>Instagram</span>
+
+        {/* Right: Copyright info */}
+        <div className="text-[9px] uppercase tracking-[0.3em] text-zinc-500 font-mono">
+          © 2026 ETERNAL ARTISANS S.R.L.
         </div>
       </footer>
     </header>
   );
 };
 
-const CollectionItem = ({ item, index }: { item: CollectionItemInfo; index: number; key?: any }) => {
-  const containerRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  });
-
-  const y = useTransform(scrollYProgress, [0, 1], [-50, 50]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-
+// Visual Tickers & Trust Highlights (replaces the old Marquee)
+const SartorialPledgeTicker = () => {
   return (
-    <motion.div 
-      ref={containerRef}
-      style={{ opacity }}
-      className={`flex flex-col ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} gap-12 md:gap-32 items-center relative mb-32 md:mb-64`}
-    >
-      {/* Parallax Image Plate */}
-      <div className="w-full md:w-[55%] relative group overflow-hidden border border-soft shadow-2xl">
-        <div className="aspect-[4/5] overflow-hidden relative">
-          <motion.img 
-            style={{ y, scale: 1.1 }}
-            src={item.image} 
-            alt={item.name}
-            className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-125"
-          />
-          <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700" />
+    <div className="bg-luxury-black border-y border-white/5">
+      {/* 1. Precise Trust Grid */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/5 text-center md:text-left">
+        <div className="p-6 md:p-8 flex items-start gap-4">
+          <ShieldCheck className="text-zinc-400 shrink-0 mt-0.5" size={18} strokeWidth={1.5} />
+          <div>
+            <h4 className="font-mono text-[9px] tracking-[0.25em] text-white uppercase mb-1">Lifetime Pledge</h4>
+            <p className="text-[11px] text-zinc-500 uppercase tracking-widest font-light leading-relaxed">
+              Complimentary re-soling and leather restoration are provided for ten years.
+            </p>
+          </div>
         </div>
-        
-        {/* Floating ID Label */}
-        <div className={`absolute top-8 ${index % 2 === 0 ? 'right-8' : 'left-8'} mix-blend-difference`}>
-          <span className="text-[40px] md:text-[60px] serif italic leading-none opacity-40">0{index + 1}</span>
+
+        <div className="p-6 md:p-8 flex items-start gap-4">
+          <Activity className="text-zinc-400 shrink-0 mt-0.5" size={18} strokeWidth={1.5} />
+          <div>
+            <h4 className="font-mono text-[9px] tracking-[0.25em] text-white uppercase mb-1">traceable materials</h4>
+            <p className="text-[11px] text-zinc-500 uppercase tracking-widest font-light leading-relaxed">
+              Only the top 3% French Box-calf tanners in Tuscany, certified bio-ethical.
+            </p>
+          </div>
+        </div>
+
+        <div className="p-6 md:p-8 flex items-start gap-4">
+          <Clock className="text-zinc-400 shrink-0 mt-0.5" size={18} strokeWidth={1.5} />
+          <div>
+            <h4 className="font-mono text-[9px] tracking-[0.25em] text-white uppercase mb-1">Rigorous Timelines</h4>
+            <p className="text-[11px] text-zinc-500 uppercase tracking-widest font-light leading-relaxed">
+              Exactly 128 workshop steps and forty-eight hours of hand-lasting focus.
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Narrative Content */}
-      <div className="w-full md:w-[35%] flex flex-col pt-8 md:pt-0">
-        <motion.div
-          initial={{ opacity: 0, x: index % 2 === 0 ? 30 : -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          viewport={{ once: true }}
-        >
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-8 h-[1px] bg-white/30" />
-            <span className="text-[9px] uppercase tracking-[0.5em] text-zinc-500 font-medium">Original Series</span>
-          </div>
-          
-          <h3 className="serif text-4xl md:text-6xl mb-8 leading-tight tracking-tight">
-            {item.name.split(' ').slice(0, 1)} <br />
-            <span className="italic opacity-50 block pl-4 md:pl-8">{item.name.split(' ').slice(1).join(' ')}</span>
-          </h3>
+      {/* 2. Seamless Floating Values Marquee */}
+      <div className="py-6 border-t border-white/5 overflow-hidden bg-zinc-950/40 relative flex items-center select-none">
+        <div className="flex animate-scroll whitespace-nowrap gap-16 items-center">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex gap-16 items-center shrink-0">
+              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">Traditional Handsewn Goodyear Welt</span>
+              <div className="w-1 h-1 rounded-full bg-white opacity-25" />
+              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">100% Vegetable-Tanned Italian Hides</span>
+              <div className="w-1 h-1 rounded-full bg-white opacity-25" />
+              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">Custom Cork Bed Cushioning</span>
+              <div className="w-1 h-1 rounded-full bg-white opacity-25" />
+              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">Anatomical Walnut Wood Lasting</span>
+              <div className="w-1 h-1 rounded-full bg-white opacity-25" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
-          <div className="h-24 md:h-32 border-l border-white/10 ml-2 mb-8 relative">
-            <div className="absolute top-0 left-0 p-4">
-              <p className="text-xs text-zinc-400 font-light leading-relaxed max-w-[280px]">
-                {item.description}
+// Redesigned Collections Display
+const Collection = () => {
+  const [selectedCategory, setSelectedCategory] = useState<"all" | "oxford" | "monk">("all");
+
+  const filteredItems = COLLECTIONS.filter((item) => {
+    if (selectedCategory === "all") return true;
+    if (selectedCategory === "oxford") return item.slug.includes("oxford");
+    if (selectedCategory === "monk") return item.slug.includes("monk");
+    return true;
+  });
+
+  return (
+    <section id="collection" className="bg-luxury-black text-white pt-20 pb-24 md:pt-32 md:pb-40 relative overflow-hidden">
+      {/* Dynamic Background Title Grid */}
+      <div className="absolute top-0 left-0 w-full text-center opacity-[0.015] pointer-events-none select-none">
+        <span className="serif text-[35vw] leading-none uppercase italic block font-bold">LEGACY</span>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 relative z-10">
+        
+        {/* Dynamic Header Block */}
+        <div className="flex flex-col items-center text-center mb-16 md:mb-24">
+          <span className="text-[10px] uppercase tracking-[0.8em] text-zinc-500 mb-4 block font-mono">CURATED SERIES</span>
+          <h2 className="serif text-4xl sm:text-6xl md:text-7.5xl tracking-tight leading-none mb-4">
+            The <span className="italic font-light">Editions</span>
+          </h2>
+          <p className="text-zinc-500 max-w-sm font-light text-[11px] sm:text-xs uppercase tracking-widest leading-relaxed mb-10">
+            A precise trilogy of shoemaking silhouettes. Each pair holds a legacy and matures distinctively according to your journey.
+          </p>
+
+          {/* Clean Segmented Category Tabs with solid touch areas */}
+          <div className="flex gap-2 sm:gap-4 p-1 border border-white/5 bg-zinc-950/80 rounded-sm">
+            {[
+              { id: "all", label: "All Works" },
+              { id: "oxford", label: "Classic Oxfords" },
+              { id: "monk", label: "Monk Straps" }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setSelectedCategory(tab.id as any)}
+                className={`px-4 py-2 text-[8px] sm:text-[9px] uppercase tracking-[0.25em] font-bold rounded-sm transition-all focus:outline-none ${
+                  selectedCategory === tab.id 
+                    ? "bg-white text-black" 
+                    : "text-zinc-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Asymmetrical Rich Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
+          <AnimatePresence mode="popLayout">
+            {filteredItems.map((item, index) => {
+              const mainStyle = item.specs?.type || "Bespoke Cut";
+              const firstClassWord = item.name.split(" ")[0];
+              const restClassWord = item.name.split(" ").slice(1).join(" ");
+              
+              return (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="group flex flex-col border border-white/5 bg-zinc-950/20 p-4 sm:p-5 hover:border-white/15 transition-all duration-500 rounded-sm relative"
+                >
+                  {/* Floating index */}
+                  <div className="absolute top-6 right-6 font-mono text-[9px] text-zinc-600 tracking-wider font-bold">
+                    [0{item.id} // SEC]
+                  </div>
+
+                  {/* Image Plate */}
+                  <div className="relative aspect-[4/5] overflow-hidden bg-zinc-900 border border-white/5 mb-6 rounded-sm select-none">
+                    <img 
+                      src={item.image} 
+                      alt={item.name}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 group-hover:opacity-75 transition-opacity" />
+                    
+                    {/* Bottom overlay inside image */}
+                    <div className="absolute bottom-4 left-4 p-2 bg-black/60 backdrop-blur-md border border-white/5">
+                      <span className="text-[8px] font-mono tracking-widest text-zinc-300 block uppercase">
+                        {mainStyle.split(" ")[0]} SYSTEM
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Footwear Name Card */}
+                  <div className="mb-4">
+                    <h3 className="serif text-xl sm:text-2xl text-white group-hover:text-zinc-300 transition-colors leading-tight">
+                      {firstClassWord} <span className="italic font-light text-zinc-400 block">{restClassWord}</span>
+                    </h3>
+                  </div>
+
+                  <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-wider mb-6 h-12 overflow-hidden line-clamp-2">
+                    {item.description}
+                  </p>
+
+                  {/* Size Preview Indicator */}
+                  <div className="flex border-t border-white/5 pt-4 mb-6 justify-between items-center text-[8px] font-mono tracking-widest text-zinc-500">
+                    <span>SIZES REQUIRED:</span>
+                    <span className="text-zinc-300">EU 40 - 45 (PK 6 - 11)</span>
+                  </div>
+
+                  {/* Direct Link Anchor */}
+                  <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-4">
+                    <span className="serif text-base sm:text-lg text-white font-light">{item.price}</span>
+                    <Link 
+                      to={`/product/${item.slug}`} 
+                      className="flex items-center gap-3 group/link hover:text-white text-zinc-400 transition-colors py-2"
+                    >
+                      <span className="text-[9px] uppercase tracking-[0.3em] font-bold pb-0.5">Explore Details</span>
+                      <div className="w-6 h-6 rounded-full border border-white/10 flex items-center justify-center group-hover/link:bg-white group-hover/link:text-black transition-all">
+                        <ArrowRight size={10} strokeWidth={1.5} />
+                      </div>
+                    </Link>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+// NEW SECTION: Bento visual showcase on Anatomy
+const AnatomyBento = () => {
+  return (
+    <section className="bg-luxury-black text-white pb-24 md:pb-32 px-4 sm:px-6 md:px-10 border-t border-white/5">
+      <div className="max-w-7xl mx-auto">
+        <div className="max-w-3xl mb-12 md:mb-16 mt-16 md:mt-24">
+          <span className="text-[9px] font-mono uppercase tracking-[0.6em] text-zinc-500 block mb-3">Structural Sincerity</span>
+          <h2 className="serif text-3xl sm:text-5xl leading-tight text-white m-0">
+            The Anatomy of <span className="italic font-light">Pure Form</span>
+          </h2>
+          <p className="text-zinc-500 max-w-sm text-[11px] uppercase tracking-widest font-light leading-relaxed mt-4">
+            Under the visible calfskin lies a system of hand-lasted biological parts designed to serve your anatomy.
+          </p>
+        </div>
+
+        {/* Dynamic Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {/* Card 1 */}
+          <div className="border border-white/5 bg-zinc-950/40 p-6 sm:p-8 flex flex-col justify-between rounded-sm min-h-[220px]">
+            <div className="flex justify-between items-center mb-6">
+              <span className="font-mono text-[8px] text-zinc-600 block">[PART 01 // INNER]</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-white opacity-40" />
+            </div>
+            <div>
+              <h3 className="serif text-xl sm:text-2xl text-white mb-2">Natural Cork Inlay</h3>
+              <p className="text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed">
+                A thick bed of biological shredded cork is hot-pressed beneath the insole. Over two weeks, it settles and mirrors your foot arch for standard orthotics.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-8 group cursor-pointer w-fit">
-            <Link to={`/product/${item.slug}`} className="flex items-center gap-6">
-               <div className="w-10 h-10 rounded-full border border-soft flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all duration-500">
-                  <ArrowRight size={14} strokeWidth={1} className="group-hover:translate-x-1 transition-transform" />
-               </div>
-               <span className="text-[10px] uppercase tracking-[0.4em] font-semibold border-b border-transparent group-hover:border-white transition-all pb-1">Enter Detail</span>
-            </Link>
+          {/* Card 2 */}
+          <div className="border border-white/5 bg-zinc-950/40 p-6 sm:p-8 flex flex-col justify-between rounded-sm min-h-[220px]">
+            <div className="flex justify-between items-center mb-6">
+              <span className="font-mono text-[8px] text-zinc-600 block">[PART 02 // STABILITY]</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-white opacity-40" />
+            </div>
+            <div>
+              <h3 className="serif text-xl sm:text-2xl text-white mb-2">Oak-Bark Sole Protection</h3>
+              <p className="text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed">
+                Tanned in traditional pits over nine months. Extremely dense, lightweight, and reinforced with 15 solid brass pegs for enduring posture stability.
+              </p>
+            </div>
           </div>
-        </motion.div>
+
+          {/* Card 3 */}
+          <div className="border border-white/5 bg-zinc-950/40 p-6 sm:p-8 flex flex-col justify-between rounded-sm min-h-[220px] md:col-span-2 lg:col-span-1">
+            <div className="flex justify-between items-center mb-6">
+              <span className="font-mono text-[8px] text-zinc-600 block">[PART 03 // CRAFT]</span>
+              <div className="w-1.5 h-1.5 rounded-full bg-white opacity-40" />
+            </div>
+            <div>
+              <h3 className="serif text-xl sm:text-2xl text-white mb-2">Wood Last Stretching</h3>
+              <p className="text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed">
+                The upper is tensioned over solid beechwood molds for three full weeks. This guarantees the leather fibers memorize their shape and prevent creasing.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-    </motion.div>
+    </section>
   );
 };
 
-const Collection = () => {
+// NEW SECTION: Full-width, high-impact immersive image banner
+const FullImageBanner = () => {
   return (
-    <section id="collection" className="bg-luxury-black text-luxury-white pt-20 pb-32 md:pt-32 md:pb-64 relative overflow-hidden">
-      {/* Background Decorative Text */}
-      <div className="absolute top-1/2 left-0 w-full text-center opacity-[0.02] pointer-events-none select-none -translate-y-1/2">
-        <span className="serif text-[40vw] leading-none uppercase italic">Artisanal</span>
+    <section className="relative h-[80vh] sm:h-[90vh] md:h-screen w-full overflow-hidden flex items-center justify-center">
+      {/* Background Image with elegant darkness overlay for contrast */}
+      <div className="absolute inset-0">
+        <img 
+          src={img3} 
+          alt="Artisanal shoemaking craftsmanship in the atelier"
+          referrerPolicy="no-referrer"
+          className="w-full h-full object-cover grayscale brightness-[0.35] transition-transform duration-1000 hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-zinc-950" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 md:px-10 relative z-10">
-        <div className="mb-32 md:mb-56">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2 }}
-            className="flex flex-col items-center text-center"
+      {/* Floating details */}
+      <div className="absolute top-10 left-6 md:left-12 font-mono text-[8px] sm:text-[9px] tracking-[0.3em] text-zinc-500 uppercase">
+        LOC: Veneto Atelier // 45.4408° N, 12.3155° E
+      </div>
+      <div className="absolute top-10 right-6 md:right-12 font-mono text-[8px] sm:text-[9px] tracking-[0.3em] text-zinc-500 uppercase">
+        SPECIFICATION ID // BO-1924
+      </div>
+
+      {/* Main minimal impact content */}
+      <div className="max-w-4xl mx-auto px-6 text-center relative z-10 space-y-6 sm:space-y-8">
+        <span className="text-[10px] sm:text-xs uppercase tracking-[0.8em] text-zinc-400 block font-mono">INSIDE THE LANDSCAPE</span>
+        <h2 className="serif text-4xl sm:text-6xl md:text-8xl text-white leading-none tracking-tight">
+          Where Time <br />
+          <span className="italic font-light text-zinc-300">Stands Still</span>
+        </h2>
+        
+        <div className="w-12 h-px bg-white/30 mx-auto" />
+        
+        <p className="text-zinc-400 max-w-lg mx-auto font-light text-[11px] sm:text-xs uppercase tracking-[0.25em] leading-relaxed">
+          Every wrinkle in our full-grain boxcalf leather represents a choice. No electric heaters, no synthetic glues. Just two hands, pure flax thread, and thirty days of silent devotion.
+        </p>
+        
+        <div className="pt-4">
+          <Link 
+            to="/atelier" 
+            className="inline-flex items-center gap-4 bg-white text-black hover:bg-zinc-200 py-3.5 px-8 uppercase text-[10px] tracking-[0.4em] font-bold rounded-sm transition-all"
           >
-            <span className="text-[10px] uppercase tracking-[0.8em] text-zinc-500 mb-8 block">Selected Works</span>
-            <h2 className="serif text-6xl md:text-[9rem] leading-[0.85] tracking-tighter">
-              Curated <br />
-              <span className="italic opacity-20">Originals</span>
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-24 mt-24 md:mt-40 max-w-5xl w-full">
-              {[
-                { title: "Pure Material", desc: "Sourced from the heart of Tuscany, our leathers represent the pinnacle of organic luxury.", code: "MAT-01" },
-                { title: "Time-Lost Process", desc: "A singular devotion to slow-craft methods that have remained unchanged for generations.", code: "PRC-44" },
-                { title: "Eternal Craft", desc: "Each piece is hand-lasted and finished with a unique signature that breathes life into form.", code: "CRT-99" }
-              ].map((value, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + (i * 0.1), duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                  viewport={{ once: true }}
-                  className="flex flex-col items-center md:items-start group relative"
-                >
-                  <div className="absolute -top-8 left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0 w-px h-6 bg-white/10 group-hover:h-12 group-hover:bg-white/30 transition-all duration-700" />
-                  <span className="text-[8px] font-mono text-zinc-600 mb-6 tracking-[0.5em] uppercase">{value.code}</span>
-                  <h4 className="serif text-xl md:text-2xl mb-5 group-hover:italic transition-all duration-500 tracking-tight">{value.title}</h4>
-                  <p className="text-[10px] text-zinc-500 leading-loose uppercase tracking-[0.25em] max-w-[240px] opacity-80 group-hover:opacity-100 transition-opacity">
-                    {value.desc}
-                  </p>
-                  <div className="w-8 group-hover:w-full h-[1px] bg-white/10 mt-8 transition-all duration-1000 ease-in-out"></div>
-                </motion.div>
-              ))}
+            <span>Explore The Atelier</span>
+            <ArrowRight size={12} strokeWidth={2} />
+          </Link>
+        </div>
+      </div>
+
+      {/* Bottom overlay parameters */}
+      <div className="absolute bottom-10 left-6 md:left-12 font-mono text-[8px] sm:text-[9px] tracking-[0.3em] text-zinc-500 uppercase hidden sm:block">
+        AUTHENTIC GOODYEAR WELTING PROCESS
+      </div>
+      <div className="absolute bottom-10 right-6 md:right-12 font-mono text-[8px] sm:text-[9px] tracking-[0.3em] text-zinc-500 uppercase hidden sm:block">
+        SINCE 1924 ESTABLISHED
+      </div>
+    </section>
+  );
+};
+
+// NEW SECTION: Editorial Reviews wall
+const EditorialReviews = () => {
+  return (
+    <section className="bg-luxury-black text-white py-16 md:py-24 px-4 sm:px-6 md:px-10 border-t border-white/5">
+      <div className="max-w-7xl mx-auto">
+        <span className="block text-[9px] font-mono tracking-[0.4em] text-zinc-500 uppercase text-center mb-10">Editorial Reviews</span>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-14 divide-y md:divide-y-0 md:divide-x divide-white/10">
+          <div className="text-center p-4 md:p-6 first:pl-0">
+            <p className="serif text-lg sm:text-xl italic text-zinc-300 leading-relaxed mb-6">
+              "The last of a disappearing discipline in Italian handcrafting. An indestructible pair built to serve you for thirty years."
+            </p>
+            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// THE MILAN JOURNAL</span>
+          </div>
+
+          <div className="text-center p-4 md:p-6">
+            <p className="serif text-lg sm:text-xl italic text-zinc-300 leading-relaxed mb-6">
+              "An flawless, solid heel design. The shred-cork bedding molds itself cleanly to your specific foot geometry inside two weeks of wear."
+            </p>
+            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// SARTORIAL MONTHLY</span>
+          </div>
+
+          <div className="text-center p-4 md:p-6 last:pr-0">
+            <p className="serif text-lg sm:text-xl italic text-zinc-300 leading-relaxed mb-6">
+              "These are not simply classic dress shoes. They are comfortable posture-stabilizing masterpieces that redefine standard design parameters."
+            </p>
+            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// THE DENTON CHRONICLE</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// NEW SECTION: The Unboxing experience
+const Unboxing = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  return (
+    <section className="bg-zinc-950 text-white py-20 md:py-28 px-4 sm:px-6 md:px-10 border-t border-white/5 relative overflow-hidden">
+      {/* Decorative ambient lighting background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white/[0.015] blur-3xl rounded-full pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-20 items-center">
+          
+          {/* Narrative blocks */}
+          <div className="lg:col-span-5 space-y-8 order-2 lg:order-1">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.5em] text-zinc-500 mb-3 block font-mono">THE COMPLEMENT</span>
+              <h2 className="serif text-4xl sm:text-5.5xl leading-tight m-0">
+                What arrives <br />
+                <span className="italic font-light text-zinc-400">is not a box.</span>
+              </h2>
             </div>
+
+            <p className="text-zinc-400 font-light text-[11px] sm:text-xs uppercase tracking-widest leading-relaxed">
+              Cotton flannel bags. A vial of Saphir polish. A hand-signed note from the welter who stitched your pair. And zero plastic.
+            </p>
+
+            <div className="pt-2">
+              <button 
+                onClick={() => setModalOpen(true)}
+                className="inline-flex items-center gap-4 bg-white text-black hover:bg-zinc-200 py-3.5 px-8 uppercase text-[10px] tracking-[0.4em] font-bold rounded-sm transition-all focus:outline-none cursor-pointer"
+              >
+                <span>Witness the unboxing</span>
+                <ArrowRight size={12} strokeWidth={2} />
+              </button>
+            </div>
+          </div>
+
+          {/* Image presentation block */}
+          <div className="lg:col-span-7 order-1 lg:order-2 flex justify-center lg:justify-end w-full">
+            <div className="group relative overflow-hidden bg-zinc-900 border border-white/5 rounded-sm aspect-[4/3] w-full select-none">
+              <img 
+                src={box1Image} 
+                alt="Premium luxury shoe packaging unboxing flat lay showing cotton flannel bags, Saphir polish, and a handwritten note"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&q=80&w=1400";
+                }}
+                className="w-full h-full object-cover brightness-95 group-hover:scale-105 transition-transform duration-1000"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-90" />
+              
+              {/* Overlay labels */}
+              <div className="absolute bottom-6 left-6 flex flex-col gap-1">
+                <span className="text-[8px] font-mono tracking-widest text-zinc-400 uppercase">SARTORIAL UNBOXING FLAT-LAY</span>
+                <span className="text-[11px] font-mono tracking-widest text-white uppercase font-bold">100% RECYCLABLE COMPOSITION</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Elegant minimalist video / showcase overlay modal */}
+      <AnimatePresence>
+        {modalOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 sm:p-6"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="bg-zinc-950 border border-white/10 w-full max-w-4xl p-6 sm:p-10 relative rounded-sm"
+            >
+              <button 
+                onClick={() => setModalOpen(false)}
+                className="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors"
+                aria-label="Close"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center pt-4">
+                <div className="md:col-span-7 overflow-hidden rounded-sm aspect-[4/3] md:aspect-[16/10]">
+                  <img 
+                    src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&q=80&w=1200"
+                    alt="Minimalist luxury open shoebox detailing"
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="md:col-span-5 space-y-6">
+                  <div>
+                    <span className="text-[8px] font-mono tracking-widest text-zinc-500 uppercase block mb-1">UNBOXING SEQUENCE</span>
+                    <h3 className="serif text-2xl sm:text-3.5xl text-white font-normal leading-tight">
+                      A Quiet <br />
+                      <span className="italic font-light">Unveiling</span>
+                    </h3>
+                  </div>
+
+                  <div className="space-y-4 text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed">
+                    <p>
+                      1. Open heavy-milled box, handmade in Italy from FSC certified fibers.
+                    </p>
+                    <p>
+                      2. Discover heavy-gauge organic cotton dust bags tied with single beeswax strings.
+                    </p>
+                    <p>
+                      3. Uncover a genuine jar of Saphir Médaille d'Or leather restoration wax.
+                    </p>
+                    <p>
+                      4. Read your individual shoe profile card, hand-signed with carbon ink by your welter.
+                    </p>
+                  </div>
+
+                  <div className="pt-2">
+                    <button 
+                      onClick={() => setModalOpen(false)}
+                      className="w-full py-3 border border-white/10 hover:border-white text-[9px] uppercase tracking-[0.3em] font-bold transition-all"
+                    >
+                      Close Sequence
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
-        </div>
-
-        <div className="flex flex-col items-center">
-          {COLLECTIONS.map((item, idx) => (
-            <CollectionItem key={item.id} item={item} index={idx} />
-          ))}
-        </div>
-      </div>
+        )}
+      </AnimatePresence>
     </section>
-  );
-};
-
-
-const Heritage = () => {
-  return (
-    <section id="heritage" className="py-20 md:py-32 px-6 md:px-10 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 md:gap-24 items-center">
-        <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="order-2 md:order-1"
-        >
-          <h2 className="serif text-4xl md:text-6xl mb-8 md:mb-10 leading-tight">
-            A Century of <br />
-            <span className="italic opacity-60">Sartorial Integrity</span>
-          </h2>
-          <p className="font-light leading-relaxed opacity-70 mb-6 md:mb-8 md:max-w-md text-sm">
-            Our atelier was founded on the rugged landscapes of Northern Italy, where the mountains met the master leatherworkers. We haven't changed our process in over a hundred years.
-          </p>
-          <p className="font-light leading-relaxed opacity-70 mb-10 md:mb-12 md:max-w-md text-sm">
-            Each pair undergoes 128 individual steps, from the initial hand-cutting of the hide to the final wax polish. It's not just a shoe; it's a legacy you wear.
-          </p>
-          <div className="flex gap-12 md:gap-16 border-t border-white/10 pt-10">
-            <div>
-              <span className="block serif text-3xl mb-1 italic">12k+</span>
-              <span className="text-[10px] uppercase tracking-widest opacity-40">Pairs Crafted</span>
-            </div>
-            <div>
-              <span className="block serif text-3xl mb-1 italic">98%</span>
-              <span className="text-[10px] uppercase tracking-widest opacity-40">Life Retention</span>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="order-1 md:order-2 h-[400px] md:h-[600px] overflow-hidden grayscale"
-        >
-          <img 
-            src={heritageImage} 
-            alt="Artisan Hands"
-            className="w-full h-full object-cover"
-          />
-        </motion.div>
-      </div>
-
-      <div className="absolute -bottom-10 md:-bottom-20 left-1/2 -translate-x-1/2 luxury-outline-text text-[20vw] md:text-[15vw] font-bold whitespace-nowrap opacity-5 md:opacity-10 pointer-events-none select-none serif">
-        HERITAGE — 1924 — HERITAGE
-      </div>
-    </section>
-  );
-};
-
-const Marquee = () => {
-  return (
-    <div className="py-12 border-y border-white/10 overflow-hidden bg-luxury-black relative flex items-center">
-      <div className="flex animate-scroll whitespace-nowrap gap-20 items-center">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="flex gap-20 items-center">
-            <span className="serif italic text-3xl opacity-60">Full Grain Leather</span>
-            <div className="w-2 h-2 rounded-full bg-white opacity-20" />
-            <span className="serif italic text-3xl opacity-60">Hand-Welted Soles</span>
-            <div className="w-2 h-2 rounded-full bg-white opacity-20" />
-            <span className="serif italic text-3xl opacity-60">Italian Craftsmanship</span>
-            <div className="w-2 h-2 rounded-full bg-white opacity-20" />
-          </div>
-        ))}
-      </div>
-    </div>
   );
 };
 
@@ -661,7 +965,7 @@ const ProductPage = () => {
   const product = COLLECTIONS.find(p => p.slug === slug) || COLLECTIONS[0];
   const [activeImg, setActiveImg] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<string | null>("Sartorial Specs");
+  const [activeTab, setActiveTab] = useState<string | null>(null);
   
   // Dynamic images based on selected product
   const images = product.images || [product.image, img1, img2, img3];
@@ -672,6 +976,14 @@ const ProductPage = () => {
     setActiveImg(0);
     setSelectedSize(null);
   }, [slug]);
+
+  const handlePrevImg = () => {
+    setActiveImg((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1));
+  };
+
+  const handleNextImg = () => {
+    setActiveImg((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
+  };
 
   return (
     <div className="bg-luxury-black text-luxury-white min-h-screen">
@@ -695,7 +1007,7 @@ const ProductPage = () => {
             </div>
 
             {/* Main Product Display Image */}
-            <div className="order-1 lg:order-2 relative flex-1 w-full aspect-square bg-zinc-900 overflow-hidden border border-soft">
+            <div className="order-1 lg:order-2 relative flex-1 w-full aspect-[3/4] bg-zinc-900 overflow-hidden border border-soft">
               <AnimatePresence mode="wait">
                 <motion.img 
                   key={`${slug}-${activeImg}`}
@@ -708,7 +1020,9 @@ const ProductPage = () => {
                   className="w-full h-full object-cover" 
                 />
               </AnimatePresence>
-              <div className="absolute bottom-6 left-6 flex gap-3">
+              
+              {/* Pagination Dots */}
+              <div className="absolute bottom-6 left-6 flex gap-3 z-20">
                 {galleryImages.map((_, i) => (
                   <button 
                     key={i}
@@ -716,6 +1030,24 @@ const ProductPage = () => {
                     className={`w-1.5 h-1.5 rounded-full transition-all ${activeImg === i ? 'bg-white w-6' : 'bg-white/30'}`}
                   />
                 ))}
+              </div>
+
+              {/* Slider Navigation Buttons */}
+              <div className="absolute bottom-5 right-6 flex gap-2 z-20">
+                <button 
+                  onClick={handlePrevImg}
+                  className="w-8 h-8 rounded-full border border-white/10 bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all group duration-300"
+                  aria-label="Previous Image"
+                >
+                  <ChevronLeft size={16} strokeWidth={1} />
+                </button>
+                <button 
+                  onClick={handleNextImg}
+                  className="w-8 h-8 rounded-full border border-white/10 bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-white hover:text-black hover:border-white transition-all group duration-300"
+                  aria-label="Next Image"
+                >
+                  <ChevronRight size={16} strokeWidth={1} />
+                </button>
               </div>
             </div>
 
@@ -878,14 +1210,21 @@ const HomePage = () => {
   return (
     <>
       <Hero />
-      <Marquee />
+      <SartorialPledgeTicker />
       <Collection />
-      <Heritage />
+      <AnatomyBento />
+      <FullImageBanner />
+      <EditorialReviews />
+      <Unboxing />
       <div className="h-[60vh] bg-luxury-black relative overflow-hidden">
         <img 
-          src={footerImg}
+          src={bo9Image}
           alt="Luxury Studio"
-          className="w-full h-full object-cover opacity-30 grayscale saturate-0"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            e.currentTarget.src = footerImg;
+          }}
+          className="w-full h-full object-cover opacity-45 brightness-90 transition-transform duration-1000 hover:scale-105"
         />
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.div 
@@ -893,10 +1232,12 @@ const HomePage = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             className="text-center"
           >
-            <h2 className="serif text-5xl md:text-8xl italic mb-8">Uncompromising.</h2>
-            <button className="px-10 py-4 bg-white text-black text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-transparent hover:text-white border border-white transition-all">
-              Discover the Atelier
-            </button>
+            <h2 className="serif text-5xl md:text-8xl italic mb-8">Savor The Luxury</h2>
+            <Link to="/atelier">
+              <button className="px-10 py-4 bg-white text-black text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-transparent hover:text-white border border-white transition-all">
+                Discover the Atelier
+              </button>
+            </Link>
           </motion.div>
         </div>
       </div>
@@ -913,6 +1254,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/product/:slug" element={<ProductPage />} />
+          <Route path="/atelier" element={<AtelierPage />} />
         </Routes>
         <Footer />
       </div>
