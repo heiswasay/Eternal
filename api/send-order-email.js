@@ -1,4 +1,5 @@
 import { createRequire } from "node:module";
+import { appendOrderToSheet } from "./google-sheets.js";
 
 const require = createRequire(import.meta.url);
 const nodemailer = require("nodemailer");
@@ -184,6 +185,13 @@ export async function handleSendOrderEmail(order) {
       console.log(
         `[Email] Order ${payload.orderId}: SMTP_USER/SMTP_PASS not set — emails not sent.`
       );
+    }
+
+    // Sync to Google Spreadsheet
+    try {
+      await appendOrderToSheet(payload);
+    } catch (sheetErr) {
+      console.error("[Sheets Error] Silently caught spreadsheet append failure:", sheetErr);
     }
 
     return {

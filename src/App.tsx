@@ -6,7 +6,7 @@
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
 import { ArrowRight, ChevronDown, Instagram, Twitter, Menu, X, Search, ShieldCheck, Truck, RotateCcw, ChevronLeft, ChevronRight, Sliders, Sparkles, Check, Compass, Clock, Activity } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Link, useLocation, useParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import { ProductStory } from "./components/ProductStory";
 import AtelierPage from "./components/AtelierPage";
 import { CartProvider, useCart } from "./context/CartContext";
@@ -534,6 +534,7 @@ const SartorialPledgeTicker = () => {
 
 // Redesigned Collections Display
 const Collection = () => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<"all" | "oxford" | "monk">("all");
   const { addToCart } = useCart();
 
@@ -601,7 +602,8 @@ const Collection = () => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  className="group flex flex-col border border-white/5 bg-zinc-950/20 p-4 sm:p-5 hover:border-white/15 transition-all duration-500 rounded-sm relative"
+                  className="group flex flex-col border border-white/5 bg-zinc-950/20 p-4 sm:p-5 hover:border-white/15 transition-all duration-500 rounded-sm relative cursor-pointer"
+                  onClick={() => navigate(`/product/${item.slug}`)}
                 >
                   {/* Floating index */}
                   <div className="absolute top-6 right-6 font-mono text-[9px] text-zinc-600 tracking-wider font-bold">
@@ -656,6 +658,7 @@ const Collection = () => {
                       <span className="serif text-base sm:text-lg text-white font-light">{item.price}</span>
                       <Link 
                         to={`/product/${item.slug}`} 
+                        onClick={(e) => e.stopPropagation()}
                         className="flex items-center gap-3 group/link hover:text-white text-zinc-400 transition-colors py-2"
                       >
                         <span className="text-[9px] uppercase tracking-[0.3em] font-bold pb-0.5">Explore Details</span>
@@ -665,7 +668,10 @@ const Collection = () => {
                       </Link>
                     </div>
                     <button
-                      onClick={() => addToCart(item, "42")}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(item, "42");
+                      }}
                       className="w-full border border-white/10 hover:border-white text-center py-2.5 text-[8px] uppercase tracking-[0.3em] font-bold transition-all hover:bg-white hover:text-black select-none cursor-pointer"
                     >
                       Quick Add to Bag <span className="opacity-40 font-mono text-[7px] font-normal pl-1">(EU 42)</span>
