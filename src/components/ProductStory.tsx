@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight, Sparkles, Layers, ShieldCheck, Compass, Eye } from "lucide-react";
 import layersboImage from "../images/layersbo.png";
+import layersmImage from "../images/layersm.png";
 
 interface SpecType {
   type: string;
@@ -13,6 +14,9 @@ interface SpecType {
   lacesDetail: string;
   lining: string;
   construction: string;
+  leatherImage?: string;
+  soleImage?: string;
+  lacesImage?: string;
 }
 
 interface CollectionItemInfo {
@@ -56,9 +60,11 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
     },
     {
       id: 4,
-      title: "Stacked Solid Leather Heel",
+      title: product.slug === 'monk-strap' ? "Stacked Solid Heel" : "Stacked Solid Leather Heel",
       coord: { x: "85%", y: "75%" },
-      desc: "Individually hand-stacked leather lifts anchored securely with solid high-tensile brass pegs."
+      desc: product.slug === 'monk-strap' 
+        ? "Individually hand-stacked lifts anchored securely with solid high-tensile brass pegs."
+        : "Individually hand-stacked leather lifts anchored securely with solid high-tensile brass pegs."
     }
   ];
 
@@ -115,7 +121,15 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                 <img 
                   src={images[1] || images[0]} 
                   alt="Anatomy Overlay" 
+                  onError={(e) => {
+                    if (product.slug === 'monk-strap') {
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800";
+                    } else {
+                      e.currentTarget.src = images[0];
+                    }
+                  }}
                   className="w-full h-full object-contain" 
+                  referrerPolicy="no-referrer"
                 />
               </div>
 
@@ -153,9 +167,13 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
             <div className="order-1 lg:order-1 relative group overflow-hidden border border-soft shadow-xl">
               <div className="aspect-[4/3] md:aspect-[16/10] overflow-hidden">
                 <img 
-                  src={images[2] || images[0]} 
+                  src={product.specs.leatherImage || images[2] || images[0]} 
                   alt="Leather Tannery Crafting" 
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1524275514187-3d16e7fbe605?q=80&w=1000";
+                  }}
                   className="w-full h-full object-cover" 
+                  referrerPolicy="no-referrer"
                 />
               </div>
               <div className="absolute top-4 left-4 p-3 md:top-6 md:left-6 md:p-4 bg-black/60 backdrop-blur-md border border-white/10">
@@ -165,8 +183,12 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
 
             {/* Content (Right on Desktop) */}
             <div className="order-2 lg:order-2 flex flex-col md:pl-6">
-              <span className="text-[8px] font-mono tracking-[0.4em] text-zinc-500 uppercase mb-4">SPEC COMPONENT // LEATHER</span>
-              <h3 className="serif text-3xl md:text-4xl mb-6 tracking-tight leading-none text-white">Calf Skin Leather</h3>
+              <span className="text-[8px] font-mono tracking-[0.4em] text-zinc-500 uppercase mb-4">
+                {product.slug === 'monk-strap' ? "SPEC COMPONENT // COGNAC SPECIALTY" : "SPEC COMPONENT // LEATHER"}
+              </span>
+              <h3 className="serif text-3xl md:text-4xl mb-6 tracking-tight leading-none text-white">
+                {product.slug === 'monk-strap' ? "Signature Museum Calfskin" : "Calf Skin Leather"}
+              </h3>
               <div className="w-12 h-px bg-white/20 mb-8" />
               <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-[0.2em] mb-6">
                 {product.specs.leather}
@@ -182,7 +204,9 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
             {/* Content (Left on Desktop, Right on Mobile) */}
             <div className="order-2 lg:order-1 flex flex-col md:pr-6">
               <span className="text-[8px] font-mono tracking-[0.4em] text-zinc-500 uppercase mb-4">SPEC COMPONENT // THE SOLE</span>
-              <h3 className="serif text-3xl md:text-4xl mb-6 tracking-tight leading-none text-white">The Leather Sole</h3>
+              <h3 className="serif text-3xl md:text-4xl mb-6 tracking-tight leading-none text-white">
+                {product.slug === 'monk-strap' ? "The Hand-Welted Sole" : "The Leather Sole"}
+              </h3>
               <div className="w-12 h-px bg-white/20 mb-8" />
               <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-[0.2em] mb-6">
                 {product.specs.sole}
@@ -196,9 +220,13 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
             <div className="order-1 lg:order-2 relative group overflow-hidden border border-soft shadow-xl">
               <div className="aspect-[4/3] md:aspect-[16/10] overflow-hidden">
                 <img 
-                  src={images[7] || images[3] || images[1]} 
+                  src={product.specs.soleImage || images[7] || images[3] || images[1]} 
                   alt="Sole Cutting & Stitching" 
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=1000";
+                  }}
                   className="w-full h-full object-cover" 
+                  referrerPolicy="no-referrer"
                 />
               </div>
               <div className="absolute top-4 right-4 p-3 md:top-6 md:right-6 md:p-4 bg-black/60 backdrop-blur-md border border-white/10">
@@ -213,20 +241,30 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
             <div className="order-1 lg:order-1 relative group overflow-hidden border border-soft shadow-xl">
               <div className="aspect-[4/3] md:aspect-[16/10] overflow-hidden">
                 <img 
-                  src={images[6] || images[4] || images[0]} 
+                  src={product.specs.lacesImage || images[6] || images[4] || images[0]} 
                   alt="Sartorial Trims Finishing" 
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1589782182703-e869260b8b09?q=80&w=1000";
+                  }}
                   className="w-full h-full object-cover" 
+                  referrerPolicy="no-referrer"
                 />
               </div>
               <div className="absolute top-4 left-4 p-3 md:top-6 md:left-6 md:p-4 bg-black/60 backdrop-blur-md border border-white/10">
-                <span className="text-[8px] font-mono tracking-[0.2em] text-zinc-300">AUTHENTIC TRIMS OR FABRIC</span>
+                <span className="text-[8px] font-mono tracking-[0.2em] text-zinc-300">
+                  {product.slug === 'monk-strap' ? "FLORENTINE BRASS CASTINGS" : "AUTHENTIC TRIMS OR FABRIC"}
+                </span>
               </div>
             </div>
 
             {/* Content (Right on Desktop) */}
             <div className="order-2 lg:order-2 flex flex-col md:pl-6">
-              <span className="text-[8px] font-mono tracking-[0.4em] text-zinc-500 uppercase mb-4">SPEC COMPONENT // THE TRIMS</span>
-              <h3 className="serif text-3xl md:text-4xl mb-6 tracking-tight leading-none text-white">The Premium Laces</h3>
+              <span className="text-[8px] font-mono tracking-[0.4em] text-zinc-500 uppercase mb-4">
+                {product.slug === 'monk-strap' ? "SPEC COMPONENT // THE BUCKLES" : "SPEC COMPONENT // THE TRIMS"}
+              </span>
+              <h3 className="serif text-3xl md:text-4xl mb-6 tracking-tight leading-none text-white">
+                {product.slug === 'monk-strap' ? "The Brass Buckles" : "The Premium Laces"}
+              </h3>
               <div className="w-12 h-px bg-white/20 mb-8" />
               <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-[0.2em] mb-6">
                 {product.specs.laces}
@@ -272,7 +310,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
-                  src={layersboImage} 
+                  src={product.slug === 'monk-strap' ? layersmImage : layersboImage} 
                   alt="Bespoke Shoe Structured Layers" 
                   className="max-h-[380px] md:max-h-[500px] w-auto h-auto object-contain select-none transition-all duration-700 relative z-10"
                 />
@@ -298,8 +336,10 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                   },
                   {
                     level: "Level 2",
-                    name: "Curried Double-Leather Insole",
-                    desc: "An organic 5mm vegetable-tanned leather shoulder that channels moisture and anchors the entire welt."
+                    name: product.slug === 'monk-strap' ? "Curried Double-Calf Insole" : "Curried Double-Leather Insole",
+                    desc: product.slug === 'monk-strap' 
+                      ? "An organic 5mm vegetable-tanned shoulder that channels moisture and anchors the entire welt."
+                      : "An organic 5mm vegetable-tanned leather shoulder that channels moisture and anchors the entire welt."
                   },
                   {
                     level: "Level 3",
@@ -308,8 +348,10 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                   },
                   {
                     level: "Level 4",
-                    name: "Oak-Bark Tanned Leather Outsole",
-                    desc: "Pressed and wax-infused ground-contact leather pit-tanned for 12 months. Incredible resilience and flexibility."
+                    name: product.slug === 'monk-strap' ? "Oak-Bark Tanned Outsole" : "Oak-Bark Tanned Leather Outsole",
+                    desc: product.slug === 'monk-strap'
+                      ? "Pressed and wax-infused ground-contact surface pit-tanned for 12 months. Incredible resilience and flexibility."
+                      : "Pressed and wax-infused ground-contact leather pit-tanned for 12 months. Incredible resilience and flexibility."
                   }
                 ].map((layer, index) => (
                   <motion.div 
@@ -362,7 +404,9 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
               step: "01",
               title: "Lasting Over Wood",
               caption: "Molding curves via heat & tension",
-              desc: "Before any stitch is applied, the hand-cut leather upper is thoroughly moistened and pulled with specialized pincers over heavy solid-beechwood lasts, remaining locked in place for full 24-hour cycles to preserve architectural form permanently."
+              desc: product.slug === 'monk-strap'
+                ? "Before any stitch is applied, the hand-cut upper skin is thoroughly moistened and pulled with specialized pincers over heavy solid-beechwood lasts, remaining locked in place for full 24-hour cycles to preserve architectural form permanently."
+                : "Before any stitch is applied, the hand-cut leather upper is thoroughly moistened and pulled with specialized pincers over heavy solid-beechwood lasts, remaining locked in place for full 24-hour cycles to preserve architectural form permanently."
             },
             {
               step: "02",
@@ -374,7 +418,9 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
               step: "03",
               title: "Patina Glaze Finish",
               caption: "Layered natural beeswax glaze",
-              desc: "Each product undergoes multi-stage manual burnishing procedures. Tanners apply pigment creams, following up with a deep coat of natural organic beeswax rubbed manually to foster a mirror-like dimensional leather shine."
+              desc: product.slug === 'monk-strap'
+                ? "Each product undergoes multi-stage manual burnishing procedures. Tanners apply pigment creams, following up with a deep coat of natural organic beeswax rubbed manually to foster a mirror-like dimensional lasting shine."
+                : "Each product undergoes multi-stage manual burnishing procedures. Tanners apply pigment creams, following up with a deep coat of natural organic beeswax rubbed manually to foster a mirror-like dimensional leather shine."
             }
           ].map((item, idx) => (
             <div key={idx} className="flex flex-col border-t border-white/5 pt-8 group cursor-default">
@@ -408,7 +454,9 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
               Lifetime <span className="italic font-light">Recrafting</span>
             </h3>
             <p className="text-zinc-400 max-w-xl leading-relaxed font-light text-[11px] uppercase tracking-wider">
-              We pledge to preserve the legacy of your purchase. Bring back your worn down soles to our atelier in the future; our shoemakers will seamlessly strip, rebuild, and re-last the leather using original techniques.
+              {product.slug === 'monk-strap'
+                ? "We pledge to preserve the legacy of your purchase. Bring back your worn down soles to our atelier in the future; our shoemakers will seamlessly strip, rebuild, and re-last the upper using original techniques."
+                : "We pledge to preserve the legacy of your purchase. Bring back your worn down soles to our atelier in the future; our shoemakers will seamlessly strip, rebuild, and re-last the leather using original techniques."}
             </p>
           </div>
           <div className="lg:col-span-4 flex justify-start lg:justify-end w-full">

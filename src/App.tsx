@@ -9,8 +9,13 @@ import React, { useState, useRef, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link, useLocation, useParams } from "react-router-dom";
 import { ProductStory } from "./components/ProductStory";
 import AtelierPage from "./components/AtelierPage";
-import heroImage from "./images/hero.jpg";
+import { CartProvider, useCart } from "./context/CartContext";
+import { CartSlideOver } from "./components/CartSlideOver";
+import { CheckoutPage } from "./components/CheckoutPage";
+import { ThankYouPage } from "./components/ThankYouPage";
+import heroImage from "./images/hero3.jpeg";
 import hero1Image from "./images/hero1-1.jpeg";
+import hero2Image from "./images/hero2.jpeg";
 import heritageImage from "./images/blackoxford.jpg";
 import img1 from "./images/1.jpg";
 import img2 from "./images/2.jpg";
@@ -27,6 +32,19 @@ import bo8Image from "./images/bo8.jpeg";
 import footerImg from "./images/footer.jpg";
 import box1Image from "./images/box1.jpeg";
 import bo9Image from "./images/bo9.jpeg";
+import boo1Image from "./images/boo1.jpeg";
+
+import m1Image from "./images/m1.jpeg";
+import m2Image from "./images/m2.jpeg";
+import m3Image from "./images/m3.jpeg";
+import m4Image from "./images/m4.jpeg";
+import m5Image from "./images/m5.jpeg";
+import m6Image from "./images/m6.jpeg";
+import m7Image from "./images/m7.jpeg";
+import m8Image from "./images/m8.jpeg";
+import m9Image from "./images/m9.jpeg";
+import m10Image from "./images/m10.jpeg";
+import m11Image from "./images/m11.jpeg";
 
 interface SpecType {
   type: string;
@@ -38,6 +56,9 @@ interface SpecType {
   lacesDetail: string;
   lining: string;
   construction: string;
+  leatherImage?: string;
+  soleImage?: string;
+  lacesImage?: string;
 }
 
 interface CollectionItemInfo {
@@ -78,8 +99,8 @@ const COLLECTIONS: CollectionItemInfo[] = [
     id: 2,
     name: "Monk Strap",
     price: "PKR 5,950",
-    image: img2,
-    images: [img2, img1, img3, img4],
+    image: m8Image,
+    images: [m8Image, m1Image, m3Image, m2Image, m4Image, m5Image],
     category: "Hand Made",
     slug: "monk-strap",
     description: "A timeless classic in a rich cognac hue, featuring a hand-welted sole for unparalleled durability.",
@@ -87,20 +108,23 @@ const COLLECTIONS: CollectionItemInfo[] = [
       type: "Double Monk Strap Dress Shoe",
       leather: "Aniline-Dyed Museum Calfskin (Cognac Brown Patina)",
       leatherDetail: "Individually hand-burnished aniline-dyed calfskin with a distinctive marbleized museum effect. Prepared using organic tree bark extracts and finished with countless hand-applied layers of mineral cream wax.",
-      sole: "Hand-Welted Italian Oak-Bark Outsole with Stacked Leather Heel",
-      soleDetail: "Double-tanned dense oak-bark leather outsole that offers exceptional shock absorption and orthopedic flexibility. Hand-cut and polished edges with subtle hand-stamped decorative detailing on the waist.",
+      sole: "Hand-Welted Italian Oak-Bark Outsole with Stacked Specialty Heel",
+      soleDetail: "Double-tanned dense oak-bark outsole that offers exceptional shock absorption and orthopedic flexibility. Hand-cut and polished edges with subtle hand-stamped decorative detailing on the waist.",
       laces: "Double Brass Buckle Straps with Hidden Elastic Anchor Guards",
       lacesDetail: "Instead of standard laces, this masterpiece is secured with two adjustable solid brass buckles individually cast in Florence, held securely by soft, heavy-grade hidden elastic segments to optimize standard flex.",
       lining: "Hand-Selected Glove-Grade Milled Sheepskin Lining",
-      construction: "Rapid Blake stitch"
+      construction: "Rapid Blake stitch",
+      leatherImage: m10Image,
+      soleImage: m11Image,
+      lacesImage: m6Image
     }
   },
   {
     id: 3,
     name: "Black Oxford Leather",
     price: "PKR 5,950",
-    image: heritageImage,
-    images: [heritageImage, img1, img3, heroImage],
+    image: boo1Image,
+    images: [boo1Image, img1, img3, heroImage],
     category: "Hand Made",
     slug: "black-oxford-leather",
     description: "Our signature piece, hand-stitched over 48 hours using the finest full-grain Italian calfskin.",
@@ -132,6 +156,7 @@ const Nav = () => {
   const [isCollectionsHovered, setIsCollectionsHovered] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+  const { totalCount, setCartOpen } = useCart();
   
   return (
     <nav className="fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-4 md:py-6 flex items-center bg-black/80 backdrop-blur-lg border-b border-white/5 transition-all">
@@ -255,9 +280,12 @@ const Nav = () => {
           </motion.div>
         </div>
         
-        <div className={`cursor-pointer ml-4 flex items-center gap-2 ${isSearchOpen ? 'opacity-0 md:opacity-100 pointer-events-none' : 'opacity-100'}`}>
-          Bag <span className="opacity-40 italic">(0)</span>
-        </div>
+        <button 
+          onClick={() => setCartOpen(true)}
+          className={`cursor-pointer ml-4 flex items-center gap-2 ${isSearchOpen ? 'opacity-0 md:opacity-100 pointer-events-none' : 'opacity-100'} hover:opacity-75 transition-all outline-none font-semibold text-[10px] uppercase tracking-[0.3em] bg-transparent text-white border-none`}
+        >
+          Bag <span className="opacity-40 italic">({totalCount})</span>
+        </button>
       </div>
 
       {/* Mobile Menu Overlay - Right Slide */}
@@ -309,25 +337,50 @@ const Hero = () => {
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, 150]);
 
+  const slides = [
+    { src: hero2Image, fallback: heroImage, alt: "Savor The Luxury - Master Craftsmanship" },
+    { src: hero1Image, fallback: heroImage, alt: "Savor The Luxury - Artisanal Shoemaking" },
+    { src: heroImage, fallback: hero1Image, alt: "Savor The Luxury - The Atelier Collection" },
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
   return (
     <header className="relative min-h-screen w-full flex flex-col justify-between overflow-hidden">
-      {/* Background Image: hero1.jpeg fully covering the hero section */}
-      <div className="absolute inset-0 z-0">
-        <motion.div style={{ y }} className="w-full h-full">
-          <img 
-            src={hero1Image} 
-            alt="Savor The Luxury - Artisanal Shoemaking"
-            referrerPolicy="no-referrer"
-            onError={(e) => {
-              // Graceful fallback to heroImage
-              e.currentTarget.src = heroImage;
-            }}
-            className="w-full h-full object-cover scale-105 opacity-150"
-          />
-        </motion.div>
+      {/* Background Image Carousel: Only images slide/fade, content remains static */}
+      <div className="absolute inset-0 z-0 overflow-hidden bg-zinc-950">
+        <AnimatePresence initial={false} mode="popLayout">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, x: 50, scale: 1.05 }}
+            animate={{ opacity: 1, x: 0, scale: 1.02 }}
+            exit={{ opacity: 0, x: -50, scale: 1.0 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            style={{ y }}
+            className="absolute inset-0 w-full h-full"
+          >
+            <img 
+              src={slides[currentIndex].src} 
+              alt={slides[currentIndex].alt}
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                // Graceful fallback
+                e.currentTarget.src = slides[currentIndex].fallback;
+              }}
+              className="w-full h-full object-cover opacity-80"
+            />
+          </motion.div>
+        </AnimatePresence>
         {/* Deep, rich, multi-stop dark overlay for extreme luxury look and solid text contrast */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/45 to-zinc-950" />
-        <div className="absolute inset-0 bg-radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.4))" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/45 to-zinc-950 z-[1] pointer-events-none" />
+        <div className="absolute inset-0 bg-radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.4)) z-[1] pointer-events-none" />
       </div>
 
       {/* Floating atelier location parameters */}
@@ -335,7 +388,7 @@ const Hero = () => {
         BY INVITATION ONLY
       </div>
 
-      {/* Center main immersive layout with left alignment */}
+      {/* Center main immersive layout with left alignment - completely static */}
       <main className="flex-1 flex flex-col justify-center items-start px-6 md:px-16 lg:px-24 xl:px-32 relative z-10 text-left max-w-4xl mr-auto space-y-6 md:space-y-8 mt-24">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -381,6 +434,36 @@ const Hero = () => {
           </Link>
         </motion.div>
       </main>
+
+      {/* Manual Slider Navigation Panel */}
+      <div className="absolute right-6 md:right-12 bottom-32 z-20 flex items-center gap-3 bg-black/40 backdrop-blur-md border border-white/5 px-4 py-2 rounded-sm">
+        <button
+          onClick={() => setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length)}
+          className="text-white/60 hover:text-white transition-colors cursor-pointer"
+          aria-label="Previous image"
+        >
+          <ChevronLeft size={16} strokeWidth={1.5} />
+        </button>
+        <div className="flex gap-1.5 px-1">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                index === currentIndex ? "bg-white w-4" : "bg-white/20 hover:bg-white/45"
+              }`}
+              aria-label={`Slide ${index + 1}`}
+            />
+          ))}
+        </div>
+        <button
+          onClick={() => setCurrentIndex((prev) => (prev + 1) % slides.length)}
+          className="text-white/60 hover:text-white transition-colors cursor-pointer"
+          aria-label="Next image"
+        >
+          <ChevronRight size={16} strokeWidth={1.5} />
+        </button>
+      </div>
 
       {/* Footer layout updated with sleek minimalist contact info & copyright */}
       <footer className="w-full relative z-10 px-6 md:px-12 pb-8 sm:pb-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-white/5 bg-zinc-950/25 backdrop-blur-sm">
@@ -428,41 +511,8 @@ const Hero = () => {
 const SartorialPledgeTicker = () => {
   return (
     <div className="bg-luxury-black border-y border-white/5">
-      {/* 1. Precise Trust Grid */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/5 text-center md:text-left">
-        <div className="p-6 md:p-8 flex items-start gap-4">
-          <ShieldCheck className="text-zinc-400 shrink-0 mt-0.5" size={18} strokeWidth={1.5} />
-          <div>
-            <h4 className="font-mono text-[9px] tracking-[0.25em] text-white uppercase mb-1">Lifetime Pledge</h4>
-            <p className="text-[11px] text-zinc-500 uppercase tracking-widest font-light leading-relaxed">
-              Complimentary re-soling and leather restoration are provided for ten years.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-6 md:p-8 flex items-start gap-4">
-          <Activity className="text-zinc-400 shrink-0 mt-0.5" size={18} strokeWidth={1.5} />
-          <div>
-            <h4 className="font-mono text-[9px] tracking-[0.25em] text-white uppercase mb-1">traceable materials</h4>
-            <p className="text-[11px] text-zinc-500 uppercase tracking-widest font-light leading-relaxed">
-              Only the top 3% French Box-calf tanners in Tuscany, certified bio-ethical.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-6 md:p-8 flex items-start gap-4">
-          <Clock className="text-zinc-400 shrink-0 mt-0.5" size={18} strokeWidth={1.5} />
-          <div>
-            <h4 className="font-mono text-[9px] tracking-[0.25em] text-white uppercase mb-1">Rigorous Timelines</h4>
-            <p className="text-[11px] text-zinc-500 uppercase tracking-widest font-light leading-relaxed">
-              Exactly 128 workshop steps and forty-eight hours of hand-lasting focus.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Seamless Floating Values Marquee */}
-      <div className="py-6 border-t border-white/5 overflow-hidden bg-zinc-950/40 relative flex items-center select-none">
+      {/* Seamless Floating Values Marquee */}
+      <div className="py-6 overflow-hidden bg-zinc-950/40 relative flex items-center select-none">
         <div className="flex animate-scroll whitespace-nowrap gap-16 items-center">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="flex gap-16 items-center shrink-0">
@@ -485,6 +535,7 @@ const SartorialPledgeTicker = () => {
 // Redesigned Collections Display
 const Collection = () => {
   const [selectedCategory, setSelectedCategory] = useState<"all" | "oxford" | "monk">("all");
+  const { addToCart } = useCart();
 
   const filteredItems = COLLECTIONS.filter((item) => {
     if (selectedCategory === "all") return true;
@@ -563,6 +614,13 @@ const Collection = () => {
                       src={item.image} 
                       alt={item.name}
                       referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        if (item.slug === 'monk-strap') {
+                          e.currentTarget.src = "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?q=80&w=800";
+                        } else {
+                          e.currentTarget.src = heroImage;
+                        }
+                      }}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-90 group-hover:opacity-75 transition-opacity" />
@@ -593,17 +651,25 @@ const Collection = () => {
                   </div>
 
                   {/* Direct Link Anchor */}
-                  <div className="mt-auto flex items-center justify-between border-t border-white/5 pt-4">
-                    <span className="serif text-base sm:text-lg text-white font-light">{item.price}</span>
-                    <Link 
-                      to={`/product/${item.slug}`} 
-                      className="flex items-center gap-3 group/link hover:text-white text-zinc-400 transition-colors py-2"
+                  <div className="mt-auto flex flex-col gap-3 border-t border-white/5 pt-4">
+                    <div className="flex items-center justify-between">
+                      <span className="serif text-base sm:text-lg text-white font-light">{item.price}</span>
+                      <Link 
+                        to={`/product/${item.slug}`} 
+                        className="flex items-center gap-3 group/link hover:text-white text-zinc-400 transition-colors py-2"
+                      >
+                        <span className="text-[9px] uppercase tracking-[0.3em] font-bold pb-0.5">Explore Details</span>
+                        <div className="w-6 h-6 rounded-full border border-white/10 flex items-center justify-center group-hover/link:bg-white group-hover/link:text-black transition-all">
+                          <ArrowRight size={10} strokeWidth={1.5} />
+                        </div>
+                      </Link>
+                    </div>
+                    <button
+                      onClick={() => addToCart(item, "42")}
+                      className="w-full border border-white/10 hover:border-white text-center py-2.5 text-[8px] uppercase tracking-[0.3em] font-bold transition-all hover:bg-white hover:text-black select-none cursor-pointer"
                     >
-                      <span className="text-[9px] uppercase tracking-[0.3em] font-bold pb-0.5">Explore Details</span>
-                      <div className="w-6 h-6 rounded-full border border-white/10 flex items-center justify-center group-hover/link:bg-white group-hover/link:text-black transition-all">
-                        <ArrowRight size={10} strokeWidth={1.5} />
-                      </div>
-                    </Link>
+                      Quick Add to Bag <span className="opacity-40 font-mono text-[7px] font-normal pl-1">(EU 42)</span>
+                    </button>
                   </div>
                 </motion.div>
               );
@@ -966,6 +1032,7 @@ const ProductPage = () => {
   const [activeImg, setActiveImg] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string | null>(null);
+  const { addToCart, setCartOpen } = useCart();
   
   // Dynamic images based on selected product
   const images = product.images || [product.image, img1, img2, img3];
@@ -1001,7 +1068,26 @@ const ProductPage = () => {
                   onClick={() => setActiveImg(i)}
                   className={`aspect-square w-14 sm:w-16 md:w-20 lg:w-full border transition-all duration-300 overflow-hidden shrink-0 bg-zinc-950 ${activeImg === i ? 'border-white ring-1 ring-white/20' : 'border-white/10 opacity-40 hover:opacity-100'}`}
                  >
-                    <img src={img} className="w-full h-full object-cover" />
+                    <img 
+                      src={img} 
+                      onError={(e) => {
+                        if (product.slug === 'monk-strap') {
+                          const fallbacks = [
+                            "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?q=80&w=800",
+                            "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800",
+                            "https://images.unsplash.com/photo-1449505278894-297fdb3edbc1?q=80&w=800",
+                            "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=800",
+                            "https://images.unsplash.com/photo-1533867617858-e7b97e060509?q=80&w=800",
+                            "https://images.unsplash.com/photo-1608256246200-53e635b5b65f?q=80&w=800"
+                          ];
+                          e.currentTarget.src = fallbacks[i % fallbacks.length];
+                        } else {
+                          e.currentTarget.src = heroImage;
+                        }
+                      }}
+                      className="w-full h-full object-cover" 
+                      referrerPolicy="no-referrer"
+                    />
                  </button>
                ))}
             </div>
@@ -1017,7 +1103,23 @@ const ProductPage = () => {
                   transition={{ duration: 0.5 }}
                   src={images[activeImg]} 
                   alt={product.name} 
+                  onError={(e) => {
+                    if (product.slug === 'monk-strap') {
+                      const fallbacks = [
+                        "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?q=80&w=800",
+                        "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=800",
+                        "https://images.unsplash.com/photo-1449505278894-297fdb3edbc1?q=80&w=800",
+                        "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=800",
+                        "https://images.unsplash.com/photo-1533867617858-e7b97e060509?q=80&w=800",
+                        "https://images.unsplash.com/photo-1608256246200-53e635b5b65f?q=80&w=800"
+                      ];
+                      e.currentTarget.src = fallbacks[activeImg % fallbacks.length];
+                    } else {
+                      e.currentTarget.src = heroImage;
+                    }
+                  }}
                   className="w-full h-full object-cover" 
+                  referrerPolicy="no-referrer"
                 />
               </AnimatePresence>
               
@@ -1119,11 +1221,20 @@ const ProductPage = () => {
 
               {/* Action Buttons */}
               <div className="flex flex-col gap-4 mb-12 md:mb-16">
-                <button className="w-full bg-white text-black py-4 md:py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-zinc-200 transition-all">
-                  Add to Bag
+                <button 
+                  onClick={() => addToCart(product, selectedSize || "42")}
+                  className="w-full bg-white text-black py-4 md:py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-zinc-200 transition-all select-none cursor-pointer"
+                >
+                  Add to Bag {selectedSize ? `(EU ${selectedSize})` : "(EU 42)"}
                 </button>
-                <button className="w-full border border-white/20 py-4 md:py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-white hover:text-black transition-all">
-                  Buy Now
+                <button 
+                  onClick={() => {
+                    addToCart(product, selectedSize || "42");
+                    setCartOpen(true);
+                  }}
+                  className="w-full border border-white/20 py-4 md:py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-white hover:text-black transition-all select-none cursor-pointer"
+                >
+                  Buy Now {selectedSize ? `(EU ${selectedSize})` : "(EU 42)"}
                 </button>
               </div>
 
@@ -1232,7 +1343,7 @@ const HomePage = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             className="text-center"
           >
-            <h2 className="serif text-5xl md:text-8xl italic mb-8">Savor The Luxury</h2>
+            <h2 className="serif text-5xl md:text-8xl italic mb-8">Uncompromising.</h2>
             <Link to="/atelier">
               <button className="px-10 py-4 bg-white text-black text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-transparent hover:text-white border border-white transition-all">
                 Discover the Atelier
@@ -1247,17 +1358,22 @@ const HomePage = () => {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-luxury-black">
-        <ScrollToTop />
-        <Nav />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/product/:slug" element={<ProductPage />} />
-          <Route path="/atelier" element={<AtelierPage />} />
-        </Routes>
-        <Footer />
-      </div>
-    </BrowserRouter>
+    <CartProvider>
+      <BrowserRouter>
+        <div className="min-h-screen bg-luxury-black">
+          <ScrollToTop />
+          <Nav />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/product/:slug" element={<ProductPage />} />
+            <Route path="/atelier" element={<AtelierPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/thank-you" element={<ThankYouPage />} />
+          </Routes>
+          <Footer />
+          <CartSlideOver />
+        </div>
+      </BrowserRouter>
+    </CartProvider>
   );
 }
