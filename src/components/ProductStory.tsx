@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Sparkles, Layers, ShieldCheck, Compass, Eye } from "lucide-react";
+import { ArrowRight, Sparkles, Layers, ShieldCheck, Compass, Eye, Database } from "lucide-react";
 import layersboImage from "../images/layersbo.png";
 import layersmImage from "../images/layersm.png";
+import { fetchReviewsFromDb, addReviewToDb, Review, getStarsString, isFirebaseConfigured } from "../firebase";
 
 interface SpecType {
   type: string;
@@ -42,74 +43,8 @@ interface ProductStoryProps {
 export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) => {
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
 
-  const [reviewsList, setReviewsList] = useState<Array<{
-    initials: string;
-    city: string;
-    rating: string;
-    desc: string;
-    orderNo: string;
-    date?: string;
-  }>>(() => {
-    const saved = localStorage.getItem(`reviews_${product.slug}`);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    
-    // Default reviews mapped by slug
-    const defaultReviewsMap: Record<string, Array<{ initials: string; city: string; rating: string; desc: string; orderNo: string }>> = {
-      "black-oxford-leather": [
-        {
-          initials: "K. HASHMI",
-          city: "Karachi",
-          rating: "★★★★★",
-          desc: "My first pair from them and I am completely blown away. The leather aroma, the precise unboxing presentation, and the snug fit of this single pair are of international caliber. Wore them to an executive dinner and felt a class apart.",
-          orderNo: "1 PAIR PURCHASED // ORDER #1042"
-        },
-        {
-          initials: "Z. AHMED",
-          city: "Lahore",
-          rating: "★★★★★",
-          desc: "Acquired this pair after hearing about their Lahore workshop. The handwelted classic leather sole has a beautiful, rich resonance and feels wonderfully broken-in after just two wears. A phenomenal purchase.",
-          orderNo: "1 PAIR PURCHASED // ORDER #2180"
-        },
-        {
-          initials: "A. REHMAN",
-          city: "Islamabad",
-          rating: "★★★★★",
-          desc: "Incredible attention to detail on this single pair. From the heavy felted box and micro-fibre dust bags to the high-density cork bed cushioning. This is easily the most superior dress shoe in my wardrobe.",
-          orderNo: "1 PAIR PURCHASED // ORDER #3095"
-        }
-      ]
-    };
-
-    return defaultReviewsMap[product.slug] || [
-      {
-        initials: "K. HASHMI",
-        city: "Karachi",
-        rating: "★★★★★",
-        desc: "My first pair from them and I am completely blown away. The leather aroma, the precise unboxing presentation, and the snug fit of this single pair are of international caliber. Wore them to an executive dinner and felt a class apart.",
-        orderNo: "1 PAIR PURCHASED // ORDER #1042"
-      },
-      {
-        initials: "Z. AHMED",
-        city: "Lahore",
-        rating: "★★★★★",
-        desc: "Acquired this pair after hearing about their Lahore workshop. The handwelted classic leather sole has a beautiful, rich resonance and feels wonderfully broken-in after just two wears. A phenomenal purchase.",
-        orderNo: "1 PAIR PURCHASED // ORDER #2180"
-      },
-      {
-        initials: "A. REHMAN",
-        city: "Islamabad",
-        rating: "★★★★★",
-        desc: "Incredible attention to detail on this single pair. From the heavy felted box and micro-fibre dust bags to the high-density cork bed cushioning. This is easily the most superior dress shoe in my wardrobe.",
-        orderNo: "1 PAIR PURCHASED // ORDER #3095"
-      }
-    ];
-  });
+  const [reviewsList, setReviewsList] = useState<Review[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
 
   const [formInitials, setFormInitials] = useState("");
   const [formCity, setFormCity] = useState("");
@@ -119,16 +54,42 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const handleReviewSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    let active = true;
+    setLoadingReviews(true);
+    fetchReviewsFromDb(product.slug)
+      .then((data) => {
+        if (active) {
+          setReviewsList(data);
+          setLoadingReviews(false);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load reviews:", err);
+        if (active) {
+          setLoadingReviews(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [product.slug]);
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formInitials.trim() || !formCity.trim() || !formDesc.trim()) {
       setErrorMsg("Please fill out all fields.");
       return;
     }
-    
-    const stars = "★".repeat(formRating) + "☆".repeat(5 - formRating);
+
+    setErrorMsg("");
+    setSuccessMsg("");
+
+    const stars = getStarsString(formRating);
     const orderNum = Math.floor(Math.random() * 8999) + 1000;
-    const newReview = {
+    const reviewData = {
+      productSlug: product.slug,
       initials: formInitials.toUpperCase().trim(),
       city: formCity.trim(),
       rating: stars,
@@ -136,20 +97,28 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
       orderNo: `1 PAIR PURCHASED // ORDER #${orderNum}`
     };
 
-    const updated = [newReview, ...reviewsList];
-    setReviewsList(updated);
-    localStorage.setItem(`reviews_${product.slug}`, JSON.stringify(updated));
+    try {
+      const savedReview = await addReviewToDb(reviewData);
+      setReviewsList((prev) => [savedReview, ...prev]);
 
-    // Reset Form
-    setFormInitials("");
-    setFormCity("");
-    setFormRating(5);
-    setFormDesc("");
-    setErrorMsg("");
-    setSuccessMsg("Your feedback has been published securely.");
-    setTimeout(() => {
-      setSuccessMsg("");
-    }, 5000);
+      // Reset Form
+      setFormInitials("");
+      setFormCity("");
+      setFormRating(5);
+      setFormDesc("");
+      setErrorMsg("");
+      setSuccessMsg(
+        isFirebaseConfigured
+          ? "Your testimonial has been securely registered to the Cloud database."
+          : "Your testimonial has been registered locally."
+      );
+      setTimeout(() => {
+        setSuccessMsg("");
+      }, 5000);
+    } catch (err) {
+      console.error(err);
+      setErrorMsg("Unable to publish feedback. Please try again.");
+    }
   };
 
   const anatomyPoints = [
@@ -513,7 +482,12 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Reviews List */}
           <div className="lg:col-span-7 space-y-10">
-            {reviewsList.length === 0 ? (
+            {loadingReviews ? (
+              <div className="flex items-center gap-3 py-12 text-zinc-500 font-mono text-xs uppercase tracking-widest">
+                <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-ping" />
+                Querying cloud ledger...
+              </div>
+            ) : reviewsList.length === 0 ? (
               <div className="text-zinc-500 font-mono text-[10px] uppercase tracking-widest py-10">
                 // No testimonials registered on the ledger yet.
               </div>

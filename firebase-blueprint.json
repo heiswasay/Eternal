@@ -1,0 +1,55 @@
+{
+  "entities": {
+    "Review": {
+      "title": "Product Review",
+      "description": "An authentic purchase testimonial recorded by a customer",
+      "type": "object",
+      "properties": {
+        "productSlug": {
+          "type": "string",
+          "description": "Identifier for the specific shoe/product model"
+        },
+        "initials": {
+          "type": "string",
+          "description": "Initials or name of the reviewer"
+        },
+        "city": {
+          "type": "string",
+          "description": "City of residence in Pakistan"
+        },
+        "rating": {
+          "type": "integer",
+          "description": "Numeric rating out of 5 stars"
+        },
+        "desc": {
+          "type": "string",
+          "description": "Narrative detailing the customer's purchase experience"
+        },
+        "orderNo": {
+          "type": "string",
+          "description": "Identifier for the verified purchase of 1 Pair"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the review was registered"
+        }
+      },
+      "required": [
+        "productSlug",
+        "initials",
+        "city",
+        "rating",
+        "desc",
+        "orderNo",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Global list of all customer reviews across products"
+    }
+  }
+}
