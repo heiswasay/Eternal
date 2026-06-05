@@ -86,20 +86,31 @@ export const CheckoutPage: React.FC = () => {
       notes: formData.notes,
     };
 
+    let sheetsSyncStatus = null;
     try {
       // Fire real server-side email dispatch
-      await fetch("/api/send-order-email", {
+      const response = await fetch("/api/send-order-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(orderSummary),
       });
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.sheetsSyncStatus) {
+          sheetsSyncStatus = data.sheetsSyncStatus;
+        }
+      }
     } catch (err) {
       console.error("Error dispatching transaction emails:", err);
     } finally {
       // Commit the order summary to local persistence for visual Thank You billing card
-      localStorage.setItem("latest_eternal_order", JSON.stringify(orderSummary));
+      const completeOrderSummary = {
+        ...orderSummary,
+        sheetsSyncStatus
+      };
+      localStorage.setItem("latest_eternal_order", JSON.stringify(completeOrderSummary));
       
       // Clear cart
       clearCart();

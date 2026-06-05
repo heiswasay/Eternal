@@ -33,6 +33,15 @@ import footerImg from "./images/footer.jpg";
 import box1Image from "./images/box1.jpeg";
 import bo9Image from "./images/bo9.jpeg";
 import boo1Image from "./images/boo1.jpeg";
+import boo3Image from "./images/boo3.jpeg";
+import boo4Image from "./images/boo4.jpeg";
+import boo5Image from "./images/boo5.jpeg";
+import boo6Image from "./images/boo6.jpeg";
+import boo8Image from "./images/boo8.jpeg";
+import boo9Image from "./images/boo9.jpeg";
+import boo10Image from "./images/boo10.jpeg";
+import boo11Image from "./images/boo11.jpeg";
+import layersbooImage from "./images/layersboo.png";
 
 import m1Image from "./images/m1.jpeg";
 import m2Image from "./images/m2.jpeg";
@@ -59,6 +68,8 @@ interface SpecType {
   leatherImage?: string;
   soleImage?: string;
   lacesImage?: string;
+  anatomyImage?: string;
+  layersImage?: string;
 }
 
 interface CollectionItemInfo {
@@ -124,7 +135,7 @@ const COLLECTIONS: CollectionItemInfo[] = [
     name: "Black Oxford Leather",
     price: "PKR 5,950",
     image: boo1Image,
-    images: [boo1Image, img1, img3, heroImage],
+    images: [boo1Image, boo3Image, boo4Image, boo5Image, boo8Image, boo9Image],
     category: "Hand Made",
     slug: "black-oxford-leather",
     description: "Our signature piece, hand-stitched over 48 hours using the finest full-grain Italian calfskin.",
@@ -137,7 +148,12 @@ const COLLECTIONS: CollectionItemInfo[] = [
       laces: "Flat-Braided Waxed Giza Cotton Laces",
       lacesDetail: "Tightly-braided, extra-long-staple Egyptian Giza cotton fibres treated with an ultra-thin coating of natural organic beeswax for high tensile strength, fray prevention, and an enduring secure knot.",
       lining: "Hand-Dyed Glove-Grade Italian Calf-Lining",
-      construction: "Handwelted Goodyear"
+      construction: "Handwelted Goodyear",
+      leatherImage: boo6Image,
+      soleImage: boo11Image,
+      lacesImage: boo10Image,
+      anatomyImage: boo9Image,
+      layersImage: layersbooImage
     }
   }
 ];
@@ -397,7 +413,7 @@ const Hero = () => {
           className="space-y-4"
         >
           <span className="text-[10px] sm:text-xs uppercase tracking-[0.8em] text-zinc-500 block font-mono">
-            ESTABLISHED 1924, VENETO
+            ESTABLISHED 2020, LAHORE
           </span>
           <h1 className="serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white leading-none tracking-tight font-light">
             Savor The <br />
@@ -472,14 +488,14 @@ const Hero = () => {
           <div className="space-y-1">
             <span className="block text-[8px] font-mono tracking-widest text-zinc-600 uppercase">ATELIER CONTACTS</span>
             <span className="block text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
-              +39 (041) 522-1924 &bull; concierge@eternal.com
+              +92 (042) 111-2020-01 &bull; support@eternal.com.pk
             </span>
           </div>
           <div className="hidden sm:block w-px h-6 bg-white/10" />
           <div className="space-y-1">
             <span className="block text-[8px] font-mono tracking-widest text-zinc-600 uppercase">LOCATION</span>
             <span className="block text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
-              VENETO &bull; MILAN &bull; TOKYO
+              LAHORE &bull; KARACHI &bull; ISLAMABAD
             </span>
           </div>
         </div>
@@ -500,7 +516,7 @@ const Hero = () => {
 
         {/* Right: Copyright info */}
         <div className="text-[9px] uppercase tracking-[0.3em] text-zinc-500 font-mono">
-          © 2026 ETERNAL ARTISANS S.R.L.
+          © 2026 ETERNAL ARTISANS
         </div>
       </footer>
     </header>
@@ -518,7 +534,7 @@ const SartorialPledgeTicker = () => {
             <div key={i} className="flex gap-16 items-center shrink-0">
               <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">Traditional Handsewn Goodyear Welt</span>
               <div className="w-1 h-1 rounded-full bg-white opacity-25" />
-              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">100% Vegetable-Tanned Italian Hides</span>
+              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">100% Vegetable-Tanned Full-Grain Hides</span>
               <div className="w-1 h-1 rounded-full bg-white opacity-25" />
               <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">Custom Cork Bed Cushioning</span>
               <div className="w-1 h-1 rounded-full bg-white opacity-25" />
@@ -642,7 +658,7 @@ const Collection = () => {
                     </h3>
                   </div>
 
-                  <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-wider mb-6 h-12 overflow-hidden line-clamp-2">
+                  <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-wider mb-6 min-h-[3.25rem]">
                     {item.description}
                   </p>
 
@@ -769,10 +785,10 @@ const FullImageBanner = () => {
 
       {/* Floating details */}
       <div className="absolute top-10 left-6 md:left-12 font-mono text-[8px] sm:text-[9px] tracking-[0.3em] text-zinc-500 uppercase">
-        LOC: Veneto Atelier // 45.4408° N, 12.3155° E
+        LOC: Lahore Atelier // 31.5204° N, 74.3587° E
       </div>
       <div className="absolute top-10 right-6 md:right-12 font-mono text-[8px] sm:text-[9px] tracking-[0.3em] text-zinc-500 uppercase">
-        SPECIFICATION ID // BO-1924
+        SPECIFICATION ID // BO-2020
       </div>
 
       {/* Main minimal impact content */}
@@ -805,7 +821,7 @@ const FullImageBanner = () => {
         AUTHENTIC GOODYEAR WELTING PROCESS
       </div>
       <div className="absolute bottom-10 right-6 md:right-12 font-mono text-[8px] sm:text-[9px] tracking-[0.3em] text-zinc-500 uppercase hidden sm:block">
-        SINCE 1924 ESTABLISHED
+        SINCE 2020 ESTABLISHED
       </div>
     </section>
   );
@@ -821,9 +837,9 @@ const EditorialReviews = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-14 divide-y md:divide-y-0 md:divide-x divide-white/10">
           <div className="text-center p-4 md:p-6 first:pl-0">
             <p className="serif text-lg sm:text-xl italic text-zinc-300 leading-relaxed mb-6">
-              "The last of a disappearing discipline in Italian handcrafting. An indestructible pair built to serve you for thirty years."
+              "The last of a disappearing discipline in bespoke Pakistani handcrafting. An indestructible pair built to serve you for thirty years."
             </p>
-            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// THE MILAN JOURNAL</span>
+            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// SARTORIAL PAKISTAN</span>
           </div>
 
           <div className="text-center p-4 md:p-6">

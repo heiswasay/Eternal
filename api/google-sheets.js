@@ -54,41 +54,92 @@ export async function appendOrderToSheet(order) {
         console.log("[Google Sheets] Successfully appended order via Apps Script Web App.");
         return { success: true, method: "webapp" };
       }
-      console.warn("[Google Sheets] Web App returned non-ok status:", response.status);
+      const responseText = await response.text();
+      console.warn("[Google Sheets] Web App returned non-ok status:", response.status, responseText);
+      return { success: false, reason: "webapp_non_ok_status", status: response.status, responseText };
     } catch (webappErr) {
       console.error("[Google Sheets] Failed to append via Web App URL:", webappErr);
+      return { success: false, reason: "webapp_error", error: webappErr.message || String(webappErr) };
     }
   }
 
   // Method 2: Service Account JWT Authentication
   let auth;
   const saKeyJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
-  const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
+  let clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
   const privateKey = process.env.GOOGLE_PRIVATE_KEY;
 
-  if (saKeyJson) {
+  // Track the configuration states for diagnostics
+  const diagnostics = {
+    has_saKeyJson: !!saKeyJson,
+    saKeyJson_is_raw_email: !!(saKeyJson && saKeyJson.includes("@") && !saKeyJson.trim().startsWith("{")),
+    saKeyJson_startsWith_curly: !!(saKeyJson && saKeyJson.trim().startsWith("{")),
+    has_clientEmail: !!clientEmail,
+    has_privateKey: !!privateKey,
+    has_webappUrl: !!process.env.GOOGLE_SHEETS_WEBAPP_URL,
+    using_fallback: false
+  };
+
+  if (saKeyJson && saKeyJson.trim().startsWith("{")) {
     try {
-      const keys = JSON.parse(saKeyJson);
+      const keys = JSON.parse(saKeyJson.trim());
+      let pk = keys.private_key;
+      if (pk) {
+        // Clean and prepare the private key
+        pk = pk.trim();
+        if (pk.startsWith('"') && pk.endsWith('"')) {
+          pk = pk.substring(1, pk.length - 1);
+        }
+        pk = pk.replace(/\\n/g, "\n");
+      }
       auth = new google.auth.JWT(
         keys.client_email,
         null,
-        keys.private_key,
+        pk,
         ["https://www.googleapis.com/auth/spreadsheets"]
       );
+      clientEmail = keys.client_email;
     } catch (parseErr) {
       console.error("[Google Sheets] Could not parse GOOGLE_SERVICE_ACCOUNT_KEY JSON:", parseErr);
+      return { success: false, reason: "json_parse_error", error: parseErr.message || String(parseErr), diagnostics };
     }
-  } else if (clientEmail && privateKey) {
-    try {
-      const formattedPrivateKey = privateKey.replace(/\\n/g, "\n");
-      auth = new google.auth.JWT(
-        clientEmail,
-        null,
-        formattedPrivateKey,
-        ["https://www.googleapis.com/auth/spreadsheets"]
-      );
-    } catch (authErr) {
-      console.error("[Google Sheets] Could not build JWT Auth with Client Email & Private Key:", authErr);
+  }
+
+  // Fallback: If JWT wasn't loaded from JSON block, try using separate GOOGLE_CLIENT_EMAIL / Client Email in saKeyJson and GOOGLE_PRIVATE_KEY
+  if (!auth) {
+    let effectiveEmail = clientEmail;
+    
+    // Auto-detect if saKey = email address
+    if (saKeyJson && saKeyJson.includes("@") && !saKeyJson.trim().startsWith("{")) {
+      console.log("[Google Sheets] GOOGLE_SERVICE_ACCOUNT_KEY does not appear to be JSON, but contains '@'. Treating as service account email.");
+      effectiveEmail = saKeyJson.trim();
+    }
+
+    if (effectiveEmail && privateKey) {
+      try {
+        diagnostics.using_fallback = true;
+        // Clean up private key (handle wrapped quotes, raw \n, literal \n, etc.)
+        let formattedPrivateKey = privateKey.trim();
+        if (formattedPrivateKey.startsWith('"') && formattedPrivateKey.endsWith('"')) {
+          formattedPrivateKey = formattedPrivateKey.substring(1, formattedPrivateKey.length - 1);
+        }
+        if (formattedPrivateKey.startsWith("'") && formattedPrivateKey.endsWith("'")) {
+          formattedPrivateKey = formattedPrivateKey.substring(1, formattedPrivateKey.length - 1);
+        }
+        formattedPrivateKey = formattedPrivateKey.replace(/\\n/g, "\n");
+
+        auth = new google.auth.JWT(
+          effectiveEmail.trim(),
+          null,
+          formattedPrivateKey,
+          ["https://www.googleapis.com/auth/spreadsheets"]
+        );
+        clientEmail = effectiveEmail;
+        console.log("[Google Sheets] Setup JWT authentication using fallback email/private-key combination.");
+      } catch (authErr) {
+        console.error("[Google Sheets] Could not build JWT Auth with Client Email & Private Key:", authErr);
+        return { success: false, reason: "auth_build_error", error: authErr.message || String(authErr), diagnostics };
+      }
     }
   }
 
@@ -125,10 +176,18 @@ export async function appendOrderToSheet(order) {
 
       if (response && response.status === 200) {
         console.log("[Google Sheets] Successfully appended order via Service Account values.append API.");
-        return { success: true, method: "service_account" };
+        return { success: true, method: "service_account", clientEmail };
       }
     } catch (saErr) {
       console.error("[Google Sheets] Failed to append via Service Account:", saErr);
+      return {
+        success: false,
+        reason: "google_api_rejection",
+        error: saErr.message || String(saErr),
+        details: saErr.response?.data?.error || null,
+        clientEmailUsed: clientEmail || "not_found",
+        diagnostics
+      };
     }
   }
 
@@ -141,5 +200,5 @@ export async function appendOrderToSheet(order) {
   console.log(`STATUS: Service credentials not specified in .env yet.`);
   console.log("--------------------------------------------------");
 
-  return { success: false, reason: "credentials_not_configured" };
+  return { success: false, reason: "credentials_not_configured", diagnostics };
 }

@@ -21,6 +21,23 @@ interface OrderSummary {
   totalPrice: string;
   paymentMethod: string;
   notes?: string;
+  sheetsSyncStatus?: {
+    success: boolean;
+    method?: string;
+    reason?: string;
+    error?: string;
+    details?: any;
+    clientEmailUsed?: string;
+    diagnostics?: {
+      has_saKeyJson: boolean;
+      saKeyJson_is_raw_email: boolean;
+      saKeyJson_startsWith_curly: boolean;
+      has_clientEmail: boolean;
+      has_privateKey: boolean;
+      has_webappUrl: boolean;
+      using_fallback: boolean;
+    };
+  } | null;
 }
 
 export const ThankYouPage: React.FC = () => {
@@ -77,10 +94,10 @@ export const ThankYouPage: React.FC = () => {
             Order Confirmed
           </span>
           <h1 className="text-3xl md:text-4xl font-normal text-white mt-1">
-            Thank You For Your Purchase
+            Thank You For Your Order!
           </h1>
-          <p className="text-sm text-zinc-400 mt-2 max-w-lg">
-            We have received your order. Standard order processing has started. Here are your transaction details.
+          <p className="text-sm text-zinc-400 mt-2 max-w-lg font-light leading-relaxed">
+            We have received your order and we are starting to process it now. Below are your order info and details.
           </p>
         </div>
 
@@ -94,8 +111,8 @@ export const ThankYouPage: React.FC = () => {
             
             {/* Customer Information Summary card */}
             <div className="border border-white/10 bg-zinc-900/10 p-6 rounded-md space-y-4">
-              <h3 className="text-sm font-medium text-zinc-300 uppercase tracking-wider border-b border-white/5 pb-2">
-                Shipping & Customer Information
+              <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-wider border-b border-white/5 pb-2">
+                Your Shipping Info
               </h3>
               
               <div className="space-y-3 text-sm">
@@ -114,7 +131,7 @@ export const ThankYouPage: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-0.5 border-t border-white/5 pt-2">
-                  <span className="text-zinc-500 text-xs">Customer Name</span>
+                  <span className="text-zinc-500 text-xs">Name</span>
                   <span className="text-white font-medium">{order.customerName}</span>
                 </div>
 
@@ -135,7 +152,7 @@ export const ThankYouPage: React.FC = () => {
 
                 {order.notes && (
                   <div className="flex flex-col gap-0.5 border-t border-white/5 pt-2">
-                    <span className="text-zinc-500 text-xs">Optional Order Note</span>
+                    <span className="text-zinc-500 text-xs">Your Notes</span>
                     <span className="text-zinc-300 italic">{order.notes}</span>
                   </div>
                 )}
@@ -145,8 +162,8 @@ export const ThankYouPage: React.FC = () => {
             {/* Bill Statement item sheet */}
             <div className="border border-white/10 bg-zinc-900/10 p-6 rounded-md flex flex-col justify-between">
               <div>
-                <h3 className="text-sm font-medium text-zinc-300 uppercase tracking-wider border-b border-white/5 pb-2 mb-4">
-                  Purchased Item(s)
+                <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-wider border-b border-white/5 pb-2 mb-4">
+                  Items Ordered
                 </h3>
 
                 <div className="divide-y divide-white/5 space-y-3 max-h-[220px] overflow-y-auto pr-1">
@@ -181,7 +198,7 @@ export const ThankYouPage: React.FC = () => {
 
               <div className="border-t border-white/10 pt-4 mt-4 space-y-1.5 text-sm">
                 <div className="flex justify-between text-zinc-400">
-                  <span>Subtotal</span>
+                  <span>Price of Items</span>
                   <span className="text-zinc-200">{order.totalPrice}</span>
                 </div>
                 <div className="flex justify-between text-zinc-400">
@@ -190,7 +207,7 @@ export const ThankYouPage: React.FC = () => {
                 </div>
                 <div className="h-px bg-white/5 my-1" />
                 <div className="flex justify-between items-end font-bold pt-1">
-                  <span className="text-white text-sm">Total Collectable Cash</span>
+                  <span className="text-white text-sm">Total Amount to Pay</span>
                   <span className="text-white text-base font-mono">{order.totalPrice}</span>
                 </div>
               </div>
@@ -199,44 +216,44 @@ export const ThankYouPage: React.FC = () => {
           </div>
         </div>
 
-        {/* SECTION 2: DELIVERY PROTOCOLS SHOWN AT THE END OF THE PAGE */}
+        {/* SECTION 3: DELIVERY PROTOCOLS SHOWN AT THE END OF THE PAGE */}
         <div className="space-y-4">
           <h2 className="text-lg font-medium text-white border-b border-white/10 pb-2">
-            Delivery Information & Protocols
+            Delivery Information
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             {/* Quick Card 1: Timeframe */}
             <div className="border border-white/5 bg-zinc-900/5 p-5 rounded-md space-y-2">
-              <div className="flex items-center gap-2 text-amber-400">
+              <div className="flex items-center gap-2 text-amber-500">
                 <Calendar size={18} />
-                <h4 className="text-sm font-medium">Delivery Time</h4>
+                <h4 className="text-sm font-medium">When will it arrive?</h4>
               </div>
-              <p className="text-xs text-zinc-400 leading-normal">
-                Your parcel will be delivered in 2 to 4 working days to your address. You will receive an SMS shipping notification soon.
+              <p className="text-xs text-zinc-400 leading-normal font-light">
+                Your package will arrive at your address in 2 to 4 working days. We will send you an SMS notification with tracking details soon.
               </p>
             </div>
 
             {/* Quick Card 2: Cash On Delivery Inspection */}
             <div className="border border-white/5 bg-zinc-900/5 p-5 rounded-md space-y-2">
-              <div className="flex items-center gap-2 text-amber-400">
+              <div className="flex items-center gap-2 text-amber-500">
                 <Receipt size={18} />
-                <h4 className="text-sm font-medium">Pay on Delivery</h4>
+                <h4 className="text-sm font-medium">Cash on Delivery</h4>
               </div>
-              <p className="text-xs text-zinc-400 leading-normal">
-                This order uses free Cash on Delivery (COD). Please inspect your shoes or packet before paying the courier cash.
+              <p className="text-xs text-zinc-400 leading-normal font-light">
+                You can pay with cash when the package arrives. You are welcome to open the box and check your shoes before you pay the rider.
               </p>
             </div>
 
             {/* Quick Card 3: Free Support */}
             <div className="border border-white/5 bg-zinc-900/5 p-5 rounded-md space-y-2">
-              <div className="flex items-center gap-2 text-amber-400">
+              <div className="flex items-center gap-2 text-amber-500">
                 <Truck size={18} />
-                <h4 className="text-sm font-medium">Easy Delivery</h4>
+                <h4 className="text-sm font-medium">Free & Easy Shipping</h4>
               </div>
-              <p className="text-xs text-zinc-400 leading-normal">
-                Free standard shipping is guaranteed. If you face any issues or need custom assistance, email us at savortheluxury@gmail.com.
+              <p className="text-xs text-zinc-400 leading-normal font-light">
+                Standard delivery is always 100% free. If you have any questions or need help, email us anytime at support@eternal.com.pk.
               </p>
             </div>
 

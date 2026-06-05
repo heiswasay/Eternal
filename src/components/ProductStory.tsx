@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
+import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles, Layers, ShieldCheck, Compass, Eye } from "lucide-react";
 import layersboImage from "../images/layersbo.png";
 import layersmImage from "../images/layersm.png";
@@ -17,6 +18,8 @@ interface SpecType {
   leatherImage?: string;
   soleImage?: string;
   lacesImage?: string;
+  anatomyImage?: string;
+  layersImage?: string;
 }
 
 interface CollectionItemInfo {
@@ -38,6 +41,116 @@ interface ProductStoryProps {
 
 export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) => {
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
+
+  const [reviewsList, setReviewsList] = useState<Array<{
+    initials: string;
+    city: string;
+    rating: string;
+    desc: string;
+    orderNo: string;
+    date?: string;
+  }>>(() => {
+    const saved = localStorage.getItem(`reviews_${product.slug}`);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    
+    // Default reviews mapped by slug
+    const defaultReviewsMap: Record<string, Array<{ initials: string; city: string; rating: string; desc: string; orderNo: string }>> = {
+      "black-oxford-leather": [
+        {
+          initials: "K. HASHMI",
+          city: "Karachi",
+          rating: "★★★★★",
+          desc: "My first pair from them and I am completely blown away. The leather aroma, the precise unboxing presentation, and the snug fit of this single pair are of international caliber. Wore them to an executive dinner and felt a class apart.",
+          orderNo: "1 PAIR PURCHASED // ORDER #1042"
+        },
+        {
+          initials: "Z. AHMED",
+          city: "Lahore",
+          rating: "★★★★★",
+          desc: "Acquired this pair after hearing about their Lahore workshop. The handwelted classic leather sole has a beautiful, rich resonance and feels wonderfully broken-in after just two wears. A phenomenal purchase.",
+          orderNo: "1 PAIR PURCHASED // ORDER #2180"
+        },
+        {
+          initials: "A. REHMAN",
+          city: "Islamabad",
+          rating: "★★★★★",
+          desc: "Incredible attention to detail on this single pair. From the heavy felted box and micro-fibre dust bags to the high-density cork bed cushioning. This is easily the most superior dress shoe in my wardrobe.",
+          orderNo: "1 PAIR PURCHASED // ORDER #3095"
+        }
+      ]
+    };
+
+    return defaultReviewsMap[product.slug] || [
+      {
+        initials: "K. HASHMI",
+        city: "Karachi",
+        rating: "★★★★★",
+        desc: "My first pair from them and I am completely blown away. The leather aroma, the precise unboxing presentation, and the snug fit of this single pair are of international caliber. Wore them to an executive dinner and felt a class apart.",
+        orderNo: "1 PAIR PURCHASED // ORDER #1042"
+      },
+      {
+        initials: "Z. AHMED",
+        city: "Lahore",
+        rating: "★★★★★",
+        desc: "Acquired this pair after hearing about their Lahore workshop. The handwelted classic leather sole has a beautiful, rich resonance and feels wonderfully broken-in after just two wears. A phenomenal purchase.",
+        orderNo: "1 PAIR PURCHASED // ORDER #2180"
+      },
+      {
+        initials: "A. REHMAN",
+        city: "Islamabad",
+        rating: "★★★★★",
+        desc: "Incredible attention to detail on this single pair. From the heavy felted box and micro-fibre dust bags to the high-density cork bed cushioning. This is easily the most superior dress shoe in my wardrobe.",
+        orderNo: "1 PAIR PURCHASED // ORDER #3095"
+      }
+    ];
+  });
+
+  const [formInitials, setFormInitials] = useState("");
+  const [formCity, setFormCity] = useState("");
+  const [formRating, setFormRating] = useState(5);
+  const [formDesc, setFormDesc] = useState("");
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formInitials.trim() || !formCity.trim() || !formDesc.trim()) {
+      setErrorMsg("Please fill out all fields.");
+      return;
+    }
+    
+    const stars = "★".repeat(formRating) + "☆".repeat(5 - formRating);
+    const orderNum = Math.floor(Math.random() * 8999) + 1000;
+    const newReview = {
+      initials: formInitials.toUpperCase().trim(),
+      city: formCity.trim(),
+      rating: stars,
+      desc: formDesc.trim(),
+      orderNo: `1 PAIR PURCHASED // ORDER #${orderNum}`
+    };
+
+    const updated = [newReview, ...reviewsList];
+    setReviewsList(updated);
+    localStorage.setItem(`reviews_${product.slug}`, JSON.stringify(updated));
+
+    // Reset Form
+    setFormInitials("");
+    setFormCity("");
+    setFormRating(5);
+    setFormDesc("");
+    setErrorMsg("");
+    setSuccessMsg("Your feedback has been published securely.");
+    setTimeout(() => {
+      setSuccessMsg("");
+    }, 5000);
+  };
 
   const anatomyPoints = [
     {
@@ -119,7 +232,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
               {/* Central Shoe Image under Tech Blueprint Overlay */}
               <div className="relative z-10 w-full max-w-lg h-auto aspect-[4/3] overflow-hidden flex items-center justify-center select-none">
                 <img 
-                  src={images[1] || images[0]} 
+                  src={product.specs.anatomyImage || images[1] || images[0]} 
                   alt="Anatomy Overlay" 
                   onError={(e) => {
                     if (product.slug === 'monk-strap') {
@@ -310,7 +423,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
-                  src={product.slug === 'monk-strap' ? layersmImage : layersboImage} 
+                  src={product.specs.layersImage || (product.slug === 'monk-strap' ? layersmImage : layersboImage)} 
                   alt="Bespoke Shoe Structured Layers" 
                   className="max-h-[380px] md:max-h-[500px] w-auto h-auto object-contain select-none transition-all duration-700 relative z-10"
                 />
@@ -383,60 +496,158 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
         </div>
       </section>
 
-      {/* 3. The 48-Hour Bespoke Journey Steps */}
+      {/* 3. Patron Testimonials / Reviews Section */}
       <section className="border-t border-white/5 pt-12 md:pt-16 pb-10 md:pb-14">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-14">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-14 border-b border-white/5 pb-8">
           <div className="max-w-xl">
-            <span className="text-[10px] uppercase tracking-[0.6em] text-zinc-500 mb-4 block">Chronicles Of Devotion</span>
+            <span className="text-[10px] uppercase tracking-[0.6em] text-zinc-500 mb-4 block">Patron Testimonials</span>
             <h2 className="serif text-4xl md:text-6xl tracking-tight leading-none">
-              The <span className="italic opacity-60">Hand-Build Story</span>
+              Reflections of <span className="italic opacity-60 font-light">The Discerning</span>
             </h2>
           </div>
           <div className="mt-6 md:mt-0 font-mono text-[9px] uppercase tracking-widest text-zinc-500">
-            Est. Period: 48 Collective Hours / 200+ Hand Interventions 
+            Verified Footwear Ownership // 1 Pair Purchases
           </div>
         </div>
 
-        {/* Triple horizontal block row layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-          {[
-            {
-              step: "01",
-              title: "Lasting Over Wood",
-              caption: "Molding curves via heat & tension",
-              desc: product.slug === 'monk-strap'
-                ? "Before any stitch is applied, the hand-cut upper skin is thoroughly moistened and pulled with specialized pincers over heavy solid-beechwood lasts, remaining locked in place for full 24-hour cycles to preserve architectural form permanently."
-                : "Before any stitch is applied, the hand-cut leather upper is thoroughly moistened and pulled with specialized pincers over heavy solid-beechwood lasts, remaining locked in place for full 24-hour cycles to preserve architectural form permanently."
-            },
-            {
-              step: "02",
-              title: "The Welted Stitch",
-              caption: "Goodyear handwelted joinery",
-              desc: "We perform a robust stitch run fusing sole, upper skin, and lining together through a continuous horizontal band. Designed with a custom double-density channel, it keeps uppers completely separate in order to facilitate infinite resoling."
-            },
-            {
-              step: "03",
-              title: "Patina Glaze Finish",
-              caption: "Layered natural beeswax glaze",
-              desc: product.slug === 'monk-strap'
-                ? "Each product undergoes multi-stage manual burnishing procedures. Tanners apply pigment creams, following up with a deep coat of natural organic beeswax rubbed manually to foster a mirror-like dimensional lasting shine."
-                : "Each product undergoes multi-stage manual burnishing procedures. Tanners apply pigment creams, following up with a deep coat of natural organic beeswax rubbed manually to foster a mirror-like dimensional leather shine."
-            }
-          ].map((item, idx) => (
-            <div key={idx} className="flex flex-col border-t border-white/5 pt-8 group cursor-default">
-              <div className="flex flex-col sm:flex-row justify-between sm:items-baseline gap-2 mb-4 sm:mb-6">
-                <span className="serif text-lg italic text-zinc-600 group-hover:text-white transition-colors duration-500">{item.step} // {item.title}</span>
-                <span className="text-[8px] font-mono text-zinc-700 font-bold uppercase tracking-wider">{item.caption}</span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          {/* Reviews List */}
+          <div className="lg:col-span-7 space-y-10">
+            {reviewsList.length === 0 ? (
+              <div className="text-zinc-500 font-mono text-[10px] uppercase tracking-widest py-10">
+                // No testimonials registered on the ledger yet.
               </div>
-              <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-widest mb-6">
-                "{item.desc}"
-              </p>
-              <div className="mt-auto flex items-center gap-3 text-zinc-500 group-hover:text-white transition-all space-x-1">
-                <span className="text-[8px] font-mono uppercase tracking-[0.3em] font-bold">Standard Metrology Check</span>
-                <Compass size={11} className="transition-transform duration-[1s] group-hover:rotate-45" />
-              </div>
+            ) : (
+              reviewsList.map((item, idx) => (
+                <div key={idx} className="flex flex-col border-b border-white/5 pb-8 last:border-b-0 last:pb-0 group cursor-default">
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-baseline gap-2 mb-3">
+                    <span className="serif text-lg italic text-zinc-300 group-hover:text-white transition-colors duration-500">
+                      {item.initials} — <span className="text-sm not-italic opacity-60 font-light">{item.city}</span>
+                    </span>
+                    <span className="text-xs text-yellow-500/90 font-bold select-none tracking-normal">
+                      {item.rating}
+                    </span>
+                  </div>
+                  <p className="text-sm text-zinc-300 font-light leading-relaxed mb-4">
+                    "{item.desc}"
+                  </p>
+                  <div className="flex items-center gap-3 text-zinc-500 group-hover:text-zinc-400 transition-all">
+                    <span className="text-[9px] font-mono uppercase tracking-wider font-medium">{item.orderNo}</span>
+                    <ShieldCheck size={11} className="text-emerald-500/70" />
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Post Review Form */}
+          <div className="lg:col-span-5 bg-zinc-900/40 border border-white/5 rounded-sm p-6 sm:p-8">
+            <div className="mb-6">
+              <span className="text-[10px] font-mono tracking-widest text-zinc-500 block uppercase mb-1">Customer Voice</span>
+              <h4 className="serif text-xl text-white">Record Your <span className="italic font-light">Testimonial</span></h4>
+              <p className="text-xs text-zinc-500 font-light mt-1">We value the authentic feedback of our local patrons.</p>
             </div>
-          ))}
+
+            <form onSubmit={handleReviewSubmit} className="space-y-6">
+              {errorMsg && (
+                <div className="p-3 bg-red-950/25 border border-red-900/30 text-red-300 text-xs font-mono rounded-sm">
+                  {errorMsg}
+                </div>
+              )}
+              
+              {successMsg && (
+                <div className="p-3 bg-emerald-950/25 border border-emerald-900/30 text-emerald-300 text-xs font-mono rounded-sm">
+                  {successMsg}
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col">
+                  <label className="text-xs font-medium text-zinc-400 mb-1.5">Initials / Name</label>
+                  <input
+                    type="text"
+                    value={formInitials}
+                    onChange={(e) => setFormInitials(e.target.value)}
+                    placeholder="e.g. A. Khan"
+                    required
+                    maxLength={30}
+                    className="border border-white/10 focus:border-white/40 rounded-sm bg-black/40 px-3 py-2 text-sm text-white focus:outline-none transition-colors duration-300 placeholder:text-zinc-600"
+                  />
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-xs font-medium text-zinc-400 mb-1.5">City</label>
+                  <input
+                    type="text"
+                    value={formCity}
+                    onChange={(e) => setFormCity(e.target.value)}
+                    placeholder="e.g. Lahore"
+                    required
+                    maxLength={35}
+                    className="border border-white/10 focus:border-white/40 rounded-sm bg-black/40 px-3 py-2 text-sm text-white focus:outline-none transition-colors duration-300 placeholder:text-zinc-600"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-xs font-medium text-zinc-400 mb-1">Your Rating</label>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <button
+                        key={num}
+                        type="button"
+                        onClick={() => setFormRating(num)}
+                        onMouseEnter={() => setHoverRating(num)}
+                        onMouseLeave={() => setHoverRating(null)}
+                        className="text-lg focus:outline-none transition-transform duration-100 hover:scale-110"
+                      >
+                        <span className={num <= (hoverRating || formRating) ? "text-yellow-500 select-none mr-0.5" : "text-zinc-700 select-none mr-0.5"}>
+                          ★
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                  <span className="text-xs text-zinc-500 font-mono">
+                    ({formRating} out of 5 stars)
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-xs font-medium text-zinc-400 mb-1.5">Your Experience</label>
+                <textarea
+                  value={formDesc}
+                  onChange={(e) => setFormDesc(e.target.value)}
+                  placeholder="Share details about the quality, premium unboxing, comfort, or leather of your Eternal shoes..."
+                  required
+                  maxLength={500}
+                  className="border border-white/10 focus:border-white/40 rounded-sm bg-black/40 p-3 text-sm text-zinc-300 h-28 focus:outline-none transition-colors duration-300 placeholder:text-zinc-600 leading-relaxed font-light"
+                />
+              </div>
+
+              <div className="flex items-center gap-3 bg-zinc-950/20 border border-white/5 rounded-sm p-3">
+                <input 
+                  type="checkbox" 
+                  id="verified-buyer" 
+                  defaultChecked 
+                  disabled
+                  className="rounded bg-black border-white/10 text-emerald-500 focus:ring-0 focus:ring-offset-0 cursor-default" 
+                />
+                <label htmlFor="verified-buyer" className="text-[10px] text-zinc-500 select-none leading-none uppercase tracking-wider">
+                  Authenticate verified purchase of 1 Pair
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full flex items-center justify-between gap-6 group hover:text-black text-white border border-white/20 px-6 py-3.5 transition-all hover:bg-white cursor-pointer rounded-sm"
+              >
+                <span className="text-xs uppercase tracking-widest font-semibold">Publish Testimonial</span>
+                <ArrowRight size={14} strokeWidth={1} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </form>
+          </div>
         </div>
       </section>
 
@@ -448,22 +659,20 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
           <div className="lg:col-span-8">
             <div className="flex gap-4 items-center mb-5">
               <ShieldCheck className="text-white opacity-80" size={20} strokeWidth={1} />
-              <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.6em] text-zinc-400 font-medium">Eternal Studio Pledge</span>
+              <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.6em] text-zinc-400 font-medium">The Atelier Legacy</span>
             </div>
             <h3 className="serif text-3xl sm:text-4xl md:text-5xl tracking-tight leading-none mb-4">
-              Lifetime <span className="italic font-light">Recrafting</span>
+              Visit The <span className="italic font-light">Atelier</span>
             </h3>
             <p className="text-zinc-400 max-w-xl leading-relaxed font-light text-[11px] uppercase tracking-wider">
-              {product.slug === 'monk-strap'
-                ? "We pledge to preserve the legacy of your purchase. Bring back your worn down soles to our atelier in the future; our shoemakers will seamlessly strip, rebuild, and re-last the upper using original techniques."
-                : "We pledge to preserve the legacy of your purchase. Bring back your worn down soles to our atelier in the future; our shoemakers will seamlessly strip, rebuild, and re-last the leather using original techniques."}
+              We invite you to experience the birthplace of true shoemaking. Visit our atelier to witness our master artisans' dedication, explore our heritage of design, and see how our signature footwear is formed.
             </p>
           </div>
           <div className="lg:col-span-4 flex justify-start lg:justify-end w-full">
-            <button className="flex items-center justify-between sm:justify-start gap-6 group hover:text-white text-zinc-400 border border-white/10 px-6 py-4 transition-all hover:bg-white hover:text-black w-full sm:w-auto">
-              <span className="text-[10px] uppercase tracking-[0.4em] font-semibold">Learn Atelier Service</span>
+            <Link to="/atelier" className="flex items-center justify-between sm:justify-start gap-6 group hover:text-white text-zinc-400 border border-white/10 px-6 py-4 transition-all hover:bg-white hover:text-black w-full sm:w-auto text-center">
+              <span className="text-[10px] uppercase tracking-[0.4em] font-semibold">Explore The Atelier</span>
               <ArrowRight size={14} strokeWidth={1} className="group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
           </div>
         </div>
       </section>

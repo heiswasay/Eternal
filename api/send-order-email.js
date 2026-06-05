@@ -18,7 +18,7 @@ export async function handleSendOrderEmail(order) {
     }
 
     const clientEmail = payload.customerEmail;
-    const adminEmail = "savortheluxury@gmail.com";
+    const adminEmail = "support@eternal.com.pk";
 
     const customerEmailHtml = `
 <!DOCTYPE html>
@@ -101,7 +101,7 @@ export async function handleSendOrderEmail(order) {
       </div>
     </div>
     <div class="footer">
-      For enquiries: <a href="mailto:savortheluxury@gmail.com">savortheluxury@gmail.com</a>
+      For enquiries: <a href="mailto:support@eternal.com.pk">support@eternal.com.pk</a>
     </div>
   </div>
 </body>
@@ -188,10 +188,12 @@ export async function handleSendOrderEmail(order) {
     }
 
     // Sync to Google Spreadsheet
+    let sheetsSyncStatus = { success: false, reason: "execution_not_called" };
     try {
-      await appendOrderToSheet(payload);
+      sheetsSyncStatus = await appendOrderToSheet(payload);
     } catch (sheetErr) {
       console.error("[Sheets Error] Silently caught spreadsheet append failure:", sheetErr);
+      sheetsSyncStatus = { success: false, reason: "exception_raised", error: sheetErr.message || String(sheetErr) };
     }
 
     return {
@@ -200,6 +202,7 @@ export async function handleSendOrderEmail(order) {
         success: true,
         message: "Order email processed successfully.",
         orderId: payload.orderId,
+        sheetsSyncStatus: sheetsSyncStatus
       },
     };
   } catch (e) {
