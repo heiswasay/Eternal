@@ -17,6 +17,9 @@ import { ThankYouPage } from "./components/ThankYouPage";
 import heroImage from "./images/hero3.jpeg";
 import hero1Image from "./images/hero1-1.jpeg";
 import hero2Image from "./images/hero2.jpeg";
+import heromobile1Image from "./images/heromobile1.jpeg";
+import heromobile2Image from "./images/heromobile2.jpeg";
+import heromobile3Image from "./images/heromobile3.jpeg";
 import heritageImage from "./images/blackoxford.jpg";
 import img1 from "./images/1.jpg";
 import img2 from "./images/2.jpg";
@@ -321,13 +324,35 @@ const Hero = () => {
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, 150]);
 
-  const slides = [
-    { src: hero2Image, fallback: heroImage, alt: "Savor The Luxury - Master Craftsmanship" },
-    { src: hero1Image, fallback: heroImage, alt: "Savor The Luxury - Artisanal Shoemaking" },
-    { src: heroImage, fallback: hero1Image, alt: "Savor The Luxury - The Atelier Collection" },
-  ];
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // using 768px as mobile threshold for beautiful experience
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const slides = isMobile
+    ? [
+        { src: heromobile1Image, fallback: heromobile1Image, alt: "Savor The Luxury" },
+        { src: heromobile2Image, fallback: heromobile2Image, alt: "Savor The Luxury" },
+        { src: heromobile3Image, fallback: heromobile3Image, alt: "Savor The Luxury" },
+      ]
+    : [
+        { src: hero2Image, fallback: heroImage, alt: "Savor The Luxury - Master Craftsmanship" },
+        { src: hero1Image, fallback: heroImage, alt: "Savor The Luxury - Artisanal Shoemaking" },
+        { src: heroImage, fallback: hero1Image, alt: "Savor The Luxury - The Atelier Collection" },
+      ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    // Reset index to be safe if content list changes
+    setCurrentIndex(0);
+  }, [isMobile]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -374,14 +399,14 @@ const Hero = () => {
         </div>
 
         {/* Center main immersive layout with left alignment - completely static */}
-        <main className="flex-1 flex flex-col justify-center items-start px-6 md:px-16 lg:px-24 xl:px-32 relative z-10 text-left max-w-4xl mr-auto space-y-6 md:space-y-8 mt-24">
+        <main className="flex-1 flex flex-col justify-between md:justify-center items-start px-6 md:px-16 lg:px-24 xl:px-32 relative z-10 text-left max-w-4xl mr-auto mt-24 pt-12 sm:pt-0 pb-28 md:pb-0">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
             className="space-y-4"
           >
-            <span className="text-[10px] sm:text-xs uppercase tracking-[0.8em] text-zinc-500 block font-mono">
+            <span className="text-[7.5px] sm:text-[10px] md:text-xs uppercase tracking-[0.5em] sm:tracking-[0.8em] text-zinc-500 block font-mono whitespace-nowrap">
               ESTABLISHED 2020, LAHORE
             </span>
             <h1 className="serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white leading-none tracking-tight font-light">
@@ -390,50 +415,52 @@ const Hero = () => {
             </h1>
           </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-            className="w-16 h-px bg-white/20 ml-0 mr-auto"
-          />
+          <div className="flex flex-col items-start space-y-4 md:space-y-8 w-full md:w-auto">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.5 }}
+              className="w-16 h-px bg-white/20 ml-0 mr-auto hidden sm:block"
+            />
 
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.7 }}
-            className="text-zinc-400 max-w-md mr-auto font-light text-[11px] sm:text-xs uppercase tracking-[0.25em] leading-relaxed"
-          >
-            <span className="hidden sm:inline">
-              An uncompromising commitment to bespoke shoemaking. Crafted solely by hand, single-needle stitched, finished with organic bee wax.
-            </span>
-            <span className="inline sm:hidden">
-              Hand-crafted bespoke shoemaking. Finished with organic wax.
-            </span>
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.9 }}
-            className="pt-6"
-          >
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                const element = document.getElementById("collection");
-                if (element) {
-                  element.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
-              className="border border-white/40 bg-zinc-950/20 backdrop-blur-md text-white hover:bg-white hover:text-black py-3 sm:py-4 px-7 sm:px-10 text-[9px] sm:text-[10px] uppercase tracking-[0.4em] font-semibold transition-all duration-300 rounded-sm cursor-pointer"
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.7 }}
+              className="text-zinc-400 max-w-md mr-auto font-light text-[11px] sm:text-xs uppercase tracking-[0.25em] leading-relaxed pt-2 sm:pt-0"
             >
-              Explore The Craft
-            </button>
-          </motion.div>
+              <span className="hidden sm:inline">
+                An uncompromising commitment to bespoke shoemaking. Crafted solely by hand, single-needle stitched, finished with organic bee wax.
+              </span>
+              <span className="inline sm:hidden">
+                Hand-crafted bespoke shoemaking. Finished with organic wax.
+              </span>
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.9 }}
+              className="pt-2 sm:pt-6"
+            >
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  const element = document.getElementById("collection");
+                  if (element) {
+                    element.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                className="border border-white/40 bg-zinc-950/20 backdrop-blur-md text-white hover:bg-white hover:text-black py-3 sm:py-4 px-7 sm:px-10 text-[9px] sm:text-[10px] uppercase tracking-[0.4em] font-semibold transition-all duration-300 rounded-sm cursor-pointer"
+              >
+                Explore The Craft
+              </button>
+            </motion.div>
+          </div>
         </main>
 
         {/* Manual Slider Navigation Panel */}
-        <div className="absolute right-6 md:right-12 bottom-8 sm:bottom-12 md:bottom-28 z-20 flex items-center gap-3 bg-black/40 backdrop-blur-md border border-white/5 px-4 py-2 rounded-sm">
+        <div className="absolute left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 right-auto md:right-12 bottom-8 sm:bottom-12 md:bottom-28 z-20 flex items-center gap-3 bg-black/40 backdrop-blur-md border border-white/5 px-4 py-2 rounded-sm">
           <button
             onClick={() => setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length)}
             className="text-white/60 hover:text-white transition-colors cursor-pointer"
