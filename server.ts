@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { handleSendOrderEmail } from "./api/send-order-email.js";
 
@@ -23,6 +24,21 @@ async function startServer() {
       appType: "spa",
     });
     app.use(vite.middlewares);
+
+    // Dev-mode SPA Fallback: Serve transformed index.html for non-asset routing
+    app.use("*", async (req, res, next) => {
+      const url = req.originalUrl;
+      try {
+        // Read raw entry template
+        let template = fs.readFileSync(path.join(process.cwd(), "index.html"), "utf-8");
+        // Apply Vite HTML transformations (injecting clients, setting correct bundles)
+        template = await vite.transformIndexHtml(url, template);
+        return res.status(200).set({ "Content-Type": "text/html" }).end(template);
+      } catch (e) {
+        vite.ssrFixStacktrace(e as Error);
+        return next(e);
+      }
+    });
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));

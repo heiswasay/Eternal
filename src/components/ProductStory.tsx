@@ -275,7 +275,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
               <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-[0.2em] mb-6">
                 {product.specs.leather}
               </p>
-              <p className="text-[11px] text-zinc-500 leading-relaxed font-light">
+              <p className="text-[11px] text-zinc-500 leading-relaxed font-light hidden sm:block">
                 {product.specs.leatherDetail}
               </p>
             </div>
@@ -293,7 +293,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
               <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-[0.2em] mb-6">
                 {product.specs.sole}
               </p>
-              <p className="text-[11px] text-zinc-500 leading-relaxed font-light">
+              <p className="text-[11px] text-zinc-500 leading-relaxed font-light hidden sm:block">
                 {product.specs.soleDetail}
               </p>
             </div>
@@ -351,7 +351,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
               <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-[0.2em] mb-6">
                 {product.specs.laces}
               </p>
-              <p className="text-[11px] text-zinc-500 leading-relaxed font-light">
+              <p className="text-[11px] text-zinc-500 leading-relaxed font-light hidden sm:block">
                 {product.specs.lacesDetail}
               </p>
             </div>
@@ -453,7 +453,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                       </div>
                       <span className="text-[7px] font-mono tracking-widest text-zinc-600 uppercase whitespace-nowrap pl-8 sm:pl-0">100% Bespoke</span>
                     </div>
-                    <p className="text-[10px] uppercase tracking-widest text-zinc-500 font-light leading-relaxed pl-8 sm:pl-11">
+                    <p className="text-[10px] uppercase tracking-widest text-zinc-500 font-light leading-relaxed pl-8 sm:pl-11 hidden sm:block">
                       {layer.desc}
                     </p>
                   </motion.div>

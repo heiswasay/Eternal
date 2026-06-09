@@ -11,6 +11,7 @@ import { ProductStory } from "./components/ProductStory";
 import AtelierPage from "./components/AtelierPage";
 import { CartProvider, useCart } from "./context/CartContext";
 import { CartSlideOver } from "./components/CartSlideOver";
+import { MenuSlideOver } from "./components/MenuSlideOver";
 import { CheckoutPage } from "./components/CheckoutPage";
 import { ThankYouPage } from "./components/ThankYouPage";
 import heroImage from "./images/hero3.jpeg";
@@ -167,12 +168,11 @@ const ScrollToTop = () => {
 };
 
 const Nav = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCollectionsHovered, setIsCollectionsHovered] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === "/";
-  const { totalCount, setCartOpen } = useCart();
+  const { totalCount, setCartOpen, setMenuOpen } = useCart();
   
   return (
     <nav className="fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-4 md:py-6 flex items-center bg-black/80 backdrop-blur-lg border-b border-white/5 transition-all">
@@ -183,10 +183,10 @@ const Nav = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/80 backdrop-blur-lg z-[70] flex items-center px-6 md:hidden"
+            className="absolute inset-0 bg-black/95 backdrop-blur-lg z-[120] flex items-center px-6"
           >
-            <div className="relative w-full flex items-center">
-              <Search size={18} className="text-zinc-500 mr-4" strokeWidth={1} />
+            <div className="relative w-full flex items-center max-w-lg mx-auto">
+              <Search size={18} className="text-zinc-400 mr-4" strokeWidth={1.5} />
               <input 
                 type="text"
                 placeholder="SEARCH FOR ARTISANAL PIECES..."
@@ -195,85 +195,94 @@ const Nav = () => {
               />
               <button 
                 onClick={() => setIsSearchOpen(false)}
-                className="ml-4 p-2"
+                className="ml-4 p-2 text-zinc-400 hover:text-white transition-colors"
               >
-                <X size={20} strokeWidth={1} />
+                <X size={20} strokeWidth={1.5} />
               </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Left Links (Desktop) */}
-      <div className={`flex-1 flex gap-8 text-[10px] uppercase tracking-[0.3em] font-semibold hidden md:flex ${isSearchOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-        <div className="flex gap-8 relative">
-          <div 
-            className="relative py-2 group"
-            onMouseEnter={() => setIsCollectionsHovered(true)}
-            onMouseLeave={() => setIsCollectionsHovered(false)}
-          >
-            <Link to={isHomePage ? "#collection" : "/#collection"} className="hover:opacity-50 transition-opacity flex items-center gap-2">
-              Collections <ChevronDown size={10} className={`transition-transform duration-300 ${isCollectionsHovered ? 'rotate-180' : ''}`} />
-            </Link>
-            
-            <AnimatePresence>
-              {isCollectionsHovered && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="absolute top-full left-0 pt-4"
-                >
-                  <div className="bg-black/80 border border-soft p-6 w-64 backdrop-blur-xl shadow-2xl">
-                    <div className="flex flex-col gap-4">
-                      {COLLECTIONS.map((item) => (
-                        <Link 
-                          key={item.id} 
-                          to={`/product/${item.slug}`} 
-                          className="group/item flex flex-col"
-                          onClick={() => setIsCollectionsHovered(false)}
-                        >
-                          <span className="text-[9px] text-zinc-500 mb-1 opacity-60 font-mono">0{item.id}</span>
-                          <span className="hover:text-zinc-400 transition-colors tracking-[0.2em]">{item.name}</span>
-                        </Link>
-                      ))}
+      {/* LEFT COLUMN: Hamburger Menu (Mobile) / Left Links (Desktop) */}
+      <div className="flex-1 flex justify-start items-center">
+        {/* Toggle mobile menu */}
+        <button 
+          onClick={() => setMenuOpen(true)} 
+          className="md:hidden p-1 hover:opacity-50 transition-opacity text-white flex items-center justify-center outline-none"
+          aria-label="Toggle menu"
+        >
+          <Menu size={24} />
+        </button>
+
+        {/* Desktop Left Links */}
+        <div className={`hidden md:flex gap-8 text-[10px] uppercase tracking-[0.3em] font-semibold ${isSearchOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <div className="flex gap-8 relative">
+            <div 
+              className="relative py-2 group"
+              onMouseEnter={() => setIsCollectionsHovered(true)}
+              onMouseLeave={() => setIsCollectionsHovered(false)}
+            >
+              <Link to={isHomePage ? "#collection" : "/#collection"} className="hover:opacity-50 transition-opacity flex items-center gap-2 text-white">
+                Collections <ChevronDown size={10} className={`transition-transform duration-300 ${isCollectionsHovered ? 'rotate-180' : ''}`} />
+              </Link>
+              
+              <AnimatePresence>
+                {isCollectionsHovered && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="absolute top-full left-0 pt-4"
+                  >
+                    <div className="bg-black/95 border border-soft p-6 w-64 backdrop-blur-xl shadow-2xl">
+                      <div className="flex flex-col gap-4">
+                        {COLLECTIONS.map((item) => (
+                          <Link 
+                            key={item.id} 
+                            to={`/product/${item.slug}`} 
+                            className="group/item flex flex-col"
+                            onClick={() => setIsCollectionsHovered(false)}
+                          >
+                            <span className="text-[9px] text-zinc-500 mb-1 opacity-60 font-mono">0{item.id}</span>
+                            <span className="hover:text-zinc-400 text-white transition-colors tracking-[0.2em]">{item.name}</span>
+                          </Link>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            <Link to="/#heritage" className="hover:opacity-50 transition-opacity py-2 text-white">Bespoke</Link>
+            <Link to="/atelier" className="hover:opacity-50 transition-opacity py-2 text-white">The Atelier</Link>
           </div>
-          <Link to="/#heritage" className="hover:opacity-50 transition-opacity py-2">Bespoke</Link>
-          <Link to="/atelier" className="hover:opacity-50 transition-opacity py-2">The Atelier</Link>
         </div>
       </div>
 
-      {/* Mobile Menu Trigger */}
-      <div className={`flex-1 md:hidden flex items-center ${isSearchOpen ? 'opacity-100' : 'opacity-100'}`}>
-        <button onClick={() => setIsOpen(true)} className="hover:opacity-50 transition-opacity">
-          <Menu size={24} />
-        </button>
+      {/* CENTER COLUMN: Perfectly Centered Brand Name Logo */}
+      <div className="flex-none flex justify-center items-center">
+        <Link to="/" className="text-xl md:text-3xl serif font-bold tracking-tighter text-center text-white hover:opacity-85 transition-all">
+          ETERNAL
+        </Link>
       </div>
 
-      {/* Centered Brand Name */}
-      <Link to="/" className={`flex-none text-2xl md:text-3xl serif font-bold tracking-tighter text-center transition-opacity ${isSearchOpen ? 'md:opacity-100 opacity-0' : 'opacity-100'}`}>
-        ETERNAL
-      </Link>
-      
-      {/* Right Links and Controls */}
-      <div className="flex-1 flex gap-8 text-[10px] uppercase tracking-[0.3em] font-semibold justify-end items-center">
-        <div className="relative flex items-center">
+      {/* RIGHT COLUMN: Controls (Search and Bag) Together side-by-side */}
+      <div className="flex-1 flex gap-4 md:gap-8 justify-end items-center text-[10px] uppercase tracking-[0.3em] font-semibold text-white">
+        {/* Search trigger */}
+        <div className="relative hidden md:flex items-center">
           <motion.div
-            animate={{ x: isSearchOpen ? -170 : 0 }}
+            animate={{ x: (isSearchOpen && window.innerWidth > 768) ? -170 : 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="flex items-center"
           >
             <button 
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="hover:opacity-50 transition-opacity cursor-pointer flex items-center z-10"
+              className="hover:opacity-50 transition-opacity cursor-pointer flex items-center z-10 p-1 text-white"
+              aria-label="Search items"
             >
-              {isSearchOpen ? <X size={14} strokeWidth={1} className="hidden md:block" /> : <Search size={16} strokeWidth={1} />}
+              {isSearchOpen ? <X size={14} className="hidden md:block" /> : <Search size={18} strokeWidth={1.5} />}
             </button>
             
             <AnimatePresence>
@@ -287,7 +296,7 @@ const Nav = () => {
                   <input 
                     type="text"
                     placeholder="SEARCH..."
-                    className="bg-transparent border-b border-white/30 text-[10px] tracking-[0.2em] outline-none w-full pb-1 uppercase text-white"
+                    className="bg-transparent border-b border-white/30 text-[10px] tracking-[0.2em] outline-none w-full pb-1 uppercase text-white font-semibold"
                     autoFocus
                   />
                 </motion.div>
@@ -296,55 +305,14 @@ const Nav = () => {
           </motion.div>
         </div>
         
+        {/* Bag/Cart Trigger */}
         <button 
           onClick={() => setCartOpen(true)}
-          className={`cursor-pointer ml-4 flex items-center gap-2 ${isSearchOpen ? 'opacity-0 md:opacity-100 pointer-events-none' : 'opacity-100'} hover:opacity-75 transition-all outline-none font-semibold text-[10px] uppercase tracking-[0.3em] bg-transparent text-white border-none`}
+          className="cursor-pointer flex items-center gap-2 hover:opacity-75 transition-all outline-none font-semibold text-[10px] uppercase tracking-[0.3em] bg-transparent text-white border-none p-1"
         >
           Bag <span className="opacity-40 italic">({totalCount})</span>
         </button>
       </div>
-
-      {/* Mobile Menu Overlay - Right Slide */}
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[80]"
-            />
-            <motion.div 
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-0 left-0 h-full w-[50%] md:w-[30%] bg-black/80 backdrop-blur-xl z-[90] flex flex-col p-8 md:p-12 shadow-2xl border-r border-white/10"
-            >
-              <button onClick={() => setIsOpen(false)} className="self-start mb-16 text-zinc-500 hover:text-white transition-colors">
-                <X size={28} strokeWidth={1} />
-              </button>
-              
-              <div className="flex flex-col gap-10">
-                <span className="text-[10px] uppercase tracking-[0.5em] text-zinc-600 mb-2 block">Navigation</span>
-                <Link onClick={() => setIsOpen(false)} to="/" className="text-xs uppercase tracking-[0.4em] hover:text-zinc-400 transition-all">Home</Link>
-                <Link onClick={() => setIsOpen(false)} to="/#collection" className="text-xs uppercase tracking-[0.4em] hover:text-zinc-400 transition-all">Collections</Link>
-                <Link onClick={() => setIsOpen(false)} to="/#heritage" className="text-xs uppercase tracking-[0.4em] hover:text-zinc-400 transition-all">Heritage</Link>
-                <Link onClick={() => setIsOpen(false)} to="/atelier" className="text-xs uppercase tracking-[0.4em] hover:text-zinc-400 transition-all">Atelier</Link>
-              </div>
-
-              <div className="mt-auto pt-10 border-t border-soft">
-                <div className="flex gap-6">
-                  <Instagram size={20} strokeWidth={1} className="opacity-50" />
-                  <Twitter size={20} strokeWidth={1} className="opacity-50" />
-                </div>
-                <p className="mt-6 text-[8px] uppercase tracking-widest opacity-30">© 2024 Eternal Artisans</p>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </nav>
   );
 };
@@ -369,120 +337,134 @@ const Hero = () => {
   }, [slides.length]);
 
   return (
-    <header className="relative min-h-screen w-full flex flex-col justify-between overflow-hidden">
-      {/* Background Image Carousel: Only images slide/fade, content remains static */}
-      <div className="absolute inset-0 z-0 overflow-hidden bg-zinc-950">
-        <AnimatePresence initial={false} mode="popLayout">
+    <div className="relative w-full">
+      <header className="relative h-[100dvh] md:h-screen w-full flex flex-col justify-between overflow-hidden">
+        {/* Background Image Carousel: Only images slide/fade, content remains static */}
+        <div className="absolute inset-0 z-0 overflow-hidden bg-zinc-950">
+          <AnimatePresence initial={false} mode="popLayout">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, x: 50, scale: 1.05 }}
+              animate={{ opacity: 1, x: 0, scale: 1.02 }}
+              exit={{ opacity: 0, x: -50, scale: 1.0 }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+              style={{ y }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <img 
+                src={slides[currentIndex].src} 
+                alt={slides[currentIndex].alt}
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  // Graceful fallback
+                  e.currentTarget.src = slides[currentIndex].fallback;
+                }}
+                className="w-full h-full object-cover opacity-80"
+              />
+            </motion.div>
+          </AnimatePresence>
+          {/* Deep, rich, multi-stop dark overlay for extreme luxury look and solid text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/45 to-zinc-950 z-[1] pointer-events-none" />
+          <div className="absolute inset-0 bg-radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.4)) z-[1] pointer-events-none" />
+        </div>
+
+        {/* Floating atelier location parameters */}
+        <div className="absolute top-24 right-6 md:right-12 font-mono text-[8px] sm:text-[9px] tracking-[0.4em] text-zinc-400 uppercase z-10 hidden sm:block">
+          BY INVITATION ONLY
+        </div>
+
+        {/* Center main immersive layout with left alignment - completely static */}
+        <main className="flex-1 flex flex-col justify-center items-start px-6 md:px-16 lg:px-24 xl:px-32 relative z-10 text-left max-w-4xl mr-auto space-y-6 md:space-y-8 mt-24">
           <motion.div
-            key={currentIndex}
-            initial={{ opacity: 0, x: 50, scale: 1.05 }}
-            animate={{ opacity: 1, x: 0, scale: 1.02 }}
-            exit={{ opacity: 0, x: -50, scale: 1.0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            style={{ y }}
-            className="absolute inset-0 w-full h-full"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            className="space-y-4"
           >
-            <img 
-              src={slides[currentIndex].src} 
-              alt={slides[currentIndex].alt}
-              referrerPolicy="no-referrer"
-              onError={(e) => {
-                // Graceful fallback
-                e.currentTarget.src = slides[currentIndex].fallback;
-              }}
-              className="w-full h-full object-cover opacity-80"
-            />
+            <span className="text-[10px] sm:text-xs uppercase tracking-[0.8em] text-zinc-500 block font-mono">
+              ESTABLISHED 2020, LAHORE
+            </span>
+            <h1 className="serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white leading-none tracking-tight font-light">
+              Savor The <br />
+              <span className="italic font-light text-zinc-300">Luxury</span>
+            </h1>
           </motion.div>
-        </AnimatePresence>
-        {/* Deep, rich, multi-stop dark overlay for extreme luxury look and solid text contrast */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/45 to-zinc-950 z-[1] pointer-events-none" />
-        <div className="absolute inset-0 bg-radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.4)) z-[1] pointer-events-none" />
-      </div>
 
-      {/* Floating atelier location parameters */}
-      <div className="absolute top-24 right-6 md:right-12 font-mono text-[8px] sm:text-[9px] tracking-[0.4em] text-zinc-400 uppercase z-10 hidden sm:block">
-        BY INVITATION ONLY
-      </div>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.5 }}
+            className="w-16 h-px bg-white/20 ml-0 mr-auto"
+          />
 
-      {/* Center main immersive layout with left alignment - completely static */}
-      <main className="flex-1 flex flex-col justify-center items-start px-6 md:px-16 lg:px-24 xl:px-32 relative z-10 text-left max-w-4xl mr-auto space-y-6 md:space-y-8 mt-24">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          className="space-y-4"
-        >
-          <span className="text-[10px] sm:text-xs uppercase tracking-[0.8em] text-zinc-500 block font-mono">
-            ESTABLISHED 2020, LAHORE
-          </span>
-          <h1 className="serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white leading-none tracking-tight font-light">
-            Savor The <br />
-            <span className="italic font-light text-zinc-300">Luxury</span>
-          </h1>
-        </motion.div>
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.7 }}
+            className="text-zinc-400 max-w-md mr-auto font-light text-[11px] sm:text-xs uppercase tracking-[0.25em] leading-relaxed"
+          >
+            <span className="hidden sm:inline">
+              An uncompromising commitment to bespoke shoemaking. Crafted solely by hand, single-needle stitched, finished with organic bee wax.
+            </span>
+            <span className="inline sm:hidden">
+              Hand-crafted bespoke shoemaking. Finished with organic wax.
+            </span>
+          </motion.p>
 
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="w-16 h-px bg-white/20 ml-0 mr-auto"
-        />
-
-        <motion.p
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.7 }}
-          className="text-zinc-400 max-w-md mr-auto font-light text-[11px] sm:text-xs uppercase tracking-[0.25em] leading-relaxed"
-        >
-          An uncompromising commitment to bespoke shoemaking. Crafted solely by hand, single-needle stitched, finished with organic bee wax.
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.9 }}
-          className="pt-6"
-        >
-          <Link to="/#collection">
-            <button className="border border-white/40 bg-zinc-950/20 backdrop-blur-md text-white hover:bg-white hover:text-black py-4 px-10 text-[10px] uppercase tracking-[0.4em] font-semibold transition-all duration-300 rounded-sm cursor-pointer">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.9 }}
+            className="pt-6"
+          >
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                const element = document.getElementById("collection");
+                if (element) {
+                  element.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              className="border border-white/40 bg-zinc-950/20 backdrop-blur-md text-white hover:bg-white hover:text-black py-3 sm:py-4 px-7 sm:px-10 text-[9px] sm:text-[10px] uppercase tracking-[0.4em] font-semibold transition-all duration-300 rounded-sm cursor-pointer"
+            >
               Explore The Craft
             </button>
-          </Link>
-        </motion.div>
-      </main>
+          </motion.div>
+        </main>
 
-      {/* Manual Slider Navigation Panel */}
-      <div className="absolute right-6 md:right-12 bottom-32 z-20 flex items-center gap-3 bg-black/40 backdrop-blur-md border border-white/5 px-4 py-2 rounded-sm">
-        <button
-          onClick={() => setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length)}
-          className="text-white/60 hover:text-white transition-colors cursor-pointer"
-          aria-label="Previous image"
-        >
-          <ChevronLeft size={16} strokeWidth={1.5} />
-        </button>
-        <div className="flex gap-1.5 px-1">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                index === currentIndex ? "bg-white w-4" : "bg-white/20 hover:bg-white/45"
-              }`}
-              aria-label={`Slide ${index + 1}`}
-            />
-          ))}
+        {/* Manual Slider Navigation Panel */}
+        <div className="absolute right-6 md:right-12 bottom-8 sm:bottom-12 md:bottom-28 z-20 flex items-center gap-3 bg-black/40 backdrop-blur-md border border-white/5 px-4 py-2 rounded-sm">
+          <button
+            onClick={() => setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length)}
+            className="text-white/60 hover:text-white transition-colors cursor-pointer"
+            aria-label="Previous image"
+          >
+            <ChevronLeft size={16} strokeWidth={1.5} />
+          </button>
+          <div className="flex gap-1.5 px-1">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                  index === currentIndex ? "bg-white w-4" : "bg-white/20 hover:bg-white/45"
+                }`}
+                aria-label={`Slide ${index + 1}`}
+              />
+            ))}
+          </div>
+          <button
+            onClick={() => setCurrentIndex((prev) => (prev + 1) % slides.length)}
+            className="text-white/60 hover:text-white transition-colors cursor-pointer"
+            aria-label="Next image"
+          >
+            <ChevronRight size={16} strokeWidth={1.5} />
+          </button>
         </div>
-        <button
-          onClick={() => setCurrentIndex((prev) => (prev + 1) % slides.length)}
-          className="text-white/60 hover:text-white transition-colors cursor-pointer"
-          aria-label="Next image"
-        >
-          <ChevronRight size={16} strokeWidth={1.5} />
-        </button>
-      </div>
+      </header>
 
-      {/* Footer layout updated with sleek minimalist contact info & copyright */}
-      <footer className="w-full relative z-10 px-6 md:px-12 pb-8 sm:pb-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-white/5 bg-zinc-950/25 backdrop-blur-sm">
+      {/* Footer layout as separate responsive element: absolute on desktop, relative flow on mobile */}
+      <footer className="w-full relative md:absolute md:bottom-0 md:left-0 z-10 px-6 md:px-12 pb-8 sm:pb-8 pt-6 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-white/5 bg-zinc-950 md:bg-zinc-950/15 md:backdrop-blur-sm">
         {/* Left: Minimal studio contact details */}
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8 text-center sm:text-left">
           <div className="space-y-1">
@@ -519,7 +501,7 @@ const Hero = () => {
           © 2026 ETERNAL ARTISANS
         </div>
       </footer>
-    </header>
+    </div>
   );
 };
 
@@ -658,7 +640,7 @@ const Collection = () => {
                     </h3>
                   </div>
 
-                  <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-wider mb-6 min-h-[3.25rem]">
+                  <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-wider mb-6 min-h-[3.25rem] line-clamp-2 md:line-clamp-none">
                     {item.description}
                   </p>
 
@@ -722,42 +704,42 @@ const AnatomyBento = () => {
         {/* Dynamic Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Card 1 */}
-          <div className="border border-white/5 bg-zinc-950/40 p-6 sm:p-8 flex flex-col justify-between rounded-sm min-h-[220px]">
+          <div className="border border-white/5 bg-zinc-950/40 p-6 sm:p-8 flex flex-col justify-between rounded-sm min-h-[110px] sm:min-h-[220px]">
             <div className="flex justify-between items-center mb-6">
               <span className="font-mono text-[8px] text-zinc-600 block">[PART 01 // INNER]</span>
               <div className="w-1.5 h-1.5 rounded-full bg-white opacity-40" />
             </div>
             <div>
               <h3 className="serif text-xl sm:text-2xl text-white mb-2">Natural Cork Inlay</h3>
-              <p className="text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed">
+              <p className="text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed hidden sm:block">
                 A thick bed of biological shredded cork is hot-pressed beneath the insole. Over two weeks, it settles and mirrors your foot arch for standard orthotics.
               </p>
             </div>
           </div>
 
           {/* Card 2 */}
-          <div className="border border-white/5 bg-zinc-950/40 p-6 sm:p-8 flex flex-col justify-between rounded-sm min-h-[220px]">
+          <div className="border border-white/5 bg-zinc-950/40 p-6 sm:p-8 flex flex-col justify-between rounded-sm min-h-[110px] sm:min-h-[220px]">
             <div className="flex justify-between items-center mb-6">
               <span className="font-mono text-[8px] text-zinc-600 block">[PART 02 // STABILITY]</span>
               <div className="w-1.5 h-1.5 rounded-full bg-white opacity-40" />
             </div>
             <div>
               <h3 className="serif text-xl sm:text-2xl text-white mb-2">Oak-Bark Sole Protection</h3>
-              <p className="text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed">
+              <p className="text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed hidden sm:block">
                 Tanned in traditional pits over nine months. Extremely dense, lightweight, and reinforced with 15 solid brass pegs for enduring posture stability.
               </p>
             </div>
           </div>
 
           {/* Card 3 */}
-          <div className="border border-white/5 bg-zinc-950/40 p-6 sm:p-8 flex flex-col justify-between rounded-sm min-h-[220px] md:col-span-2 lg:col-span-1">
+          <div className="border border-white/5 bg-zinc-950/40 p-6 sm:p-8 flex flex-col justify-between rounded-sm min-h-[110px] sm:min-h-[220px] md:col-span-2 lg:col-span-1">
             <div className="flex justify-between items-center mb-6">
               <span className="font-mono text-[8px] text-zinc-600 block">[PART 03 // CRAFT]</span>
               <div className="w-1.5 h-1.5 rounded-full bg-white opacity-40" />
             </div>
             <div>
               <h3 className="serif text-xl sm:text-2xl text-white mb-2">Wood Last Stretching</h3>
-              <p className="text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed">
+              <p className="text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed hidden sm:block">
                 The upper is tensioned over solid beechwood molds for three full weeks. This guarantees the leather fibers memorize their shape and prevent creasing.
               </p>
             </div>
@@ -802,16 +784,21 @@ const FullImageBanner = () => {
         <div className="w-12 h-px bg-white/30 mx-auto" />
         
         <p className="text-zinc-400 max-w-lg mx-auto font-light text-[11px] sm:text-xs uppercase tracking-[0.25em] leading-relaxed">
-          Every wrinkle in our full-grain boxcalf leather represents a choice. No electric heaters, no synthetic glues. Just two hands, pure flax thread, and thirty days of silent devotion.
+          <span className="hidden sm:inline">
+            Every wrinkle in our full-grain boxcalf leather represents a choice. No electric heaters, no synthetic glues. Just two hands, pure flax thread, and thirty days of silent devotion.
+          </span>
+          <span className="inline sm:hidden">
+            Handcrafted with flax thread and thirty days of silent devotion.
+          </span>
         </p>
         
         <div className="pt-4">
           <Link 
             to="/atelier" 
-            className="inline-flex items-center gap-4 bg-white text-black hover:bg-zinc-200 py-3.5 px-8 uppercase text-[10px] tracking-[0.4em] font-bold rounded-sm transition-all"
+            className="inline-flex items-center gap-2.5 sm:gap-4 bg-white text-black hover:bg-zinc-200 py-2.5 sm:py-3.5 px-5 sm:px-8 uppercase text-[9px] sm:text-[10px] tracking-[0.3em] sm:tracking-[0.4em] font-bold rounded-sm transition-all whitespace-nowrap"
           >
             <span>Explore The Atelier</span>
-            <ArrowRight size={12} strokeWidth={2} />
+            <ArrowRight size={10} className="w-2.5 h-2.5 sm:w-3 sm:h-3" strokeWidth={2} />
           </Link>
         </div>
       </div>
@@ -842,14 +829,14 @@ const EditorialReviews = () => {
             <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// SARTORIAL PAKISTAN</span>
           </div>
 
-          <div className="text-center p-4 md:p-6">
+          <div className="text-center p-4 md:p-6 hidden md:block">
             <p className="serif text-lg sm:text-xl italic text-zinc-300 leading-relaxed mb-6">
               "An flawless, solid heel design. The shred-cork bedding molds itself cleanly to your specific foot geometry inside two weeks of wear."
             </p>
             <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// SARTORIAL MONTHLY</span>
           </div>
 
-          <div className="text-center p-4 md:p-6 last:pr-0">
+          <div className="text-center p-4 md:p-6 last:pr-0 hidden md:block">
             <p className="serif text-lg sm:text-xl italic text-zinc-300 leading-relaxed mb-6">
               "These are not simply classic dress shoes. They are comfortable posture-stabilizing masterpieces that redefine standard design parameters."
             </p>
@@ -864,6 +851,26 @@ const EditorialReviews = () => {
 // NEW SECTION: The Unboxing experience
 const Unboxing = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [unboxingSlideIndex, setUnboxingSlideIndex] = useState(0);
+
+  const unboxingSlides = [
+    {
+      src: box1Image,
+      alt: "FSC certified heavy-milled box, handmade in Italy"
+    },
+    {
+      src: bo9Image,
+      alt: "Heavy-gauge organic cotton dust bags tied with single beeswax strings"
+    },
+    {
+      src: img2,
+      alt: "Genuine jar of Saphir Médaille d'Or leather wax restoration"
+    },
+    {
+      src: img3,
+      alt: "Individual shoe profile card, hand-signed with carbon ink by your welter"
+    }
+  ];
 
   return (
     <section className="bg-zinc-950 text-white py-20 md:py-28 px-4 sm:px-6 md:px-10 border-t border-white/5 relative overflow-hidden">
@@ -872,12 +879,20 @@ const Unboxing = () => {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-20 items-center">
+          {/* Mobile-only Heading (shows above image on mobile) */}
+          <div className="lg:hidden">
+            <span className="text-[10px] uppercase tracking-[0.5em] text-zinc-500 mb-3 block font-mono">THE COMPLEMENT</span>
+            <h2 className="serif text-4xl sm:text-6xl leading-tight tracking-tight m-0">
+              What arrives <br />
+              <span className="italic font-light text-zinc-400">is not a box.</span>
+            </h2>
+          </div>
           
           {/* Narrative blocks */}
-          <div className="lg:col-span-5 space-y-8 order-2 lg:order-1">
-            <div>
+          <div className="lg:col-span-5 space-y-8 order-3 lg:order-1">
+            <div className="hidden lg:block">
               <span className="text-[10px] uppercase tracking-[0.5em] text-zinc-500 mb-3 block font-mono">THE COMPLEMENT</span>
-              <h2 className="serif text-4xl sm:text-5.5xl leading-tight m-0">
+              <h2 className="serif text-4xl sm:text-6xl lg:text-7.5xl leading-tight tracking-tight m-0">
                 What arrives <br />
                 <span className="italic font-light text-zinc-400">is not a box.</span>
               </h2>
@@ -889,17 +904,20 @@ const Unboxing = () => {
 
             <div className="pt-2">
               <button 
-                onClick={() => setModalOpen(true)}
-                className="inline-flex items-center gap-4 bg-white text-black hover:bg-zinc-200 py-3.5 px-8 uppercase text-[10px] tracking-[0.4em] font-bold rounded-sm transition-all focus:outline-none cursor-pointer"
+                onClick={() => {
+                  setUnboxingSlideIndex(0);
+                  setModalOpen(true);
+                }}
+                className="inline-flex items-center gap-2.5 sm:gap-4 bg-white text-black hover:bg-zinc-200 py-2.5 sm:py-3.5 px-5 sm:px-8 uppercase text-[9px] sm:text-[10px] tracking-[0.3em] sm:tracking-[0.4em] font-bold rounded-sm transition-all focus:outline-none cursor-pointer whitespace-nowrap"
               >
                 <span>Witness the unboxing</span>
-                <ArrowRight size={12} strokeWidth={2} />
+                <ArrowRight size={10} className="w-2.5 h-2.5 sm:w-3 sm:h-3" strokeWidth={2} />
               </button>
             </div>
           </div>
 
           {/* Image presentation block */}
-          <div className="lg:col-span-7 order-1 lg:order-2 flex justify-center lg:justify-end w-full">
+          <div className="lg:col-span-7 order-2 lg:order-2 flex justify-center lg:justify-end w-full">
             <div className="group relative overflow-hidden bg-zinc-900 border border-white/5 rounded-sm aspect-[4/3] w-full select-none">
               <img 
                 src={box1Image} 
@@ -937,53 +955,88 @@ const Unboxing = () => {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
               transition={{ type: "spring", duration: 0.5 }}
-              className="bg-zinc-950 border border-white/10 w-full max-w-4xl p-6 sm:p-10 relative rounded-sm"
+              className="bg-zinc-950 border border-white/10 w-full max-w-4xl p-5 sm:p-8 md:p-10 relative rounded-sm max-h-[92dvh] overflow-y-auto"
             >
               <button 
                 onClick={() => setModalOpen(false)}
-                className="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors"
+                className="absolute top-4 right-4 sm:top-6 sm:right-6 text-zinc-400 hover:text-white transition-colors z-30 bg-black/40 p-1.5 sm:p-0 rounded-full"
                 aria-label="Close"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
 
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center pt-4">
-                <div className="md:col-span-7 overflow-hidden rounded-sm aspect-[4/3] md:aspect-[16/10]">
-                  <img 
-                    src="https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&q=80&w=1200"
-                    alt="Minimalist luxury open shoebox detailing"
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover"
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-5 md:gap-8 items-center pt-4 sm:pt-2">
+                {/* Image Slider: Renders FIRST on mobile naturally */}
+                <div className="md:col-span-7 overflow-hidden rounded-sm aspect-[16/10] sm:aspect-[4/3] md:aspect-[16/10] relative group/slider border border-white/5 bg-zinc-900">
+                  <AnimatePresence mode="wait">
+                    <motion.img 
+                      key={unboxingSlideIndex}
+                      src={unboxingSlides[unboxingSlideIndex].src}
+                      alt={unboxingSlides[unboxingSlideIndex].alt}
+                      referrerPolicy="no-referrer"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className="w-full h-full object-cover"
+                    />
+                  </AnimatePresence>
+
+                  {/* Left & Right Chevron Handles */}
+                  <button
+                    onClick={() => setUnboxingSlideIndex((prev) => (prev - 1 + unboxingSlides.length) % unboxingSlides.length)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-white hover:text-black text-white p-2 sm:p-2.5 rounded-full transition-all opacity-100 md:opacity-0 md:group-hover/slider:opacity-100 cursor-pointer border border-white/10"
+                    aria-label="Previous Unboxing image"
+                  >
+                    <ChevronLeft size={14} strokeWidth={2} />
+                  </button>
+                  <button
+                    onClick={() => setUnboxingSlideIndex((prev) => (prev + 1) % unboxingSlides.length)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-white hover:text-black text-white p-2 sm:p-2.5 rounded-full transition-all opacity-100 md:opacity-0 md:group-hover/slider:opacity-100 cursor-pointer border border-white/10"
+                    aria-label="Next Unboxing image"
+                  >
+                    <ChevronRight size={14} strokeWidth={2} />
+                  </button>
+
+                  {/* Aesthetic Slide Label Caption Overlay */}
+                  <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between z-15 bg-black/60 backdrop-blur-xs px-3 py-1.5 rounded-sm border border-white/5">
+                    <span className="text-[7.5px] sm:text-[8px] font-mono tracking-widest text-zinc-300 uppercase truncate max-w-[70%]">
+                      {unboxingSlides[unboxingSlideIndex].alt}
+                    </span>
+                    <span className="text-[7.5px] sm:text-[8px] font-mono tracking-widest text-zinc-400 whitespace-nowrap">
+                      {unboxingSlideIndex + 1} / {unboxingSlides.length}
+                    </span>
+                  </div>
                 </div>
-                <div className="md:col-span-5 space-y-6">
+
+                {/* Narrative Information Section */}
+                <div className="md:col-span-5 space-y-3 md:space-y-5">
                   <div>
-                    <span className="text-[8px] font-mono tracking-widest text-zinc-500 uppercase block mb-1">UNBOXING SEQUENCE</span>
-                    <h3 className="serif text-2xl sm:text-3.5xl text-white font-normal leading-tight">
-                      A Quiet <br />
-                      <span className="italic font-light">Unveiling</span>
+                    <span className="text-[7.5px] sm:text-[8px] font-mono tracking-widest text-zinc-500 uppercase block mb-0.5">UNBOXING SEQUENCE</span>
+                    <h3 className="serif text-lg sm:text-xl md:text-2xl text-white font-normal leading-tight">
+                      A Quiet <span className="italic font-light">Unveiling</span>
                     </h3>
                   </div>
 
-                  <div className="space-y-4 text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed">
-                    <p>
+                  <div className="space-y-1.5 md:space-y-3.5 text-[8px] sm:text-[9px] md:text-[10px] text-zinc-400 font-light uppercase tracking-[0.12em] sm:tracking-[0.18em] leading-relaxed">
+                    <p className={unboxingSlideIndex === 0 ? "text-white font-medium border-l border-white/40 pl-2 transition-all" : "opacity-60 transition-all pl-2 border-l border-transparent"}>
                       1. Open heavy-milled box, handmade in Italy from FSC certified fibers.
                     </p>
-                    <p>
+                    <p className={unboxingSlideIndex === 1 ? "text-white font-medium border-l border-white/40 pl-2 transition-all" : "opacity-60 transition-all pl-2 border-l border-transparent"}>
                       2. Discover heavy-gauge organic cotton dust bags tied with single beeswax strings.
                     </p>
-                    <p>
+                    <p className={unboxingSlideIndex === 2 ? "text-white font-medium border-l border-white/40 pl-2 transition-all" : "opacity-60 transition-all pl-2 border-l border-transparent"}>
                       3. Uncover a genuine jar of Saphir Médaille d'Or leather restoration wax.
                     </p>
-                    <p>
+                    <p className={unboxingSlideIndex === 3 ? "text-white font-medium border-l border-white/40 pl-2 transition-all" : "opacity-60 transition-all pl-2 border-l border-transparent"}>
                       4. Read your individual shoe profile card, hand-signed with carbon ink by your welter.
                     </p>
                   </div>
 
-                  <div className="pt-2">
+                  <div className="pt-1">
                     <button 
                       onClick={() => setModalOpen(false)}
-                      className="w-full py-3 border border-white/10 hover:border-white text-[9px] uppercase tracking-[0.3em] font-bold transition-all"
+                      className="w-full py-2 border border-white/10 hover:border-white text-[7.5px] sm:text-[8px] uppercase tracking-[0.3em] font-bold transition-all rounded-sm"
                     >
                       Close Sequence
                     </button>
@@ -1394,6 +1447,7 @@ export default function App() {
           </Routes>
           <Footer />
           <CartSlideOver />
+          <MenuSlideOver />
         </div>
       </BrowserRouter>
     </CartProvider>
