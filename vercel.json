@@ -6,7 +6,7 @@
       "destination": "/api/:path*"
     },
     {
-      "source": "/:path*",
+      "source": "/((?!assets|favicon.ico).*)",
       "destination": "/index.html"
     }
   ]
