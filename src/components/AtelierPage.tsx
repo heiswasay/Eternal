@@ -16,9 +16,9 @@ import {
 } from "lucide-react";
 
 // Local image imports corresponding to the blank files
-import work1 from "../images/work1.jpeg";
-import work2 from "../images/work2.jpeg";
-import work3 from "../images/work3.jpeg";
+import work1 from "../images/work1.webp";
+import work2 from "../images/work2.webp";
+import work3 from "../images/work3.webp";
 
 // Beautiful, high-end fallbacks in case local files are empty or unrendered
 const IMAGES = {
@@ -150,7 +150,7 @@ export default function AtelierPage() {
         {/* 3 Step Interactive Card Array */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-10">
           
-          {/* Step 1: Cutting with work1.jpeg */}
+          {/* Step 1: Cutting with work1.webp */}
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -184,7 +184,7 @@ export default function AtelierPage() {
             </div>
           </motion.div>
 
-          {/* Step 2: Lasting with work2.jpeg */}
+          {/* Step 2: Lasting with work2.webp */}
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -218,7 +218,7 @@ export default function AtelierPage() {
             </div>
           </motion.div>
 
-          {/* Step 3: Finished Shoes with work3.jpeg */}
+          {/* Step 3: Finished Shoes with work3.webp */}
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
