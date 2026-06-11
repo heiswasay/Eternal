@@ -39,10 +39,5 @@ service cloud.firestore {
       allow get, list: if true; // Publicly readable products
       allow create, update, delete: if true; // Managed by the admin panel
     }
-
-    // Interactive Analytics telemetry collection rules
-    match /analytics/{eventId} {
-      allow create, get, list: if true; // Anyone can submit analytics; anyone can retrieve metrics (admin page)
-    }
   }
 }

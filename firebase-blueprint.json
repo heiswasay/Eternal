@@ -100,46 +100,6 @@
         "description",
         "specs"
       ]
-    },
-    "AnalyticsEvent": {
-      "title": "Analytics Event",
-      "description": "Secure record of client-side interaction trace",
-      "type": "object",
-      "properties": {
-        "eventType": {
-          "type": "string",
-          "enum": ["page_view", "add_to_cart", "click"]
-        },
-        "path": {
-          "type": "string"
-        },
-        "productSlug": {
-          "type": "string"
-        },
-        "productName": {
-          "type": "string"
-        },
-        "price": {
-          "type": "number"
-        },
-        "size": {
-          "type": "string"
-        },
-        "elementId": {
-          "type": "string"
-        },
-        "elementText": {
-          "type": "string"
-        },
-        "tagName": {
-          "type": "string"
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": ["eventType", "createdAt"]
     }
   },
   "firestore": {
@@ -150,10 +110,6 @@
     "products/{productId}": {
       "schema": "Product",
       "description": "E-commerce inventory catalog items"
-    },
-    "analytics/{eventId}": {
-      "schema": "AnalyticsEvent",
-      "description": "Continuous stream of interaction and metrics telemetry"
     }
   }
 }
