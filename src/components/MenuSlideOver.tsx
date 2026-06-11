@@ -3,12 +3,28 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { X, ChevronDown, Instagram, Twitter, ArrowRight, Sparkles, Compass, Search } from "lucide-react";
 import { useCart } from "../context/CartContext";
-import { useProducts } from "../App";
+
+const COLLECTIONS = [
+  {
+    id: 1,
+    name: "Brown Oxford Leather",
+    slug: "brown-oxford-leather",
+  },
+  {
+    id: 2,
+    name: "Monk Strap",
+    slug: "monk-strap",
+  },
+  {
+    id: 3,
+    name: "Black Oxford Leather",
+    slug: "black-oxford-leather",
+  }
+];
 
 export const MenuSlideOver: React.FC = () => {
   const { isMenuOpen, setMenuOpen } = useCart();
   const [isCollectionsCollapsed, setIsCollectionsCollapsed] = useState(false);
-  const { products } = useProducts();
 
   return (
     <AnimatePresence>
@@ -106,14 +122,14 @@ export const MenuSlideOver: React.FC = () => {
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden flex flex-col gap-4 pl-4 border-l border-white/10 py-1"
                       >
-                        {products.map((item, idx) => (
+                        {COLLECTIONS.map((item) => (
                           <Link
-                            key={item.id || item.slug}
+                            key={item.id}
                             to={`/product/${item.slug}`}
                             className="group flex flex-col"
                             onClick={() => setMenuOpen(false)}
                           >
-                            <span className="text-[8px] text-zinc-500 mb-0.5 font-mono">0{idx + 1}</span>
+                            <span className="text-[8px] text-zinc-500 mb-0.5 font-mono">0{item.id}</span>
                             <span className="text-xs uppercase tracking-[0.2em] text-zinc-300 hover:text-white transition-all font-light">
                               {item.name}
                             </span>

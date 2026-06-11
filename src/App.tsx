@@ -9,8 +9,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import { ProductStory } from "./components/ProductStory";
 import AtelierPage from "./components/AtelierPage";
-import AdminPanelPage from "./components/AdminPanelPage";
-import { fetchProductsFromDb } from "./firebase";
 import { CartProvider, useCart } from "./context/CartContext";
 import { CartSlideOver } from "./components/CartSlideOver";
 import { MenuSlideOver } from "./components/MenuSlideOver";
@@ -90,21 +88,7 @@ interface CollectionItemInfo {
   specs: SpecType;
 }
 
-export interface ProductContextType {
-  products: CollectionItemInfo[];
-  isLoading: boolean;
-  refreshProducts: () => Promise<void>;
-}
-
-export const ProductContext = React.createContext<ProductContextType | null>(null);
-
-export const useProducts = () => {
-  const context = React.useContext(ProductContext);
-  if (!context) throw new Error("useProducts must be used within a ProductProvider");
-  return context;
-};
-
-export const COLLECTIONS: CollectionItemInfo[] = [
+const COLLECTIONS: CollectionItemInfo[] = [
   {
     id: 1,
     name: "Brown Oxford Leather",
@@ -192,7 +176,6 @@ const Nav = () => {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
   const { totalCount, setCartOpen, setMenuOpen } = useCart();
-  const { products } = useProducts();
   
   return (
     <nav className="fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-4 md:py-6 flex items-center bg-black/80 backdrop-blur-lg border-b border-white/5 transition-all">
@@ -258,14 +241,14 @@ const Nav = () => {
                   >
                     <div className="bg-black/95 border border-soft p-6 w-64 backdrop-blur-xl shadow-2xl">
                       <div className="flex flex-col gap-4">
-                        {products.map((item, idx) => (
+                        {COLLECTIONS.map((item) => (
                           <Link 
-                            key={item.id || item.slug} 
+                            key={item.id} 
                             to={`/product/${item.slug}`} 
                             className="group/item flex flex-col"
                             onClick={() => setIsCollectionsHovered(false)}
                           >
-                            <span className="text-[9px] text-zinc-500 mb-1 opacity-60 font-mono">0{idx + 1}</span>
+                            <span className="text-[9px] text-zinc-500 mb-1 opacity-60 font-mono">0{item.id}</span>
                             <span className="hover:text-zinc-400 text-white transition-colors tracking-[0.2em]">{item.name}</span>
                           </Link>
                         ))}
@@ -579,9 +562,8 @@ const Collection = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<"all" | "oxford" | "monk">("all");
   const { addToCart } = useCart();
-  const { products } = useProducts();
 
-  const filteredItems = products.filter((item) => {
+  const filteredItems = COLLECTIONS.filter((item) => {
     if (selectedCategory === "all") return true;
     if (selectedCategory === "oxford") return item.slug.includes("oxford");
     if (selectedCategory === "monk") return item.slug.includes("monk");
@@ -639,7 +621,7 @@ const Collection = () => {
               
               return (
                 <motion.div
-                  key={item.id || item.slug}
+                  key={item.id}
                   layout
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -650,7 +632,7 @@ const Collection = () => {
                 >
                   {/* Floating index */}
                   <div className="absolute top-6 right-6 font-mono text-[9px] text-zinc-600 tracking-wider font-bold">
-                    [0{index + 1} // SEC]
+                    [0{item.id} // SEC]
                   </div>
 
                   {/* Image Plate */}
@@ -1148,8 +1130,7 @@ const Footer = () => {
 
 const ProductPage = () => {
   const { slug } = useParams();
-  const { products } = useProducts();
-  const product = products.find(p => p.slug === slug) || COLLECTIONS.find(p => p.slug === slug) || products[0] || COLLECTIONS[0];
+  const product = COLLECTIONS.find(p => p.slug === slug) || COLLECTIONS[0];
   const [activeImg, setActiveImg] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string | null>(null);
@@ -1478,77 +1459,24 @@ const HomePage = () => {
 };
 
 export default function App() {
-  const [products, setProducts] = useState<CollectionItemInfo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const loadAllProducts = async () => {
-    setIsLoading(true);
-    try {
-      const dbItems = await fetchProductsFromDb(COLLECTIONS);
-      
-      const mapped: CollectionItemInfo[] = dbItems.map((item, idx) => ({
-        id: idx + 1,
-        name: item.name,
-        price: item.price,
-        originalPrice: item.originalPrice,
-        discountPercent: item.discountPercent,
-        image: item.image,
-        images: item.images || [item.image],
-        category: item.category,
-        slug: item.slug,
-        description: item.description,
-        specs: {
-          type: item.specs?.type || "",
-          leather: item.specs?.leather || "",
-          leatherDetail: item.specs?.leatherDetail || "",
-          sole: item.specs?.sole || "",
-          soleDetail: item.specs?.soleDetail || "",
-          laces: item.specs?.laces || "",
-          lacesDetail: item.specs?.lacesDetail || "",
-          lining: item.specs?.lining || "",
-          construction: item.specs?.construction || "",
-          leatherImage: item.specs?.leatherImage,
-          soleImage: item.specs?.soleImage,
-          lacesImage: item.specs?.lacesImage,
-          anatomyImage: item.specs?.anatomyImage,
-          layersImage: item.specs?.layersImage,
-        }
-      }));
-      setProducts(mapped);
-    } catch (e) {
-      console.error("Failed to load or sync database catalog:", e);
-      setProducts(COLLECTIONS);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadAllProducts();
-  }, []);
-
   return (
-    <ProductContext.Provider value={{ products, isLoading, refreshProducts: loadAllProducts }}>
-      <CartProvider>
-        <BrowserRouter>
-          <div className="min-h-screen bg-luxury-black">
-            <ScrollToTop />
-            <Nav />
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/product/:slug" element={<ProductPage />} />
-              <Route path="/atelier" element={<AtelierPage />} />
-              <Route path="/admin" element={<AdminPanelPage />} />
-              <Route path="/admin-eternal-gate" element={<AdminPanelPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/thank-you" element={<ThankYouPage />} />
-            </Routes>
-            <Footer />
-            <CartSlideOver />
-            <MenuSlideOver />
-          </div>
-        </BrowserRouter>
-      </CartProvider>
-    </ProductContext.Provider>
+    <CartProvider>
+      <BrowserRouter>
+        <div className="min-h-screen bg-luxury-black">
+          <ScrollToTop />
+          <Nav />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/product/:slug" element={<ProductPage />} />
+            <Route path="/atelier" element={<AtelierPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/thank-you" element={<ThankYouPage />} />
+          </Routes>
+          <Footer />
+          <CartSlideOver />
+          <MenuSlideOver />
+        </div>
+      </BrowserRouter>
+    </CartProvider>
   );
 }
