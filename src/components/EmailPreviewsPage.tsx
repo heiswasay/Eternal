@@ -474,7 +474,7 @@ export default function EmailPreviewsPage() {
                   <span className="text-zinc-400 truncate font-light">
                     {activeTab === "customer" 
                       ? `From: Eternal Atelier • To: ${order.customerEmail}` 
-                      : `From: Atelier Automation • To: support@eternal.com.pk`
+                      : `From: Atelier Automation • To: savortheluxury@gmail.com`
                     }
                   </span>
                 </div>

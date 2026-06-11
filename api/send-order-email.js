@@ -27,7 +27,7 @@ export async function handleSendOrderEmail(order) {
     };
 
     const clientEmail = payload.customerEmail;
-    const adminEmail = "support@eternal.com.pk";
+    const adminEmail = "savortheluxury@gmail.com";
 
     const customerEmailHtml = `
 <!DOCTYPE html>
