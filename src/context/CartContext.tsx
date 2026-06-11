@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { logAnalyticsEvent } from "../firebase";
 
 export interface CartItem {
   id: string; // Format: `${productId}-${size}`
@@ -58,6 +59,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     size: string,
     quantity = 1
   ) => {
+    // Audit telemetry
+    try {
+      logAnalyticsEvent({
+        eventType: "add_to_cart",
+        productSlug: product.slug,
+        productName: product.name,
+        price: parsePrice(product.price),
+        size,
+      });
+    } catch (err) {
+      console.error("Telemetry failed:", err);
+    }
+
     const itemId = `${product.id}-${size}`;
     setCartItems((prevItems) => {
       const existingIndex = prevItems.findIndex((item) => item.id === itemId);

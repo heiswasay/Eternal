@@ -10,7 +10,7 @@ import { BrowserRouter, Routes, Route, Link, useLocation, useParams, useNavigate
 import { ProductStory } from "./components/ProductStory";
 import AtelierPage from "./components/AtelierPage";
 import AdminPanelPage from "./components/AdminPanelPage";
-import { fetchProductsFromDb } from "./firebase";
+import { fetchProductsFromDb, logAnalyticsEvent } from "./firebase";
 import { CartProvider, useCart } from "./context/CartContext";
 import { CartSlideOver } from "./components/CartSlideOver";
 import { MenuSlideOver } from "./components/MenuSlideOver";
@@ -1477,6 +1477,24 @@ const HomePage = () => {
   );
 };
 
+const PageTracker = () => {
+  const location = useLocation();
+  
+  useEffect(() => {
+    if (location.pathname.startsWith("/admin")) return;
+    try {
+      logAnalyticsEvent({
+        eventType: "page_view",
+        path: location.pathname,
+      });
+    } catch (e) {
+      console.error("Page tracking event fail:", e);
+    }
+  }, [location.pathname]);
+
+  return null;
+};
+
 export default function App() {
   const [products, setProducts] = useState<CollectionItemInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -1527,12 +1545,44 @@ export default function App() {
     loadAllProducts();
   }, []);
 
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      if (window.location.pathname.startsWith("/admin")) return;
+
+      try {
+        const target = e.target as HTMLElement;
+        const interactive = target.closest("button, a, input, select, textarea, [role='button'], .cursor-pointer, [id^='tab-'], [id^='size-']");
+        
+        if (interactive) {
+          const elementId = interactive.id || "";
+          const tagName = interactive.tagName || "";
+          const elementText = (interactive.textContent || "").trim().substring(0, 50);
+          
+          logAnalyticsEvent({
+            eventType: "click",
+            elementId,
+            elementText,
+            tagName,
+          });
+        }
+      } catch (err) {
+        console.error("Click tracking event fail:", err);
+      }
+    };
+
+    window.addEventListener("click", handleGlobalClick, { capture: true });
+    return () => {
+      window.removeEventListener("click", handleGlobalClick, { capture: true });
+    };
+  }, []);
+
   return (
     <ProductContext.Provider value={{ products, isLoading, refreshProducts: loadAllProducts }}>
       <CartProvider>
         <BrowserRouter>
           <div className="min-h-screen bg-luxury-black">
             <ScrollToTop />
+            <PageTracker />
             <Nav />
             <Routes>
               <Route path="/" element={<HomePage />} />

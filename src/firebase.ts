@@ -463,3 +463,216 @@ function deleteProductFromLocalStorage(productSlug: string, fallbackCollections:
   const filtered = existing.filter(p => p.slug !== productSlug);
   localStorage.setItem("eternal_products", JSON.stringify(filtered));
 }
+
+// -------------------------------------------------------------
+// Interactive Analytics & Telemetry Layer (Durable & Offline Sync)
+// -------------------------------------------------------------
+
+export interface AnalyticsEvent {
+  id?: string;
+  eventType: "page_view" | "add_to_cart" | "click";
+  path?: string;
+  productSlug?: string;
+  productName?: string;
+  price?: number;
+  size?: string;
+  elementId?: string;
+  elementText?: string;
+  tagName?: string;
+  createdAt?: any;
+}
+
+// Low-level fast telemetry logger
+export async function logAnalyticsEvent(event: Omit<AnalyticsEvent, "id" | "createdAt">): Promise<void> {
+  const eventData = {
+    ...event,
+    createdAt: new Date(),
+  };
+
+  if (isFirebaseConfigured && db) {
+    const path = "analytics";
+    try {
+      await addDoc(collection(db, path), {
+        ...event,
+        createdAt: serverTimestamp(),
+      });
+      // Cache locally so analytics panels behave instantly
+      logToLocalHistory(eventData);
+    } catch (error) {
+      console.error("Firestore telemetry logging error, reverting to local stash:", error);
+      logToLocalHistory(eventData);
+    }
+  } else {
+    logToLocalHistory(eventData);
+  }
+}
+
+// Helper to keep a local fallback trace of metrics
+function logToLocalHistory(event: AnalyticsEvent) {
+  try {
+    const stored = localStorage.getItem("eternal_analytics");
+    const list: AnalyticsEvent[] = stored ? JSON.parse(stored) : [];
+    
+    // Prune buffer if it grows too large
+    if (list.length > 5000) {
+      list.shift();
+    }
+    
+    list.push({
+      ...event,
+      createdAt: event.createdAt instanceof Date ? event.createdAt.toISOString() : new Date().toISOString()
+    });
+    localStorage.setItem("eternal_analytics", JSON.stringify(list));
+  } catch (e) {
+    console.error("Failed to commit offline analytics record:", e);
+  }
+}
+
+// Retrieve telemetry streams
+export async function fetchAnalyticsEvents(): Promise<AnalyticsEvent[]> {
+  if (isFirebaseConfigured && db) {
+    const path = "analytics";
+    try {
+      const q = query(
+        collection(db, path),
+        orderBy("createdAt", "desc"),
+        limit(4000)
+      );
+      const snapshot = await getDocs(q);
+      const events: AnalyticsEvent[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        events.push({
+          id: doc.id,
+          eventType: data.eventType,
+          path: data.path || "",
+          productSlug: data.productSlug || "",
+          productName: data.productName || "",
+          price: data.price ? Number(data.price) : undefined,
+          size: data.size || "",
+          elementId: data.elementId || "",
+          elementText: data.elementText || "",
+          tagName: data.tagName || "",
+          createdAt: data.createdAt?.toDate() || new Date(),
+        });
+      });
+
+      if (events.length > 0) {
+        return events;
+      }
+      return fetchAnalyticsFromLocal();
+    } catch (error) {
+      console.error("Firestore database retrieve analytics failed, loading offline buffers:", error);
+      return fetchAnalyticsFromLocal();
+    }
+  } else {
+    return fetchAnalyticsFromLocal();
+  }
+}
+
+function fetchAnalyticsFromLocal(): AnalyticsEvent[] {
+  try {
+    const stored = localStorage.getItem("eternal_analytics");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      const items = parsed.map((item: any) => ({
+        ...item,
+        createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
+      }));
+      return items.sort((a: any, b: any) => b.createdAt.getTime() - a.createdAt.getTime());
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  return seedDemoAnalytics();
+}
+
+// High density seeded metrics to populate charts with realistic historical trends on fresh runs
+function seedDemoAnalytics(): AnalyticsEvent[] {
+  const events: AnalyticsEvent[] = [];
+  const now = new Date();
+  
+  for (let i = 0; i < 14; i++) {
+    const eventDate = new Date();
+    eventDate.setDate(now.getDate() - i);
+    
+    // Daily traffic factors
+    const pageViews = 75 + Math.floor(Math.random() * 80);
+    const carts = 10 + Math.floor(Math.random() * 20);
+    const clicks = 130 + Math.floor(Math.random() * 160);
+    
+    // Create random hours for visual dispersion in timelines
+    for (let j = 0; j < pageViews; j++) {
+      const offsetMs = Math.random() * 24 * 3600 * 1000;
+      const t = new Date(eventDate.getTime() - offsetMs);
+      const paths = ["/", "/atelier", "/product/brown-oxford-leather", "/product/monk-strap", "/product/black-oxford-leather"];
+      const selectedPath = paths[Math.floor(Math.random() * paths.length)];
+      
+      events.push({
+        eventType: "page_view",
+        path: selectedPath,
+        createdAt: t
+      });
+    }
+    
+    for (let j = 0; j < carts; j++) {
+      const offsetMs = Math.random() * 24 * 3600 * 1000;
+      const t = new Date(eventDate.getTime() - offsetMs);
+      const shoes = [
+        { slug: "brown-oxford-leather", name: "Brown Oxford Leather", price: 5950 },
+        { slug: "monk-strap", name: "Monk Strap", price: 6250 },
+        { slug: "black-oxford-leather", name: "Black Oxford Leather", price: 5950 }
+      ];
+      const selectedShoe = shoes[Math.floor(Math.random() * shoes.length)];
+      const sizes = ["40", "41", "42", "43", "44"];
+      const selectedSize = sizes[Math.floor(Math.random() * sizes.length)];
+      
+      events.push({
+        eventType: "add_to_cart",
+        productSlug: selectedShoe.slug,
+        productName: selectedShoe.name,
+        price: selectedShoe.price,
+        size: selectedSize,
+        createdAt: t
+      });
+    }
+    
+    for (let j = 0; j < clicks; j++) {
+      const offsetMs = Math.random() * 24 * 3600 * 1000;
+      const t = new Date(eventDate.getTime() - offsetMs);
+      const elements = [
+        { id: "hero-atelier-btn", text: "EXPLORE THE SECTIONS", tag: "BUTTON" },
+        { id: "nav-bag-btn", text: "BAG", tag: "BUTTON" },
+        { id: "story-explore-anatomy", text: "REVEAL ANATOMY", tag: "BUTTON" },
+        { id: "nav-atelier-link", text: "ATELIER", tag: "A" },
+        { id: "size-selector-42", text: "EU 42", tag: "DIV" },
+        { id: "tab-sole-layer", text: "SOLE DESIGN", tag: "BUTTON" },
+        { id: "submit-review-btn", text: "SUBMIT TESTIMONIAL", tag: "BUTTON" },
+        { id: "nav-admin-link", text: "ADMIN", tag: "A" },
+        { id: "add-to-cart-btn", text: "ADD TO BAG", tag: "BUTTON" },
+      ];
+      const elem = elements[Math.floor(Math.random() * elements.length)];
+      
+      events.push({
+        eventType: "click",
+        elementId: elem.id,
+        elementText: elem.text,
+        tagName: elem.tag,
+        createdAt: t
+      });
+    }
+  }
+  
+  try {
+    const mapped = events.map(ev => ({
+      ...ev,
+      createdAt: ev.createdAt.toISOString()
+    }));
+    localStorage.setItem("eternal_analytics", JSON.stringify(mapped));
+  } catch (e) {
+    console.error(e);
+  }
+  
+  return events;
+}
+

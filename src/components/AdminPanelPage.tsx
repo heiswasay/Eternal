@@ -6,7 +6,7 @@ import {
   Save, X, Check, Eye, AlertCircle, Sparkles, LogOut, ChevronDown 
 } from "lucide-react";
 import { 
-  DbProduct, ProductSpec, fetchProductsFromDb, saveProductToDb, deleteProductFromDb 
+  DbProduct, ProductSpec, fetchProductsFromDb, saveProductToDb, deleteProductFromDb, fetchAnalyticsEvents, AnalyticsEvent 
 } from "../firebase";
 
 // Fallback products used to seed the DB initially
@@ -227,8 +227,33 @@ export default function AdminPanelPage() {
   const [alertMsg, setAlertMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   // Email template sub-workspace states
-  const [adminActiveTab, setAdminActiveTab] = useState<"catalog" | "emails">("catalog");
+  const [adminActiveTab, setAdminActiveTab] = useState<"catalog" | "emails" | "analytics">("catalog");
   const [selectedEmailPreview, setSelectedEmailPreview] = useState<"customer" | "admin">("customer");
+
+  // Analytics states
+  const [analyticsEvents, setAnalyticsEvents] = useState<AnalyticsEvent[]>([]);
+  const [isAnalyticsLoading, setIsAnalyticsLoading] = useState<boolean>(true);
+  const [analyticsTimeframe, setAnalyticsTimeframe] = useState<"7d" | "14d" | "all">("14d");
+  const [customStartDate, setCustomStartDate] = useState<string>("");
+  const [customEndDate, setCustomEndDate] = useState<string>("");
+
+  const loadAnalytics = async () => {
+    setIsAnalyticsLoading(true);
+    try {
+      const data = await fetchAnalyticsEvents();
+      setAnalyticsEvents(data);
+    } catch (err) {
+      console.error("Failed to fetch interactive analytics stream:", err);
+    } finally {
+      setIsAnalyticsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadAnalytics();
+    }
+  }, [isAuthenticated, adminActiveTab]);
 
   // Editable mail rendering payloads
   const [mockOrderId, setMockOrderId] = useState("ET-84920");
@@ -604,10 +629,10 @@ export default function AdminPanelPage() {
           </div>
 
           {/* Sub-workspace Navigation Tabs */}
-          <div className="flex border-b border-white/5 mb-10 gap-8">
+          <div className="flex border-b border-white/5 mb-10 gap-8 overflow-x-auto scrollbar-none">
             <button
               onClick={() => setAdminActiveTab("catalog")}
-              className={`pb-4 text-xs font-mono uppercase tracking-[0.2em] font-medium transition-all relative cursor-pointer outline-none ${
+              className={`pb-4 text-xs font-mono uppercase tracking-[0.2em] font-medium transition-all relative cursor-pointer outline-none shrink-0 ${
                 adminActiveTab === "catalog" ? "text-white font-semibold" : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
@@ -618,12 +643,23 @@ export default function AdminPanelPage() {
             </button>
             <button
               onClick={() => setAdminActiveTab("emails")}
-              className={`pb-4 text-xs font-mono uppercase tracking-[0.2em] font-medium transition-all relative cursor-pointer outline-none ${
+              className={`pb-4 text-xs font-mono uppercase tracking-[0.2em] font-medium transition-all relative cursor-pointer outline-none shrink-0 ${
                 adminActiveTab === "emails" ? "text-white font-semibold" : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
               Order Email Previews
               {adminActiveTab === "emails" && (
+                <motion.div layoutId="adminActiveTabBar" className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-500" />
+              )}
+            </button>
+            <button
+              onClick={() => setAdminActiveTab("analytics")}
+              className={`pb-4 text-xs font-mono uppercase tracking-[0.2em] font-medium transition-all relative cursor-pointer outline-none shrink-0 ${
+                adminActiveTab === "analytics" ? "text-white font-semibold" : "text-zinc-500 hover:text-zinc-300"
+              }`}
+            >
+              Live Visual Analytics
+              {adminActiveTab === "analytics" && (
                 <motion.div layoutId="adminActiveTabBar" className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-500" />
               )}
             </button>
@@ -896,6 +932,554 @@ export default function AdminPanelPage() {
                   </div>
                 </div>
               </div>
+            </motion.div>
+          )}
+
+          {/* Live Visual Analytics Sub-workspace Tab */}
+          {adminActiveTab === "analytics" && (
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-8"
+            >
+              {/* Header and Controller bar */}
+              <div className="bg-zinc-900/40 border border-white/5 p-6 rounded-sm flex flex-col xl:flex-row items-start xl:items-center justify-between gap-6">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase font-mono tracking-widest text-[#d97706]/90">Atelier Client Telemetry</span>
+                  </div>
+                  <h2 className="serif text-xl text-white font-normal">Atelier Performance Analytics</h2>
+                  <p className="text-zinc-500 text-xs font-light max-w-2xl leading-relaxed">
+                    Review and evaluate user behaviors, checkout funnel velocity, selection rates, and element-level hotspots synchronized in real-time with the secure live cloud ledger.
+                  </p>
+                </div>
+
+                {/* Interactive Filtering Terminal */}
+                <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
+                  {/* Preset Buttons */}
+                  <div className="flex bg-zinc-900 border border-white/10 p-1 rounded gap-1 shrink-0">
+                    <button
+                      onClick={() => {
+                        setAnalyticsTimeframe("7d");
+                        setCustomStartDate("");
+                        setCustomEndDate("");
+                      }}
+                      className={`px-3 py-1.5 text-[9px] uppercase tracking-wider font-semibold font-mono rounded transition-all cursor-pointer ${
+                        analyticsTimeframe === "7d" && !customStartDate && !customEndDate
+                          ? "bg-white text-black font-semibold"
+                          : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      7 Days
+                    </button>
+                    <button
+                      onClick={() => {
+                        setAnalyticsTimeframe("14d");
+                        setCustomStartDate("");
+                        setCustomEndDate("");
+                      }}
+                      className={`px-3 py-1.5 text-[9px] uppercase tracking-wider font-semibold font-mono rounded transition-all cursor-pointer ${
+                        analyticsTimeframe === "14d" && !customStartDate && !customEndDate
+                          ? "bg-white text-black font-semibold"
+                          : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      14 Days
+                    </button>
+                    <button
+                      onClick={() => {
+                        setAnalyticsTimeframe("all");
+                        setCustomStartDate("");
+                        setCustomEndDate("");
+                      }}
+                      className={`px-3 py-1.5 text-[9px] uppercase tracking-wider font-semibold font-mono rounded transition-all cursor-pointer ${
+                        analyticsTimeframe === "all" && !customStartDate && !customEndDate
+                          ? "bg-white text-black font-semibold"
+                          : "text-zinc-400 hover:text-white"
+                      }`}
+                    >
+                      All Time
+                    </button>
+                  </div>
+
+                  {/* Custom Date Filter */}
+                  <div className="flex items-center gap-2 bg-zinc-900/60 border border-white/10 p-2 rounded-sm text-xs w-full sm:w-auto">
+                    <div className="flex items-center gap-1">
+                      <span className="text-[8px] font-mono text-zinc-500 uppercase">From:</span>
+                      <input
+                        type="date"
+                        value={customStartDate}
+                        onChange={(e) => {
+                          setCustomStartDate(e.target.value);
+                          setAnalyticsTimeframe("all");
+                        }}
+                        className="bg-transparent border-0 text-white font-mono text-xs focus:ring-0 focus:outline-none w-28 p-0"
+                      />
+                    </div>
+                    <div className="flex items-center gap-1 border-l border-white/10 pl-2">
+                      <span className="text-[8px] font-mono text-zinc-500 uppercase">To:</span>
+                      <input
+                        type="date"
+                        value={customEndDate}
+                        onChange={(e) => {
+                          setCustomEndDate(e.target.value);
+                          setAnalyticsTimeframe("all");
+                        }}
+                        className="bg-transparent border-0 text-white font-mono text-xs focus:ring-0 focus:outline-none w-28 p-0"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Sync Indicator / Reload Button */}
+                  <button
+                    onClick={loadAnalytics}
+                    disabled={isAnalyticsLoading}
+                    className="p-2.5 border border-white/10 hover:border-white bg-zinc-950 text-white transition-all rounded hover:bg-white hover:text-black cursor-pointer flex items-center justify-center shrink-0 disabled:opacity-50"
+                    title="Refresh Live Analytics Stream"
+                  >
+                    {isAnalyticsLoading ? (
+                      <div className="w-3.5 h-3.5 border-2 border-zinc-400 border-t-white animate-spin rounded-full" />
+                    ) : (
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 16H18.2" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Loader Panel */}
+              {isAnalyticsLoading ? (
+                <div className="py-32 text-center border border-white/5 bg-zinc-950/40">
+                  <div className="animate-spin w-8 h-8 border border-white/20 border-t-white rounded-full mx-auto mb-4" />
+                  <span className="text-[9px] font-mono tracking-widest uppercase text-zinc-500 block">Compiling behavioral telemetry metrics...</span>
+                </div>
+              ) : (
+                <>
+                  {/* Parsing & Statistics logic block rendering within scope */}
+                  {(() => {
+                    // Filters events logic
+                    const events = analyticsEvents.filter((ev) => {
+                      const evDate = ev.createdAt instanceof Date ? ev.createdAt : new Date(ev.createdAt);
+                      if (customStartDate || customEndDate) {
+                        if (customStartDate) {
+                          const start = new Date(customStartDate);
+                          start.setHours(0,0,0,0);
+                          if (evDate < start) return false;
+                        }
+                        if (customEndDate) {
+                          const end = new Date(customEndDate);
+                          end.setHours(23,59,59,999);
+                          if (evDate > end) return false;
+                        }
+                        return true;
+                      }
+                      if (analyticsTimeframe === "7d") {
+                        const limit = new Date();
+                        limit.setDate(limit.getDate() - 7);
+                        return evDate >= limit;
+                      } else if (analyticsTimeframe === "14d") {
+                        const limit = new Date();
+                        limit.setDate(limit.getDate() - 14);
+                        return evDate >= limit;
+                      }
+                      return true;
+                    });
+
+                    // KPI Calculation
+                    const viewsList = events.filter(e => e.eventType === "page_view");
+                    const cartsList = events.filter(e => e.eventType === "add_to_cart");
+                    const clicksList = events.filter(e => e.eventType === "click");
+
+                    const totalViews = viewsList.length;
+                    const totalCarts = cartsList.length;
+                    const totalClicks = clicksList.length;
+
+                    const conversionRate = totalViews > 0 ? ((totalCarts / totalViews) * 100).toFixed(1) : "0.0";
+
+                    // Daily Chronology Compilation (SVG Layout)
+                    const dayMap: { [key: string]: { dateStr: string; label: string; views: number; carts: number; clicks: number } } = {};
+                    events.forEach(ev => {
+                      const date = ev.createdAt instanceof Date ? ev.createdAt : new Date(ev.createdAt);
+                      const key = date.toISOString().split("T")[0];
+                      if (!dayMap[key]) {
+                        dayMap[key] = {
+                          dateStr: key,
+                          label: date.toLocaleDateString("en-PK", { month: "short", day: "numeric" }),
+                          views: 0,
+                          carts: 0,
+                          clicks: 0
+                        };
+                      }
+                      if (ev.eventType === "page_view") dayMap[key].views++;
+                      if (ev.eventType === "add_to_cart") dayMap[key].carts++;
+                      if (ev.eventType === "click") dayMap[key].clicks++;
+                    });
+
+                    const timeline = Object.values(dayMap).sort((a, b) => a.dateStr.localeCompare(b.dateStr));
+                    const maxDailyMetrics = timeline.length > 0 ? Math.max(...timeline.map(t => Math.max(t.views, t.clicks, t.carts))) : 10;
+                    
+                    // Click breakdown analysis
+                    const clickIdMap: { [key: string]: { id: string; text: string; tag: string; count: number } } = {};
+                    clicksList.forEach(c => {
+                      const key = `${c.elementId || "unknown"}-${c.elementText || "empty"}`;
+                      if (!clickIdMap[key]) {
+                        clickIdMap[key] = {
+                          id: c.elementId || "No ID Field",
+                          text: c.elementText || "Generic Click",
+                          tag: c.tagName || "DIV",
+                          count: 0
+                        };
+                      }
+                      clickIdMap[key].count++;
+                    });
+                    const sortedClicks = Object.values(clickIdMap).sort((a,b) => b.count - a.count).slice(0, 10);
+
+                    // Page traffic destinations analysis
+                    const pathMap: { [key: string]: number } = {};
+                    viewsList.forEach(v => {
+                      const p = v.path || "/";
+                      pathMap[p] = (pathMap[p] || 0) + 1;
+                    });
+                    const sortedPaths = Object.entries(pathMap).map(([path, count]) => ({ path, count })).sort((a,b) => b.count - a.count);
+
+                    // Added to cart product popularity
+                    const productCartsMap: { [key: string]: { name: string; count: number; value: number } } = {};
+                    cartsList.forEach(c => {
+                      const key = c.productSlug || "unknown";
+                      if (!productCartsMap[key]) {
+                        productCartsMap[key] = {
+                          name: c.productName || c.productSlug || "Atelier Shoe Design",
+                          count: 0,
+                          value: 0
+                        };
+                      }
+                      productCartsMap[key].count++;
+                      productCartsMap[key].value += c.price || 0;
+                    });
+                    const sortedCartProducts = Object.values(productCartsMap).sort((a,b) => b.count - a.count);
+
+                    // Added to cart size preference analysis
+                    const sizeMap: { [key: string]: number } = {};
+                    cartsList.forEach(c => {
+                      if (c.size) {
+                        sizeMap[c.size] = (sizeMap[c.size] || 0) + 1;
+                      }
+                    });
+                    const sortedSizes = Object.entries(sizeMap).map(([size, count]) => ({ size, count })).sort((a,b) => b.count - a.count);
+
+                    return (
+                      <div className="space-y-8 animate-fadeIn">
+                        {/* KPI Metrology Cards Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                          <div className="border border-white/5 bg-zinc-950/40 p-6 rounded-sm">
+                            <span className="block text-[8px] font-mono text-zinc-500 uppercase tracking-widest mb-1.5">Traffic (Page Views)</span>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-3xl font-light text-white">{totalViews.toLocaleString()}</span>
+                            </div>
+                            <span className="text-[10px] text-zinc-600 block mt-2 font-mono uppercase tracking-wider">// active visits registered</span>
+                          </div>
+
+                          <div className="border border-white/5 bg-zinc-950/40 p-6 rounded-sm">
+                            <span className="block text-[8px] font-mono text-zinc-500 uppercase tracking-widest mb-1.5">Total Add to Carts</span>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-3xl font-light text-white">{totalCarts.toLocaleString()}</span>
+                            </div>
+                            <span className="text-[10px] text-zinc-600 block mt-2 font-mono uppercase tracking-wider">// high potential conversions</span>
+                          </div>
+
+                          <div className="border border-white/5 bg-zinc-950/40 p-6 rounded-sm">
+                            <span className="block text-[8px] font-mono text-zinc-500 uppercase tracking-widest mb-1.5">Funnel Conversion Rate</span>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-3xl font-light text-amber-500">{conversionRate}%</span>
+                            </div>
+                            <span className="text-[10px] text-zinc-600 block mt-2 font-mono uppercase tracking-wider">// add to cart / total views</span>
+                          </div>
+
+                          <div className="border border-white/5 bg-zinc-950/40 p-6 rounded-sm">
+                            <span className="block text-[8px] font-mono text-zinc-500 uppercase tracking-widest mb-1.5">Total Clicks Monitored</span>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-3xl font-light text-white">{totalClicks.toLocaleString()}</span>
+                            </div>
+                            <span className="text-[10px] text-zinc-600 block mt-2 font-mono uppercase tracking-wider">// hot zone handshakes</span>
+                          </div>
+                        </div>
+
+                        {/* Interactive Area Chart Timeline Card */}
+                        <div className="border border-white/5 bg-zinc-950/40 p-6 rounded-sm">
+                          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b border-white/5 pb-4 gap-4">
+                            <div>
+                              <h3 className="text-xs uppercase font-mono tracking-widest text-zinc-200">Chronological Traffic Stream</h3>
+                              <p className="text-[10px] text-zinc-500 font-light mt-1">Daily trend timelines for views, carts, and click interactions</p>
+                            </div>
+                            {/* Legend */}
+                            <div className="flex flex-wrap gap-4 text-[9px] font-mono uppercase text-zinc-400">
+                              <div className="flex items-center gap-1.5">
+                                <div className="w-2.5 h-2.5 bg-amber-500 rounded-sm" />
+                                <span>Page Views</span>
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <div className="w-2.5 h-2.5 bg-emerald-500 rounded-sm" />
+                                <span>Carts Added</span>
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <div className="w-2.5 h-2.5 bg-zinc-500 rounded-sm" />
+                                <span>Clicks</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Render beautiful custom pure-SVG area line chart */}
+                          {timeline.length < 1 ? (
+                            <div className="py-24 text-center text-zinc-600 text-xs font-mono uppercase tracking-widest">
+                              No metrics recorded in this specified timeframe range
+                            </div>
+                          ) : (
+                            <div className="w-full overflow-x-auto scrollbar-none">
+                              {/* Responsive SVG Box */}
+                              <div className="min-w-[800px]">
+                                <svg viewBox="0 0 1000 320" className="w-full h-auto overflow-visible select-none">
+                                  <defs>
+                                    <linearGradient id="viewsGrad" x1="0" y1="0" x2="0" y2="1">
+                                      <stop offset="0%" stopColor="#d97706" stopOpacity="0.25" />
+                                      <stop offset="100%" stopColor="#d97706" stopOpacity="0" />
+                                    </linearGradient>
+                                    <linearGradient id="cartsGrad" x1="0" y1="0" x2="0" y2="1">
+                                      <stop offset="0%" stopColor="#10b981" stopOpacity="0.2" />
+                                      <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+                                    </linearGradient>
+                                  </defs>
+
+                                  {/* Y Axis horizontal gridlines */}
+                                  {[0, 0.25, 0.5, 0.75, 1].map((p, idx) => {
+                                    const y = 30 + p * 240;
+                                    const val = Math.round(maxDailyMetrics * (1 - p));
+                                    return (
+                                      <g key={idx}>
+                                        <line x1="60" y1={y} x2="980" y2={y} stroke="rgba(255,255,255,0.04)" strokeDasharray="3 3" />
+                                        <text x="15" y={y + 4} fill="rgb(113,113,122)" className="text-[10px] font-mono font-light text-right">{val}</text>
+                                      </g>
+                                    );
+                                  })}
+
+                                  {/* Math coordinates compiling paths for vectors */}
+                                  {(() => {
+                                    const count = timeline.length;
+                                    const stepX = count > 1 ? 920 / (count - 1) : 920;
+                                    
+                                    const viewsPoints = timeline.map((t, i) => {
+                                      const x = 60 + i * stepX;
+                                      const y = 270 - (t.views / maxDailyMetrics) * 240;
+                                      return { x, y, val: t.views, label: t.label };
+                                    });
+
+                                    const clicksPoints = timeline.map((t, i) => {
+                                      const x = 60 + i * stepX;
+                                      const y = 270 - (t.clicks / maxDailyMetrics) * 240;
+                                      return { x, y, val: t.clicks };
+                                    });
+
+                                    const cartsPoints = timeline.map((t, i) => {
+                                      const x = 60 + i * stepX;
+                                      const y = 270 - (t.carts / maxDailyMetrics) * 240;
+                                      return { x, y, val: t.carts };
+                                    });
+
+                                    const viewsPathStr = viewsPoints.map(p => `${p.x},${p.y}`).join(" ");
+                                    const clicksPathStr = clicksPoints.map(p => `${p.x},${p.y}`).join(" ");
+                                    const cartsPathStr = cartsPoints.map(p => `${p.x},${p.y}`).join(" ");
+
+                                    const viewsFilledStr = viewsPoints.length > 0 
+                                      ? `60,270 ${viewsPathStr} ${viewsPoints[viewsPoints.length-1].x},270`
+                                      : "";
+
+                                    const cartsFilledStr = cartsPoints.length > 0 
+                                      ? `60,270 ${cartsPathStr} ${cartsPoints[cartsPoints.length-1].x},270`
+                                      : "";
+
+                                    return (
+                                      <>
+                                        {/* Shaded Area Fills */}
+                                        {viewsFilledStr && <polygon points={viewsFilledStr} fill="url(#viewsGrad)" />}
+                                        {cartsFilledStr && <polygon points={cartsFilledStr} fill="url(#cartsGrad)" />}
+
+                                        {/* Precision Stroke Polylines */}
+                                        {viewsPathStr && <polyline points={viewsPathStr} fill="none" stroke="#d97706" strokeWidth="2" />}
+                                        {clicksPathStr && <polyline points={clicksPathStr} fill="none" stroke="rgba(161,161,170,0.5)" strokeWidth="1.5" strokeDasharray="2 2" />}
+                                        {cartsPathStr && <polyline points={cartsPathStr} fill="none" stroke="#10b981" strokeWidth="2" />}
+
+                                        {/* X Axis grid dates & dots */}
+                                        {viewsPoints.map((p, idx) => {
+                                          const showLabel = count <= 7 || idx % Math.ceil(count / 7) === 0 || idx === count - 1;
+                                          return (
+                                            <g key={idx}>
+                                              {showLabel && (
+                                                <>
+                                                  <line x1={p.x} y1="270" x2={p.x} y2="276" stroke="rgba(255,255,255,0.15)" />
+                                                  <text x={p.x} y="295" fill="rgb(113,113,122)" textAnchor="middle" className="text-[9px] font-mono uppercase tracking-widest">{p.label}</text>
+                                                </>
+                                              )}
+
+                                              {/* Hoverable Node Dots */}
+                                              <circle cx={p.x} cy={p.y} r="3" fill="#d97706" stroke="#09090b" strokeWidth="1" />
+                                              <circle cx={p.x} cy={cartsPoints[idx].y} r="3" fill="#10b981" stroke="#09090b" strokeWidth="1" />
+                                            </g>
+                                          );
+                                        })}
+                                      </>
+                                    );
+                                  })()}
+                                </svg>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Funnel Velocity and Elements Click Rates Layout */}
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                          {/* Element Click Hotspots Table (Left: 7-Cols) */}
+                          <div className="lg:col-span-7 border border-white/5 bg-zinc-950/40 p-6 rounded-sm">
+                            <div className="mb-6">
+                              <h3 className="text-xs uppercase font-mono tracking-widest text-zinc-200">Where Customers Click (Interactive Hotspots)</h3>
+                              <p className="text-[10px] text-zinc-500 font-light mt-1">Specific element selectors intercepted with interaction metrics</p>
+                            </div>
+
+                            {sortedClicks.length < 1 ? (
+                              <div className="py-12 text-center text-zinc-600 font-mono text-xs uppercase tracking-wider">
+                                No interface interactions currently recorded
+                              </div>
+                            ) : (
+                              <div className="overflow-x-auto">
+                                <table className="w-full text-left font-mono text-[10px] leading-relaxed min-w-[500px]">
+                                  <thead>
+                                    <tr className="border-b border-white/5 text-zinc-500 uppercase tracking-wider">
+                                      <th className="pb-3 font-medium">Element Selector ID / String</th>
+                                      <th className="pb-3 font-medium text-center">Type</th>
+                                      <th className="pb-3 font-medium">Capture Label Context</th>
+                                      <th className="pb-3 font-medium text-right">Click Rates</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="divide-y divide-white/5 text-zinc-300">
+                                    {sortedClicks.map((click, idx) => {
+                                      const clickShare = totalClicks > 0 ? ((click.count / totalClicks) * 100).toFixed(1) : "0.0";
+                                      return (
+                                        <tr key={idx} className="hover:bg-white/[0.01] transition-all">
+                                          <td className="py-3 text-amber-500/90 truncate max-w-[140px]" title={click.id}>
+                                            #{click.id || "anonymous"}
+                                          </td>
+                                          <td className="py-3 text-center">
+                                            <span className="px-1.5 py-0.5 text-[8px] bg-zinc-900 border border-white/10 rounded text-zinc-400">
+                                              {click.tag}
+                                            </span>
+                                          </td>
+                                          <td className="py-3 text-zinc-400 font-sans italic max-w-[150px] truncate" title={click.text}>
+                                            "{click.text || "—"}"
+                                          </td>
+                                          <td className="py-3 text-right">
+                                            <div className="flex flex-col items-end">
+                                              <span className="text-white font-semibold">{click.count} clicks</span>
+                                              <span className="text-[8px] text-zinc-500">({clickShare}%)</span>
+                                            </div>
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Right: 5-Cols conversion funnel & size maps */}
+                          <div className="lg:col-span-5 space-y-8">
+                            {/* Product Checkout Potential List */}
+                            <div className="border border-white/5 bg-zinc-950/40 p-6 rounded-sm">
+                              <div className="mb-4">
+                                <h3 className="text-xs uppercase font-mono tracking-widest text-zinc-200">Added to Bag (Conversions)</h3>
+                                <p className="text-[10px] text-zinc-500 font-light mt-1">Which shoe designs are capturing customer intent</p>
+                              </div>
+
+                              {sortedCartProducts.length < 1 ? (
+                                <div className="py-12 text-center text-zinc-600 font-mono text-[10px] uppercase tracking-wider">
+                                  No product selections tracked in bag yet
+                                </div>
+                              ) : (
+                                <ul className="divide-y divide-white/5 space-y-3 pt-2">
+                                  {sortedCartProducts.map((p, idx) => {
+                                    const share = totalCarts > 0 ? ((p.count / totalCarts) * 100).toFixed(1) : "0.0";
+                                    return (
+                                      <li key={idx} className="flex justify-between items-center py-2 text-xs">
+                                        <div className="space-y-0.5">
+                                          <span className="font-light text-white block uppercase tracking-wide">{p.name}</span>
+                                          <span className="text-[8px] font-mono text-zinc-500 block">Total potential checkout: PKR {p.value.toLocaleString()}</span>
+                                        </div>
+                                        <div className="text-right font-mono">
+                                          <span className="text-white font-semibold block">{p.count} times</span>
+                                          <span className="text-[8px] text-zinc-500">({share}% of bags)</span>
+                                        </div>
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
+                              )}
+                            </div>
+
+                            {/* Size breakdown distribution list */}
+                            <div className="border border-white/5 bg-zinc-950/40 p-6 rounded-sm">
+                              <div className="mb-4">
+                                <h3 className="text-xs uppercase font-mono tracking-widest text-zinc-200">Sizing Demand Distribution</h3>
+                                <p className="text-[10px] text-zinc-500 font-light mt-1">Breakdown representation of sizing requests</p>
+                              </div>
+
+                              {sortedSizes.length < 1 ? (
+                                <div className="py-6 text-center text-zinc-600 font-mono text-[10px] uppercase tracking-wider">
+                                  No size choices logged yet
+                                </div>
+                              ) : (
+                                <div className="grid grid-cols-5 gap-3 pt-2">
+                                  {sortedSizes.slice(0, 5).map(({ size, count }, idx) => {
+                                    const share = totalCarts > 0 ? ((count / totalCarts) * 100).toFixed(0) : "0";
+                                    return (
+                                      <div key={idx} className="border border-white/5 bg-zinc-900/40 p-3 text-center rounded">
+                                        <span className="block text-[8px] font-mono text-zinc-500 uppercase">EU {size}</span>
+                                        <span className="block text-base font-light text-white my-1">{count}</span>
+                                        <span className="block text-[8px] font-mono text-amber-500">{share}%</span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Traffic Destinations/Paths */}
+                            <div className="border border-white/5 bg-zinc-950/40 p-6 rounded-sm">
+                              <div className="mb-4">
+                                <h3 className="text-xs uppercase font-mono tracking-widest text-zinc-200">Top Visited Atelier Pages</h3>
+                                <p className="text-[10px] text-zinc-500 font-light mt-1">Locations bringing the highest customer attention</p>
+                              </div>
+
+                              <ul className="divide-y divide-white/5 space-y-2 pt-1 font-mono text-[10px]">
+                                {sortedPaths.slice(0, 5).map((p, idx) => {
+                                  const pathShare = totalViews > 0 ? ((p.count / totalViews) * 100).toFixed(1) : "0.0";
+                                  return (
+                                    <li key={idx} className="flex justify-between items-center py-2 text-zinc-300">
+                                      <span className="text-zinc-400 font-medium">{p.path}</span>
+                                      <div className="text-right">
+                                        <span className="text-white font-semibold">{p.count} views</span>
+                                        <span className="text-[8px] text-zinc-500 ml-1.5">({pathShare}%)</span>
+                                      </div>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </>
+              )}
             </motion.div>
           )}
 
