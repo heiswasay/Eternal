@@ -44,12 +44,72 @@
         "orderNo",
         "createdAt"
       ]
+    },
+    "Product": {
+      "title": "Product Item",
+      "description": "A fine footwear product available for purchase in the store",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full display name of the item"
+        },
+        "price": {
+          "type": "string",
+          "description": "Current active selling price"
+        },
+        "originalPrice": {
+          "type": "string",
+          "description": "Original non-discounted price (optional)"
+        },
+        "discountPercent": {
+          "type": "string",
+          "description": "Percentage or promo offer badge (e.g. 15% OFF) (optional)"
+        },
+        "image": {
+          "type": "string",
+          "description": "Primary display image URL"
+        },
+        "images": {
+          "type": "array",
+          "description": "All gallery image URLs"
+        },
+        "category": {
+          "type": "string",
+          "description": "General style category (e.g. Hand Made)"
+        },
+        "slug": {
+          "type": "string",
+          "description": "URL friendly distinct string"
+        },
+        "description": {
+          "type": "string",
+          "description": "Sartorial overview explaining design nuance"
+        },
+        "specs": {
+          "type": "object",
+          "description": "Anatomy design specs and details"
+        }
+      },
+      "required": [
+        "name",
+        "price",
+        "image",
+        "category",
+        "slug",
+        "description",
+        "specs"
+      ]
     }
   },
   "firestore": {
     "reviews/{reviewId}": {
       "schema": "Review",
       "description": "Global list of all customer reviews across products"
+    },
+    "products/{productId}": {
+      "schema": "Product",
+      "description": "E-commerce inventory catalog items"
     }
   }
 }

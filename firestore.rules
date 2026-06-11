@@ -33,5 +33,11 @@ service cloud.firestore {
       allow create: if isValidId(reviewId) && isValidReview(incoming());
       allow update, delete: if false; // Reviews are immortal ledger entries and cannot be modified or deleted by clients
     }
+
+    // Products inventory collection rules
+    match /products/{productId} {
+      allow get, list: if true; // Publicly readable products
+      allow create, update, delete: if true; // Managed by the admin panel
+    }
   }
 }

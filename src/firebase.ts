@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, limit } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, limit, doc, setDoc, deleteDoc, updateDoc } from "firebase/firestore";
 // Safely search for applet configuration using Vite glob.
 // This prevents compilation failures on Vercel or local machine if the JSON file is gitignored.
 const configs = (import.meta as any).glob("../firebase-applet-config.json", { eager: true });
@@ -238,4 +238,228 @@ function addReviewToLocalStorage(review: Omit<Review, "id" | "createdAt">): Revi
   const updated = [newReview, ...existing];
   localStorage.setItem(`reviews_${review.productSlug}`, JSON.stringify(updated));
   return newReview;
+}
+
+// -------------------------------------------------------------
+// Product Inventory Database Access Layer (Firestore + LocalStorage)
+// -------------------------------------------------------------
+
+export interface ProductSpec {
+  type: string;
+  leather: string;
+  leatherDetail: string;
+  sole: string;
+  soleDetail: string;
+  laces: string;
+  lacesDetail: string;
+  lining: string;
+  construction: string;
+  leatherImage?: string;
+  soleImage?: string;
+  lacesImage?: string;
+  anatomyImage?: string;
+  layersImage?: string;
+}
+
+export interface DbProduct {
+  id: string; // Document ID
+  name: string;
+  price: string;
+  originalPrice?: string; // Original price before discounts
+  discountPercent?: string; // Discount percentage badge (e.g., "15% OFF")
+  image: string;
+  images: string[];
+  category: string;
+  slug: string;
+  description: string;
+  specs: ProductSpec;
+  createdAt?: any;
+}
+
+// Fetch products from database, falling back to LocalStorage or initial seeding if empty
+export async function fetchProductsFromDb(fallbackCollections: any[]): Promise<DbProduct[]> {
+  if (isFirebaseConfigured && db) {
+    const path = "products";
+    try {
+      const q = query(collection(db, path), orderBy("name", "asc"));
+      const snapshot = await getDocs(q);
+      const list: DbProduct[] = [];
+      
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        list.push({
+          id: doc.id,
+          name: data.name,
+          price: data.price,
+          originalPrice: data.originalPrice,
+          discountPercent: data.discountPercent,
+          image: data.image,
+          images: data.images || [data.image],
+          category: data.category,
+          slug: data.slug,
+          description: data.description,
+          specs: data.specs || {},
+          createdAt: data.createdAt?.toDate() || new Date(),
+        });
+      });
+
+      // If database has products, return them!
+      if (list.length > 0) {
+        return list;
+      }
+
+      // If the database is completely empty let's seed it with default items
+      console.log("Firestore empty. Seeding with default collections...");
+      for (const col of fallbackCollections) {
+        const docId = col.slug;
+        const prodData = {
+          name: col.name,
+          price: col.price,
+          originalPrice: col.originalPrice || "",
+          discountPercent: col.discountPercent || "",
+          image: col.image,
+          images: col.images || [col.image],
+          category: col.category,
+          slug: col.slug,
+          description: col.description,
+          specs: col.specs || {},
+          createdAt: new Date(),
+        };
+        await setDoc(doc(db, path, docId), prodData);
+        list.push({ ...prodData, id: docId });
+      }
+      return list;
+
+    } catch (error: any) {
+      if (error?.code === 'permission-denied' || error?.message?.includes('permissions')) {
+        try {
+          handleFirestoreError(error, OperationType.GET, path);
+        } catch (specError) {
+          console.error("Firestore spec permission error logged:", specError);
+        }
+      }
+      console.error("Firestore product fetch error, falling back to LocalStorage:", error);
+      return fetchProductsFromLocalStorage(fallbackCollections);
+    }
+  } else {
+    return fetchProductsFromLocalStorage(fallbackCollections);
+  }
+}
+
+// Save or Update a product in the database
+export async function saveProductToDb(product: DbProduct, fallbackCollections: any[]): Promise<DbProduct> {
+  const path = "products";
+  // Clean product information
+  const prodData: any = {
+    name: product.name,
+    price: product.price,
+    originalPrice: product.originalPrice || "",
+    discountPercent: product.discountPercent || "",
+    image: product.image,
+    images: product.images && product.images.length > 0 ? product.images : [product.image],
+    category: product.category,
+    slug: product.slug,
+    description: product.description,
+    specs: product.specs,
+    createdAt: product.createdAt ? (typeof product.createdAt.toDate === 'function' ? product.createdAt : new Date(product.createdAt)) : new Date(),
+  };
+
+  if (isFirebaseConfigured && db) {
+    try {
+      const docId = product.slug; // Use slug as document ID for stable routing URL
+      await setDoc(doc(db, path, docId), prodData);
+      console.log("Successfully saved product to Firestore:", docId);
+      return { ...prodData, id: docId };
+    } catch (error: any) {
+      if (error?.code === 'permission-denied' || error?.message?.includes('permissions')) {
+        try {
+          handleFirestoreError(error, OperationType.WRITE, path);
+        } catch (specError) {
+          console.error("Firestore spec write validation error logged:", specError);
+        }
+      }
+      console.error("Firestore product save error, falling back to LocalStorage:", error);
+      return saveProductToLocalStorage(product, fallbackCollections);
+    }
+  } else {
+    return saveProductToLocalStorage(product, fallbackCollections);
+  }
+}
+
+// Delete a product from database
+export async function deleteProductFromDb(productSlug: string, fallbackCollections: any[]): Promise<void> {
+  if (isFirebaseConfigured && db) {
+    const path = `products/${productSlug}`;
+    try {
+      await deleteDoc(doc(db, "products", productSlug));
+      console.log("Successfully deleted product from Firestore:", productSlug);
+    } catch (error: any) {
+      if (error?.code === 'permission-denied' || error?.message?.includes('permissions')) {
+        try {
+          handleFirestoreError(error, OperationType.DELETE, path);
+        } catch (specError) {
+          console.error("Firestore spec delete error logged:", specError);
+        }
+      }
+      console.error("Firestore product delete error, falling back to LocalStorage:", error);
+      deleteProductFromLocalStorage(productSlug, fallbackCollections);
+    }
+  } else {
+    deleteProductFromLocalStorage(productSlug, fallbackCollections);
+  }
+}
+
+// LocalStorage auxiliary support
+function fetchProductsFromLocalStorage(fallbackCollections: any[]): DbProduct[] {
+  const saved = localStorage.getItem("eternal_products");
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      console.error("Failed to parse LocalStorage products:", e);
+    }
+  }
+  
+  // Seed local storage dynamically with initial collections
+  const seed: DbProduct[] = fallbackCollections.map(col => ({
+    id: col.slug,
+    name: col.name,
+    price: col.price,
+    originalPrice: col.originalPrice || "",
+    discountPercent: col.discountPercent || "",
+    image: col.image,
+    images: col.images || [col.image],
+    category: col.category,
+    slug: col.slug,
+    description: col.description,
+    specs: col.specs || {},
+    createdAt: new Date(),
+  }));
+  localStorage.setItem("eternal_products", JSON.stringify(seed));
+  return seed;
+}
+
+function saveProductToLocalStorage(product: DbProduct, fallbackCollections: any[]): DbProduct {
+  const existing = fetchProductsFromLocalStorage(fallbackCollections);
+  const updatedProduct = {
+    ...product,
+    id: product.slug, // Ensure id is always set to slug
+    createdAt: product.createdAt || new Date(),
+  };
+  
+  const index = existing.findIndex(p => p.slug === product.slug);
+  if (index !== -1) {
+    existing[index] = updatedProduct;
+  } else {
+    existing.push(updatedProduct);
+  }
+  
+  localStorage.setItem("eternal_products", JSON.stringify(existing));
+  return updatedProduct;
+}
+
+function deleteProductFromLocalStorage(productSlug: string, fallbackCollections: any[]): void {
+  const existing = fetchProductsFromLocalStorage(fallbackCollections);
+  const filtered = existing.filter(p => p.slug !== productSlug);
+  localStorage.setItem("eternal_products", JSON.stringify(filtered));
 }
