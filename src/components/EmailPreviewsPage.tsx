@@ -120,7 +120,7 @@ export default function EmailPreviewsPage() {
     <tr>
       <td align="center" valign="top">
         <div class="glass-card">
-          <div class="logo">ETERNAL WORKSHOP ATELIER</div>
+          <div class="logo">ETERNAL</div>
           <h1 class="heading-title">Your order is confirmed</h1>
           <p class="greeting-text">Thanks for your order, ${order.customerName}!</p>
           
@@ -192,7 +192,7 @@ export default function EmailPreviewsPage() {
               For Enquiry: <a href="mailto:support@eternal.com.pk" style="color: #f59e0b; text-decoration: none; font-weight: bold;">support@eternal.com.pk</a>
             </p>
             <p style="font-size: 10px; color: #52525b; margin: 0; letter-spacing: 0.1em; text-transform: uppercase;">
-              &copy; 2026 ETERNAL WORKSHOP ATELIER. ALL RIGHTS RESERVED.
+              &copy; 2024 ETERNAL. ALL RIGHTS RESERVED.
             </p>
           </div>
 
