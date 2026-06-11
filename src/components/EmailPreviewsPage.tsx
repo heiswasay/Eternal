@@ -85,14 +85,6 @@ export default function EmailPreviewsPage() {
 
   // Get customer facing email template
   const getCustomerHtml = () => {
-    const getFullImageUrl = (itemImage?: string) => {
-      if (!itemImage) return "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=250&q=80";
-      if (itemImage.startsWith("http")) return itemImage;
-      const baseUrl = "https://ais-pre-qlmixii56q7npi2m57pvtv-156965086703.asia-southeast1.run.app";
-      const cleanPath = itemImage.startsWith("/") ? itemImage : "/" + itemImage;
-      return `${baseUrl}${cleanPath}`;
-    };
-
     return `
 <!DOCTYPE html>
 <html>
@@ -129,9 +121,6 @@ export default function EmailPreviewsPage() {
           ${order.items.map(item => `
           <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 16px;">
             <tr>
-              <td width="70" style="vertical-align: top; padding-right: 16px;">
-                <img src="${getFullImageUrl(item.image)}" width="70" height="70" style="border-radius: 4px; object-fit: cover; border: 1px solid rgba(255,255,255,0.08); background-color: #121214;" alt="${item.name}" />
-              </td>
               <td style="vertical-align: middle; text-align: left;">
                 <div style="font-size: 13px; font-weight: 600; color: #ffffff; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">${item.name}</div>
                 <div style="font-size: 11px; color: #71717a;">EU Size: ${item.size} &bull; Qty: ${item.quantity}</div>
