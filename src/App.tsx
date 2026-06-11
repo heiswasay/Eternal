@@ -4,11 +4,12 @@
  */
 
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
-import { ArrowRight, ChevronDown, Instagram, Twitter, Menu, X, Search, ShieldCheck, Truck, RotateCcw, ChevronLeft, ChevronRight, Sliders, Sparkles, Check, Compass, Clock, Activity } from "lucide-react";
+import { ArrowRight, ChevronDown, Instagram, Twitter, Menu, X, Search, ShieldCheck, Truck, RotateCcw, ChevronLeft, ChevronRight, Sliders, Sparkles, Check, Compass, Clock, Activity, Mail } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import { ProductStory } from "./components/ProductStory";
 import AtelierPage from "./components/AtelierPage";
+import EmailPreviewsPage from "./components/EmailPreviewsPage";
 import { CartProvider, useCart } from "./context/CartContext";
 import { CartSlideOver } from "./components/CartSlideOver";
 import { MenuSlideOver } from "./components/MenuSlideOver";
@@ -1107,6 +1108,14 @@ const Footer = () => {
               <li><Link to="/#collection" className="hover:opacity-50 transition-opacity">Care Instructions</Link></li>
               <li><Link to="/#collection" className="hover:opacity-50 transition-opacity">Repairs</Link></li>
               <li><Link to="/#collection" className="hover:opacity-50 transition-opacity">Shipping</Link></li>
+              <li>
+                <Link 
+                  to="/email-designs" 
+                  className="hover:text-amber-500 hover:opacity-100 transition-colors flex items-center gap-1.5 text-amber-500 font-medium"
+                >
+                  Email Previews <Sparkles size={11} className="animate-pulse" />
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -1471,6 +1480,7 @@ export default function App() {
             <Route path="/atelier" element={<AtelierPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/thank-you" element={<ThankYouPage />} />
+            <Route path="/email-designs" element={<EmailPreviewsPage />} />
           </Routes>
           <Footer />
           <CartSlideOver />
