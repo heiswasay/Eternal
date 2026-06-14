@@ -111,7 +111,13 @@ export const CartSlideOver: React.FC = () => {
                               </button>
                             </div>
                             <span className="inline-block mt-1 px-2.5 py-0.5 border border-white/10 bg-white/5 rounded-sm font-mono text-[8px] uppercase tracking-[0.15em] text-zinc-400">
-                              Size: EU {item.size}
+                              Size: {(() => {
+                                const num = parseInt(item.size, 10);
+                                if (!isNaN(num) && num >= 35) {
+                                  return `EU ${item.size}`;
+                                }
+                                return `US ${item.size}`;
+                              })()}
                             </span>
                           </div>
 

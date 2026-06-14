@@ -415,7 +415,13 @@ export const CheckoutPage: React.FC = () => {
                         </h4>
                         <div className="flex gap-2 items-center mt-1">
                           <span className="text-[10px] text-zinc-400 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded font-mono">
-                            Size: EU {item.size}
+                            Size: {(() => {
+                              const num = parseInt(item.size, 10);
+                              if (!isNaN(num) && num >= 35) {
+                                return `EU ${item.size}`;
+                              }
+                              return `US ${item.size}`;
+                            })()}
                           </span>
                           <span className="text-xs text-zinc-500">
                             Qty: {item.quantity}

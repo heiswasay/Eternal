@@ -4,7 +4,7 @@
  */
 
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
-import { ArrowRight, ChevronDown, Instagram, Twitter, Menu, X, Search, ShieldCheck, Truck, RotateCcw, ChevronLeft, ChevronRight, Sliders, Sparkles, Check, Compass, Clock, Activity, Mail } from "lucide-react";
+import { ArrowRight, ChevronDown, Instagram, Facebook, Menu, X, Search, ShieldCheck, Truck, RotateCcw, ChevronLeft, ChevronRight, Sliders, Sparkles, Check, Compass, Clock, Activity, Mail } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import { ProductStory } from "./components/ProductStory";
@@ -47,6 +47,8 @@ import boo9Image from "./images/boo9.webp";
 import boo10Image from "./images/boo10.webp";
 import boo11Image from "./images/boo11.webp";
 import layersbooImage from "./images/layersboo.png";
+import sizeguideImage from "./images/sizeguide.png";
+import sizeguide2Image from "./images/sizeguide2.png";
 
 import m1Image from "./images/m1.webp";
 import m2Image from "./images/m2.webp";
@@ -498,7 +500,7 @@ const Hero = () => {
           <div className="space-y-1">
             <span className="block text-[8px] font-mono tracking-widest text-zinc-600 uppercase">ATELIER CONTACTS</span>
             <span className="block text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
-              +92 (042) 111-2020-01 &bull; support@eternal.com.pk
+              +92 (042) 111-2020-01 &bull; savortheluxury@gmail.com
             </span>
           </div>
           <div className="hidden sm:block w-px h-6 bg-white/10" />
@@ -613,7 +615,7 @@ const Collection = () => {
         </div>
 
         {/* Asymmetrical Rich Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 sm:gap-8 lg:gap-10">
           <AnimatePresence mode="popLayout">
             {filteredItems.map((item, index) => {
               const mainStyle = item.specs?.type || "Bespoke Cut";
@@ -675,7 +677,7 @@ const Collection = () => {
                   {/* Size Preview Indicator */}
                   <div className="flex border-t border-white/5 pt-4 mb-6 justify-between items-center text-[8px] font-mono tracking-widest text-zinc-500">
                     <span>SIZES REQUIRED:</span>
-                    <span className="text-zinc-300">EU 40 - 45 (PK 6 - 11)</span>
+                    <span className="text-zinc-300">US 6 - 12 (EU 39 - 45)</span>
                   </div>
 
                   {/* Direct Link Anchor */}
@@ -696,11 +698,11 @@ const Collection = () => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        addToCart(item, "42");
+                        addToCart(item, "9");
                       }}
                       className="w-full border border-white/10 hover:border-white text-center py-2.5 text-[8px] uppercase tracking-[0.3em] font-bold transition-all hover:bg-white hover:text-black select-none cursor-pointer"
                     >
-                      Quick Add to Bag <span className="opacity-40 font-mono text-[7px] font-normal pl-1">(EU 42)</span>
+                      Quick Add to Bag <span className="opacity-40 font-mono text-[7px] font-normal pl-1">(US 9)</span>
                     </button>
                   </div>
                 </motion.div>
@@ -1080,6 +1082,7 @@ const Unboxing = () => {
 };
 
 const Footer = () => {
+  const { setSizeGuideOpen } = useCart();
   return (
     <footer id="contact" className="bg-luxury-black text-white pt-20 md:pt-32 pb-12 px-6 md:px-10 border-t border-white/5">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-20 mb-20 md:mb-32">
@@ -1104,18 +1107,9 @@ const Footer = () => {
           <div>
             <h4 className="text-[10px] uppercase tracking-[0.3em] font-semibold mb-6 md:mb-8 opacity-40">Navigation</h4>
             <ul className="flex flex-col gap-4 text-sm font-light">
-              <li><Link to="/#collection" className="hover:opacity-50 transition-opacity">Size Guide</Link></li>
-              <li><Link to="/#collection" className="hover:opacity-50 transition-opacity">Care Instructions</Link></li>
-              <li><Link to="/#collection" className="hover:opacity-50 transition-opacity">Repairs</Link></li>
-              <li><Link to="/#collection" className="hover:opacity-50 transition-opacity">Shipping</Link></li>
-              <li>
-                <Link 
-                  to="/email-designs" 
-                  className="hover:text-amber-500 hover:opacity-100 transition-colors flex items-center gap-1.5 text-amber-500 font-medium"
-                >
-                  Email Previews <Sparkles size={11} className="animate-pulse" />
-                </Link>
-              </li>
+              <li><button onClick={() => setSizeGuideOpen(true)} className="hover:opacity-50 transition-opacity cursor-pointer text-left bg-transparent border-none p-0 outline-none">Size Guide</button></li>
+              <li><Link to="/#collection" className="hover:opacity-50 transition-opacity">Privacy Policy</Link></li>
+              <li><Link to="/#collection" className="hover:opacity-50 transition-opacity">Shipping & Returns</Link></li>
             </ul>
           </div>
 
@@ -1123,7 +1117,7 @@ const Footer = () => {
             <h4 className="text-[10px] uppercase tracking-[0.3em] font-semibold mb-6 md:mb-8 opacity-40">Connect</h4>
             <div className="flex gap-6 items-center">
               <a href="#" className="hover:opacity-50 transition-opacity"><Instagram size={20} strokeWidth={1} /></a>
-              <a href="#" className="hover:opacity-50 transition-opacity"><Twitter size={20} strokeWidth={1} /></a>
+              <a href="#" className="hover:opacity-50 transition-opacity"><Facebook size={20} strokeWidth={1} /></a>
             </div>
           </div>
         </div>
@@ -1143,7 +1137,7 @@ const ProductPage = () => {
   const [activeImg, setActiveImg] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string | null>(null);
-  const { addToCart, setCartOpen } = useCart();
+  const { addToCart, setCartOpen, setSizeGuideOpen } = useCart();
   
   // Dynamic images based on selected product
   const images = product.images || [product.image, img1, img2, img3];
@@ -1306,24 +1300,30 @@ const ProductPage = () => {
                 <div>
                    <div className="flex justify-between items-end mb-4">
                      <span className="text-[10px] uppercase tracking-widest text-zinc-400">Select Size</span>
-                     <span className="text-[8px] uppercase tracking-widest text-zinc-600 border-b border-soft pb-1 cursor-pointer hover:text-white transition-colors">Size Guide</span>
+                     <span 
+                       onClick={() => setSizeGuideOpen(true)}
+                       className="text-[8px] uppercase tracking-widest text-zinc-600 border-b border-soft pb-1 cursor-pointer hover:text-white transition-colors"
+                     >
+                       Size Guide
+                     </span>
                    </div>
                    <div className="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
                       {[
-                        { eu: '40', pk: '6' },
-                        { eu: '41', pk: '7' },
-                        { eu: '42', pk: '8' },
-                        { eu: '43', pk: '9' },
-                        { eu: '44', pk: '10' },
-                        { eu: '45', pk: '11' }
+                        { us: '6', eu: '39' },
+                        { us: '7', eu: '40' },
+                        { us: '8', eu: '41' },
+                        { us: '9', eu: '42' },
+                        { us: '10', eu: '43' },
+                        { us: '11', eu: '44' },
+                        { us: '12', eu: '45' }
                       ].map(size => (
                         <button 
-                          key={size.eu} 
-                          onClick={() => setSelectedSize(size.eu)}
-                          className={`group border py-3 px-2 flex flex-col items-center justify-center transition-all ${selectedSize === size.eu ? 'border-white bg-white/10' : 'border-soft hover:border-white/50 bg-transparent'}`}
+                          key={size.us} 
+                          onClick={() => setSelectedSize(size.us)}
+                          className={`group border py-3 px-2 flex flex-col items-center justify-center transition-all ${selectedSize === size.us ? 'border-white bg-white/10' : 'border-soft hover:border-white/50 bg-transparent'}`}
                         >
-                          <span className="text-[11px] text-white">EU {size.eu}</span>
-                          <span className="text-[8px] text-zinc-500 group-hover:text-zinc-300">PK {size.pk}</span>
+                          <span className="text-[11px] text-white font-mono">US {size.us}</span>
+                          <span className="text-[8px] text-zinc-500 group-hover:text-zinc-300 font-mono">EU {size.eu}</span>
                         </button>
                       ))}
                    </div>
@@ -1333,19 +1333,19 @@ const ProductPage = () => {
               {/* Action Buttons */}
               <div className="flex flex-col gap-4 mb-12 md:mb-16">
                 <button 
-                  onClick={() => addToCart(product, selectedSize || "42")}
+                  onClick={() => addToCart(product, selectedSize || "9")}
                   className="w-full bg-white text-black py-4 md:py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-zinc-200 transition-all select-none cursor-pointer"
                 >
-                  Add to Bag {selectedSize ? `(EU ${selectedSize})` : "(EU 42)"}
+                  Add to Bag {selectedSize ? `(US ${selectedSize})` : "(US 9)"}
                 </button>
                 <button 
                   onClick={() => {
-                    addToCart(product, selectedSize || "42");
+                    addToCart(product, selectedSize || "9");
                     setCartOpen(true);
                   }}
                   className="w-full border border-white/20 py-4 md:py-5 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-white hover:text-black transition-all select-none cursor-pointer"
                 >
-                  Buy Now {selectedSize ? `(EU ${selectedSize})` : "(EU 42)"}
+                  Buy Now {selectedSize ? `(US ${selectedSize})` : "(US 9)"}
                 </button>
               </div>
 
@@ -1467,6 +1467,157 @@ const HomePage = () => {
   );
 };
 
+const SizeGuideModal = () => {
+  const { isSizeGuideOpen, setSizeGuideOpen } = useCart();
+
+  return (
+    <AnimatePresence>
+      {isSizeGuideOpen && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setSizeGuideOpen(false)}
+          className="fixed inset-0 bg-black/95 backdrop-blur-2xl z-[150] flex items-center justify-center p-0 md:p-6"
+        >
+          <motion.div 
+            initial={{ scale: 0.95, y: 15 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.95, y: 15 }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full h-full md:h-auto md:max-w-[720px] md:aspect-square bg-zinc-950 border-0 md:border md:border-white/10 p-5 md:p-10 rounded-none overflow-hidden flex flex-col justify-between max-h-screen md:max-h-[85vh] lg:max-h-[90vh]"
+          >
+            {/* Close Button */}
+            <button 
+              onClick={() => setSizeGuideOpen(false)}
+              className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors cursor-pointer select-none z-20 p-2 rounded-full hover:bg-white/5"
+              aria-label="Close dialog"
+            >
+              <X size={20} strokeWidth={1.5} />
+            </button>
+
+            <div className="flex-1 flex flex-col justify-between min-h-0 mt-4 md:mt-0">
+              <div className="mb-3 md:mb-6 shrink-0">
+                <span className="text-[9px] font-mono tracking-[0.2em] text-zinc-500 block mb-1">ATELIER GUIDES</span>
+                <h3 className="text-xs md:text-sm uppercase tracking-[0.3em] font-semibold text-white font-mono">
+                  Sartorial Size Guide
+                </h3>
+              </div>
+
+              {/* Center Content Section */}
+              <div className="flex-1 flex flex-col justify-center min-h-0 overflow-hidden">
+                {/* Desktop Sizing Image (sizeguide.png) */}
+                <div className="hidden md:flex relative w-full flex-1 min-h-0 bg-zinc-900 border border-white/5 rounded-none overflow-hidden flex-col justify-center items-center">
+                  <img 
+                    src={sizeguideImage} 
+                    alt="Sartorial Shoe Size Guide" 
+                    referrerPolicy="no-referrer"
+                    className="max-w-full max-h-full object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
+                  />
+                  
+                  {/* Fallback Custom Sizing Chart Table */}
+                  <div 
+                    className="absolute inset-0 flex flex-col justify-center p-6 bg-zinc-950 overflow-y-auto" 
+                    style={{ display: "none" }}
+                  >
+                    <div className="grid grid-cols-3 gap-4 border-b border-white/10 pb-3 mb-4 text-[9px] tracking-widest uppercase font-mono text-zinc-400 text-center font-bold">
+                      <span>US SIZE</span>
+                      <span>EU SIZE</span>
+                      <span>FOOT LENGTH</span>
+                    </div>
+                    <div className="flex flex-col gap-0.5 text-[11px] font-mono text-zinc-300">
+                      {[
+                        { us: "6", eu: "39", length: "24.5 cm" },
+                        { us: "7", eu: "40", length: "25.0 cm" },
+                        { us: "8", eu: "41", length: "25.5 cm" },
+                        { us: "9", eu: "42", length: "26.0 cm" },
+                        { us: "10", eu: "43", length: "26.5 cm" },
+                        { us: "11", eu: "44", length: "27.2 cm" },
+                        { us: "12", eu: "45", length: "28.0 cm" },
+                      ].map((row, i) => (
+                        <div key={i} className="grid grid-cols-3 py-1.5 md:py-2 text-center hover:bg-white/5 border-b border-white/5 last:border-b-0 transition-colors">
+                          <span className="text-white font-medium">US {row.us}</span>
+                          <span className="text-zinc-400">EU {row.eu}</span>
+                          <span className="text-zinc-500 text-[10px]">{row.length}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile Sizing Image (sizeguide2.png) */}
+                <div className="flex md:hidden relative w-full flex-1 min-h-0 bg-zinc-900 border border-white/5 rounded-none overflow-hidden flex-col justify-center items-center">
+                  <img 
+                    src={sizeguide2Image} 
+                    alt="Sartorial Shoe Size Guide Mobile" 
+                    referrerPolicy="no-referrer"
+                    className="max-w-full max-h-full object-contain"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
+                  />
+                  
+                  {/* Fallback Custom Sizing Chart Table */}
+                  <div 
+                    className="absolute inset-0 flex flex-col justify-center p-6 bg-zinc-950 overflow-y-auto" 
+                    style={{ display: "none" }}
+                  >
+                    <div className="grid grid-cols-3 gap-4 border-b border-white/10 pb-3 mb-4 text-[9px] tracking-widest uppercase font-mono text-zinc-400 text-center font-bold">
+                      <span>US SIZE</span>
+                      <span>EU SIZE</span>
+                      <span>FOOT LENGTH</span>
+                    </div>
+                    <div className="flex flex-col gap-0.5 text-[11px] font-mono text-zinc-300">
+                      {[
+                        { us: "6", eu: "39", length: "24.5 cm" },
+                        { us: "7", eu: "40", length: "25.0 cm" },
+                        { us: "8", eu: "41", length: "25.5 cm" },
+                        { us: "9", eu: "42", length: "26.0 cm" },
+                        { us: "10", eu: "43", length: "26.5 cm" },
+                        { us: "11", eu: "44", length: "27.2 cm" },
+                        { us: "12", eu: "45", length: "28.0 cm" },
+                      ].map((row, i) => (
+                        <div key={i} className="grid grid-cols-3 py-1.5 md:py-2 text-center hover:bg-white/5 border-b border-white/5 last:border-b-0 transition-colors">
+                          <span className="text-white font-medium">US {row.us}</span>
+                          <span className="text-zinc-400">EU {row.eu}</span>
+                          <span className="text-zinc-500 text-[10px]">{row.length}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-3 shrink-0">
+                  <p className="text-[9px] text-zinc-500 font-mono tracking-wider leading-relaxed text-center">
+                    * Our shoes conform to standard international sizing. Choose your standard dress shoe size.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-white/5 shrink-0">
+              <button
+                onClick={() => setSizeGuideOpen(false)}
+                className="w-full bg-white text-black py-3 md:py-4 text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-zinc-200 transition-all cursor-pointer select-none"
+              >
+                Confirm & Close
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
 export default function App() {
   return (
     <CartProvider>
@@ -1485,6 +1636,7 @@ export default function App() {
           <Footer />
           <CartSlideOver />
           <MenuSlideOver />
+          <SizeGuideModal />
         </div>
       </BrowserRouter>
     </CartProvider>

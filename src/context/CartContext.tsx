@@ -17,6 +17,8 @@ interface CartContextType {
   setCartOpen: (open: boolean) => void;
   isMenuOpen: boolean;
   setMenuOpen: (open: boolean) => void;
+  isSizeGuideOpen: boolean;
+  setSizeGuideOpen: (open: boolean) => void;
   addToCart: (product: { id: number; name: string; price: string; image: string; slug: string }, size: string, quantity?: number) => void;
   removeFromCart: (itemId: string) => void;
   updateQuantity: (itemId: string, delta: number) => void;
@@ -48,6 +50,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   const [isCartOpen, setCartOpen] = useState(false);
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const [isSizeGuideOpen, setSizeGuideOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("eternal_cart", JSON.stringify(cartItems));
@@ -121,6 +124,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setCartOpen,
         isMenuOpen,
         setMenuOpen,
+        isSizeGuideOpen,
+        setSizeGuideOpen,
         addToCart,
         removeFromCart,
         updateQuantity,

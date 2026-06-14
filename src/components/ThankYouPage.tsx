@@ -184,7 +184,13 @@ export const ThankYouPage: React.FC = () => {
                             {item.name}
                           </h4>
                           <span className="text-[11px] text-zinc-500">
-                            Size: EU {item.size} &times; {item.quantity}
+                            Size: {(() => {
+                              const num = parseInt(item.size, 10);
+                              if (!isNaN(num) && num >= 35) {
+                                return `EU ${item.size}`;
+                              }
+                              return `US ${item.size}`;
+                            })()} &times; {item.quantity}
                           </span>
                         </div>
                         <span className="text-xs text-zinc-300 font-medium text-right mt-1 font-mono">
@@ -253,7 +259,7 @@ export const ThankYouPage: React.FC = () => {
                 <h4 className="text-sm font-medium">Free & Easy Shipping</h4>
               </div>
               <p className="text-xs text-zinc-400 leading-normal font-light">
-                Standard delivery is always 100% free. If you have any questions or need help, email us anytime at support@eternal.com.pk.
+                Standard delivery is always 100% free. If you have any questions or need help, email us anytime at savortheluxury@gmail.com.
               </p>
             </div>
 

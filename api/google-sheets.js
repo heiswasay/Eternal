@@ -10,9 +10,20 @@ export async function appendOrderToSheet(order) {
   // Format timestamp (GMT +0/UTC)
   const timestamp = new Date().toISOString().replace("T", " ").substring(0, 19);
 
+  const displaySize = (size) => {
+    if (!size) return "N/A";
+    const str = String(size);
+    if (str.includes("US") || str.includes("EU") || str.includes("UK")) return str;
+    const num = parseInt(str, 10);
+    if (!isNaN(num) && num >= 35) {
+      return `EU ${str}`;
+    }
+    return `US ${str}`;
+  };
+
   // Format items ordered cleanly
   const itemsList = order.items
-    .map(item => `${item.name} (${item.size ? "EU " + item.size : "N/A"}) x${item.quantity}`)
+    .map(item => `${item.name} (${displaySize(item.size)}) x${item.quantity}`)
     .join(", ");
 
   const rowValues = [

@@ -22,6 +22,15 @@ interface OrderPayload {
   totalPrice: string;
 }
 
+const displaySize = (size: string) => {
+  if (!size) return "N/A";
+  const num = parseInt(size, 10);
+  if (!isNaN(num) && num >= 35) {
+    return `EU ${size}`;
+  }
+  return `US ${size}`;
+};
+
 const INITIAL_ORDER: OrderPayload = {
   orderId: "ETN-2026-8804",
   customerName: "Wasey Ahmed",
@@ -32,14 +41,14 @@ const INITIAL_ORDER: OrderPayload = {
   items: [
     {
       name: "Brown Oxford Leather",
-      size: "42",
+      size: "9",
       quantity: 1,
       price: "PKR 5,950",
       image: "/src/images/bo1.webp"
     },
     {
       name: "Monk Strap",
-      size: "43",
+      size: "10",
       quantity: 1,
       price: "PKR 5,950",
       image: "/src/images/m8.webp"
@@ -118,19 +127,19 @@ export default function EmailPreviewsPage() {
           
           <div class="section-title">Order Summary</div>
           
-          ${order.items.map(item => `
-          <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 16px;">
-            <tr>
-              <td style="vertical-align: middle; text-align: left;">
-                <div style="font-size: 13px; font-weight: 600; color: #ffffff; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">${item.name}</div>
-                <div style="font-size: 11px; color: #71717a;">EU Size: ${item.size} &bull; Qty: ${item.quantity}</div>
-              </td>
-              <td width="100" style="vertical-align: middle; text-align: right; font-size: 13px; font-weight: 600; color: #ffffff;">
-                ${item.price}
-              </td>
-            </tr>
-          </table>
-          `).join("")}
+           ${order.items.map(item => `
+           <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 16px;">
+             <tr>
+               <td style="vertical-align: middle; text-align: left;">
+                 <div style="font-size: 13px; font-weight: 600; color: #ffffff; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">${item.name}</div>
+                 <div style="font-size: 11px; color: #71717a;">${displaySize(item.size)} &bull; Qty: ${item.quantity}</div>
+               </td>
+               <td width="100" style="vertical-align: middle; text-align: right; font-size: 13px; font-weight: 600; color: #ffffff;">
+                 ${item.price}
+               </td>
+             </tr>
+           </table>
+           `).join("")}
 
           <div class="details-box">
             <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #a1a1aa; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">Delivery Details</div>
@@ -178,7 +187,7 @@ export default function EmailPreviewsPage() {
               </a>
             </div>
             <p style="font-size: 11px; color: #71717a; margin: 0 0 8px 0; letter-spacing: 0.05em; text-transform: uppercase;">
-              For Enquiry: <a href="mailto:support@eternal.com.pk" style="color: #f59e0b; text-decoration: none; font-weight: bold;">support@eternal.com.pk</a>
+              For Enquiry: <a href="mailto:savortheluxury@gmail.com" style="color: #f59e0b; text-decoration: none; font-weight: bold;">savortheluxury@gmail.com</a>
             </p>
             <p style="font-size: 10px; color: #52525b; margin: 0; letter-spacing: 0.1em; text-transform: uppercase;">
               &copy; 2024 ETERNAL. ALL RIGHTS RESERVED.
@@ -228,7 +237,7 @@ export default function EmailPreviewsPage() {
             (item) => `
         <tr>
           <td>${item.name}</td>
-          <td>EU ${item.size}</td>
+          <td>${displaySize(item.size)}</td>
           <td>${item.quantity}</td>
           <td>${item.price}</td>
         </tr>`
