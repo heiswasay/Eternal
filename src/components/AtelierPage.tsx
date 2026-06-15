@@ -10,7 +10,6 @@ import {
   Check, 
   Sparkles, 
   Users, 
-  Activity,
   Heart,
   CornerDownRight
 } from "lucide-react";
@@ -27,48 +26,7 @@ const IMAGES = {
   showroom: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80"
 };
 
-interface MaterialOption {
-  id: string;
-  name: string;
-  origin: string;
-  patina: string;
-  resilience: string;
-  details: string;
-  color: string;
-}
-
-const LEATHER_BENCH: MaterialOption[] = [
-  {
-    id: "aniline",
-    name: "Tuscan Aniline Box-Calf",
-    origin: "Tuscany, Italy (top 3% select)",
-    patina: "Extremely rich / Glossy mirror shine",
-    resilience: "High tensile / Naturally breathable",
-    details: "Tanned with organic oak bark extracts over 45 days. Shows unblemished natural hides that enrich with daily conditioning.",
-    color: "bg-amber-950"
-  },
-  {
-    id: "suede",
-    name: "Sartorial Royal Suede",
-    origin: "Leeds, United Kingdom",
-    patina: "Velvety matte / Deep rich dye",
-    resilience: "Supple / Extremely comfortable",
-    details: "Finished with double-shaved nap fibers. Water-repellent treated and ideal for softer bespoke tailoring silhouettes.",
-    color: "bg-zinc-800"
-  },
-  {
-    id: "cordovan",
-    name: "Genuine Waxed Shell Cordovan",
-    origin: "Horween Tannery, USA",
-    patina: "Uncreased roll / Deep mahogany lustre",
-    resilience: "Indestructible / Water-resistant",
-    details: "Drawn from a flat muscle layer under the horse hide. Hand-greased with natural oils, aging over decades into a legendary patina.",
-    color: "bg-red-950"
-  }
-];
-
 export default function AtelierPage() {
-  const [activeMaterial, setActiveMaterial] = useState<MaterialOption>(LEATHER_BENCH[0]);
   const [bookingStep, setBookingStep] = useState<number>(1);
   const [formData, setFormData] = useState({
     name: "",
@@ -255,104 +213,166 @@ export default function AtelierPage() {
         </div>
       </div>
 
-      {/* 3. Interactive Feature: Virtual Leather Bench (Extremely unique and premium) */}
-      <div className="max-w-7xl mx-auto mb-20 md:mb-32">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
-          {/* Left Column: Selector */}
-          <div className="lg:col-span-5">
-            <span className="text-[9px] font-mono uppercase tracking-[0.6em] text-zinc-500 block mb-2">Tactile Diagnostics</span>
-            <h2 className="serif text-3xl sm:text-4xl md:text-5xl leading-tight mb-6">
-              Virtual <span className="italic text-zinc-400">Leather Bench</span>
-            </h2>
-            <p className="text-zinc-400 font-light leading-relaxed text-[11px] uppercase tracking-wider mb-8">
-              Atelier shoes feel like custom extensions of your body because we choose character-forming hide types. Select a material below to explore its structural specifications.
-            </p>
+      {/* Brand Story Section */}
+      <div className="max-w-4xl mx-auto mb-20 md:mb-32 border-t border-white/5 pt-20 px-6">
+        <div className="mb-16 text-center">
+          <span className="text-[9px] font-mono uppercase tracking-[0.6em] text-zinc-500 block mb-3">Our Manifesto</span>
+          <h2 className="serif text-3xl sm:text-5xl tracking-normal text-white">
+            Brand <span className="italic text-zinc-400">Story</span>
+          </h2>
+        </div>
 
-            {/* Selection Buttons */}
-            <div className="flex flex-col gap-4">
-              {LEATHER_BENCH.map((mat) => {
-                const isSelected = activeMaterial.id === mat.id;
-                return (
-                  <button
-                    key={mat.id}
-                    onClick={() => setActiveMaterial(mat)}
-                    className={`flex items-center justify-between text-left p-4 border transition-all text-sm rounded-sm ${
-                      isSelected 
-                        ? "border-white bg-white/5" 
-                        : "border-white/5 bg-transparent hover:border-white/20"
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-3 h-3 ${mat.color} border border-white/20`} />
-                      <span className={`font-mono text-xs uppercase tracking-wider ${isSelected ? "text-white" : "text-zinc-400"}`}>
-                        {mat.name}
-                      </span>
-                    </div>
-                    <ArrowRight size={12} className={`transition-transform duration-300 ${isSelected ? "translate-x-1 opacity-100" : "opacity-0"}`} />
-                  </button>
-                );
-              })}
+        <div className="space-y-16 md:space-y-24">
+          {/* Section 1 & 2: Our Beginning & Our Vision */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
+            <div className="space-y-4">
+              <span className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase block">01 // Our Beginning</span>
+              <h3 className="serif text-xl sm:text-2xl text-white font-light">Karachi, 2020</h3>
+              <p className="text-zinc-400 font-light text-[13px] md:text-sm leading-relaxed">
+                Eternal was founded in Karachi in 2020 with a simple but audacious belief: Pakistani gentlemen deserve world-class footwear without leaving the country.
+              </p>
+              <p className="text-zinc-400 font-light text-[13px] md:text-sm leading-relaxed">
+                For too long, luxury shoes meant traveling abroad or settling for mass-produced imports that cracked, creased, and fell apart within months. The local court offered quantity over quality, fast fashion instead of lasting heirlooms. We decided to change that forever.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <span className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase block">02 // Our Vision</span>
+              <h3 className="serif text-xl sm:text-2xl text-white font-light">Pakistan's Handmade Legacy</h3>
+              <p className="text-zinc-400 font-light text-[13px] md:text-sm leading-relaxed">
+                To become Pakistan's first true luxury handmade footwear house — one that stands shoulder to shoulder with English, Italian, and French shoemakers, but rooted entirely in Karachi.
+              </p>
+              <div className="space-y-3 font-mono text-[9px] uppercase tracking-widest text-zinc-500 border-l border-white/10 pl-4 py-1 mt-2">
+                <p className="text-zinc-400 font-sans normal-case text-[11px] mb-2">We envision a future where:</p>
+                <div className="flex gap-2">
+                  <span className="text-zinc-600">→</span>
+                  <span>Pride over compromise in every boardroom</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-zinc-600">→</span>
+                  <span>Passing hand-sewn heirlooms down to the son</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-zinc-600">→</span>
+                  <span>"Made in Pakistan" represents absolute excellence</span>
+                </div>
+              </div>
+              <p className="text-[11px] font-mono tracking-wider text-white uppercase font-bold mt-4">
+                We are not building a shoe brand. We are building a legacy.
+              </p>
             </div>
           </div>
 
-          {/* Right Column: Dynamic Spec Deck */}
-          <div className="lg:col-span-7">
-            <div className="border border-white/10 bg-zinc-950/80 p-6 sm:p-10 relative overflow-hidden rounded-sm min-h-[380px] flex flex-col justify-between">
-              {/* Subtle design block aesthetic */}
-              <div className="absolute top-0 right-0 h-20 w-20 border-b border-l border-white/5 pointer-events-none" />
-              <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-white/25 to-transparent" />
-              
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeMaterial.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-6"
-                >
-                  {/* Decorative corner tag */}
-                  <div className="flex justify-between items-center">
-                    <span className="font-mono text-[8px] uppercase tracking-[0.3em] font-semibold text-zinc-600">CALIBRATION SPEC</span>
-                    <span className="font-mono text-[8px] uppercase tracking-widest text-zinc-500 bg-white/5 px-2 py-1">CERTIFIED RAW</span>
-                  </div>
+          {/* Section 3: The Challenge We Saw */}
+          <div className="space-y-6 border-t border-white/5 pt-12 md:pt-16">
+            <div className="max-w-2xl">
+              <span className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase block mb-1">03 // The Challenge We Saw</span>
+              <h3 className="serif text-2xl sm:text-3xl text-white font-light mb-4">Integrity Over Compromise</h3>
+              <p className="text-zinc-400 font-light text-[13px] md:text-sm leading-relaxed">
+                When we studied the Pakistani market in 2020, we saw an opportunity to stand out not by competing on price, but by maintaining uncompromised integrity against standard commercial shortcuts:
+              </p>
+            </div>
 
-                  <div>
-                    <h3 className="serif text-2xl sm:text-3xl text-white mb-2">{activeMaterial.name}</h3>
-                    <p className="text-[11px] text-zinc-400 tracking-wide block uppercase font-light">Origin: {activeMaterial.origin}</p>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-white/5 pt-6">
-                    <div>
-                      <span className="block text-[8px] font-mono tracking-widest text-zinc-600 uppercase mb-1">Aging & Patina Profile</span>
-                      <p className="text-xs text-zinc-300 font-light uppercase tracking-wider">{activeMaterial.patina}</p>
-                    </div>
-                    <div>
-                      <span className="block text-[8px] font-mono tracking-widest text-zinc-600 uppercase mb-1">Structural Elasticity</span>
-                      <p className="text-xs text-zinc-300 font-light uppercase tracking-wider">{activeMaterial.resilience}</p>
-                    </div>
-                  </div>
-
-                  <div className="bg-white/[0.02] border border-white/5 p-4 mt-4 rounded-sm">
-                    <span className="block text-[8px] font-mono tracking-widest text-zinc-500 uppercase mb-2">Micro-Structure & Tanning</span>
-                    <p className="text-[10px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed">
-                      "{activeMaterial.details}"
-                    </p>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Technical disclaimer */}
-              <div className="mt-8 flex items-center gap-3 font-mono text-[8px] tracking-widest text-zinc-600">
-                <Activity size={10} className="text-zinc-500 animate-pulse" />
-                <span>100% TRACEABLE AND BIOLOGICALLY ETHICAL LIVESTOCK</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 pt-4 text-left">
+              <div className="p-4 border border-white/5 bg-zinc-950/40 rounded-sm">
+                <span className="block font-mono text-[9px] text-zinc-500 uppercase tracking-widest mb-1">Leather Quality</span>
+                <p className="text-zinc-400 font-light text-[11px] leading-relaxed">Corrected grains or plastic coatings replaced by top-tier genuine hides.</p>
+              </div>
+              <div className="p-4 border border-white/5 bg-zinc-950/40 rounded-sm">
+                <span className="block font-mono text-[9px] text-zinc-500 uppercase tracking-widest mb-1">Construction</span>
+                <p className="text-zinc-400 font-light text-[11px] leading-relaxed">Glued soles and plastic counters replaced by authentic hand-welting.</p>
+              </div>
+              <div className="p-4 border border-white/5 bg-zinc-950/40 rounded-sm">
+                <span className="block font-mono text-[9px] text-zinc-500 uppercase tracking-widest mb-1">Durability & Shape</span>
+                <p className="text-zinc-400 font-light text-[11px] leading-relaxed">Crafted to last years, modeled strictly on custom-mapped regional feet shapes.</p>
+              </div>
+              <div className="p-4 border border-white/5 bg-zinc-950/40 rounded-sm">
+                <span className="block font-mono text-[9px] text-zinc-500 uppercase tracking-widest mb-1">Transparency</span>
+                <p className="text-zinc-400 font-light text-[11px] leading-relaxed">Open disclosure of exact materials — cork filling, shank, and pegs.</p>
               </div>
             </div>
           </div>
 
+          {/* Section 4 & 5: Our Promise & The Customer */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 border-t border-white/5 pt-12 md:pt-16">
+            <div className="space-y-4">
+              <span className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase block">04 // Our Promise</span>
+              <h3 className="serif text-xl sm:text-2xl text-white font-light">Uncompromising Craftsmanship</h3>
+              <p className="text-zinc-400 font-light text-[13px] md:text-sm leading-relaxed">
+                Every pair of Eternal shoes is handmade, incorporating full-grain leather from the top 3% of selected hides. We employ the traditional Goodyear welted mechanism — the same robust construction found in $1,500 international classics.
+              </p>
+              <p className="text-zinc-500 font-light text-[13px] md:text-sm leading-relaxed italic">
+                We do not cut corners. We show you exactly what is inside our shoes — cork filling, steel shank, brass pegs, oak-bark sole — because we are proud of it.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <span className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase block">05 // The Eternal Customer</span>
+              <h3 className="serif text-xl sm:text-2xl text-white font-light">Discerning Choices</h3>
+              <p className="text-zinc-400 font-light text-[13px] md:text-sm leading-relaxed">
+                Our customer refuses to confuse price with value. You understand that true handmade craftsmanship takes time, and you choose to invest once and invest well while supporting local masters of the craft.
+              </p>
+              <p className="text-[11px] font-mono tracking-wider text-zinc-300 uppercase font-semibold">
+                Slow luxury, made right here in Karachi.
+              </p>
+            </div>
+          </div>
+
+          {/* Section 6 & 7: Three Articles & Karachi Atelier */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 border-t border-white/5 pt-12 md:pt-16">
+            <div className="space-y-4">
+              <span className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase block">06 // Essential Collection</span>
+              <h3 className="serif text-xl sm:text-2xl text-white font-light">Three Articles. Zero Compromises.</h3>
+              <p className="text-zinc-400 font-light text-[13px] md:text-sm leading-relaxed">
+                We launched with only three quintessential silhouettes: the Black Oxford, the Brown Oxford, and the Brown Monk. No seasonal drops or chasing trend cycles. Just three perfect shoes, made relentlessly well. We will add more only when we can maintain this exact standard.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <span className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase block">07 // Our Atelier in Karachi</span>
+              <h3 className="serif text-xl sm:text-2xl text-white font-light">Meet the Makers</h3>
+              <p className="text-zinc-400 font-light text-[13px] md:text-sm leading-relaxed">
+                Behind our shoes is a dedicated small team of master craftsmen in Karachi. They hand-cut each hide, hand-stitch the welts, hand-polish the soles to a glass-smooth finish, and personally sign every box that leaves the workshop.
+              </p>
+              <p className="text-zinc-500 font-light text-[12px] leading-relaxed italic">
+                We know their names, and you will find their handwritten initials inscribed inside your shoes.
+              </p>
+            </div>
+          </div>
+
+          {/* Section 8 & 9: Savor the luxury / From 2020 to forever */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 border-t border-white/5 pt-12 md:pt-16">
+            <div className="space-y-4">
+              <span className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase block">08 // What "Savor the Luxury" Means</span>
+              <h3 className="serif text-xl sm:text-2xl text-white font-light">Our Tagline Philosophy</h3>
+              <p className="text-zinc-400 font-light text-[13px] md:text-sm leading-relaxed">
+                Savor means to slow down, appreciate the unique grain, and notice the immaculate stitch. The luxury is not about loud logos or status — it is the quiet confidence of knowing you are wearing something made with absolute integrity.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <span className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase block">09 // The Journey</span>
+              <h3 className="serif text-xl sm:text-2xl text-white font-light">From Karachi To Forever</h3>
+              <p className="text-zinc-400 font-light text-[13px] md:text-sm leading-relaxed">
+                We started in 2020 with one last, one hide, and one belief. Today, we ship across Pakistan. Tomorrow, we hope to show the world that Pakistani craftsmanship belongs in the global conversation about luxury.
+              </p>
+            </div>
+          </div>
+
+          {/* Section 10: Call to Join */}
+          <div className="text-center bg-zinc-950/40 border border-white/5 p-8 md:p-12 rounded-sm space-y-4 max-w-2xl mx-auto rounded">
+            <span className="text-[9px] font-mono tracking-[0.4em] text-zinc-500 uppercase block">Join the Journey</span>
+            <p className="text-zinc-300 font-light text-[13px] sm:text-sm max-w-xl mx-auto leading-relaxed">
+              Whether you choose the Black Oxford, the Brown Oxford, or the Brown Monk — you are supporting a movement to make "made in Pakistan" mean something truly extraordinary.
+            </p>
+            <div className="border-t border-white/5 pt-4 inline-block px-10">
+              <p className="serif text-lg italic text-white font-light">Eternal — Savor the Luxury</p>
+            </div>
+          </div>
         </div>
       </div>
+
+
 
       {/* 4. Bespoke Private Consultation Form */}
       <div className="max-w-4xl mx-auto border border-white/10 bg-white/[0.02] p-6 sm:p-10 md:p-14 rounded-sm relative">
@@ -426,9 +446,9 @@ export default function AtelierPage() {
                     onChange={handleInputChange}
                     className="w-full bg-black/60 border border-white/10 rounded-sm py-3 px-4 text-xs font-mono tracking-widest focus:border-white focus:outline-none uppercase text-white"
                   >
-                    {LEATHER_BENCH.map(l => (
-                      <option key={l.id} value={l.name}>{l.name}</option>
-                    ))}
+                    <option value="Tuscan Aniline Box-Calf">Tuscan Aniline Box-Calf</option>
+                    <option value="Sartorial Royal Suede">Sartorial Royal Suede</option>
+                    <option value="Genuine Waxed Shell Cordovan">Genuine Waxed Shell Cordovan</option>
                   </select>
                 </div>
               </div>
