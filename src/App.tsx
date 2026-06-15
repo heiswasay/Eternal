@@ -100,7 +100,7 @@ const COLLECTIONS: CollectionItemInfo[] = [
     images: [bo1Image, bo2Image, bo3Image, bo4Image, bo5Image, bo6Image, bo7Image, bo8Image],
     category: "Hand Made",
     slug: "brown-oxford-leather",
-    description: "The height of sartorial elegance, featuring hand-burnished leather and artisanal buckle detailing.",
+    description: "Handcrafted brown Oxford shoes made from premium leather for effortless sophistication and lasting comfort.",
     specs: {
       type: "Semi-Brogue Captoe Oxford",
       leather: "Mahogany Burnished Alpine Calfskin",
@@ -121,7 +121,7 @@ const COLLECTIONS: CollectionItemInfo[] = [
     images: [m8Image, m1Image, m3Image, m2Image, m4Image, m5Image],
     category: "Hand Made",
     slug: "monk-strap",
-    description: "A timeless classic in a rich cognac hue, featuring a hand-welted sole for unparalleled durability.",
+    description: "Elegant monk strap shoes crafted in Pakistan for men seeking modern style with timeless appeal.",
     specs: {
       type: "Double Monk Strap Dress Shoe",
       leather: "Aniline-Dyed Museum Calfskin (Cognac Brown Patina)",
@@ -145,7 +145,7 @@ const COLLECTIONS: CollectionItemInfo[] = [
     images: [boo1Image, boo3Image, boo4Image, boo5Image, boo8Image, boo9Image],
     category: "Hand Made",
     slug: "black-oxford-leather",
-    description: "Our signature piece, hand-stitched over 48 hours using the finest full-grain Italian calfskin.",
+    description: "Classic black leather dress shoes designed for formal occasions and everyday confidence.",
     specs: {
       type: "Wholecut Bespoke Oxford",
       leather: "Ultra-Premium Full-Grain Italian Box-Calf (Tuscan Tannery)",
@@ -410,7 +410,7 @@ const Hero = () => {
             className="space-y-4"
           >
             <span className="text-[7.5px] sm:text-[10px] md:text-xs uppercase tracking-[0.5em] sm:tracking-[0.8em] text-zinc-500 block font-mono whitespace-nowrap">
-              ESTABLISHED 2020, LAHORE
+              ESTABLISHED 2020, KARACHI
             </span>
             <h1 className="serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white leading-none tracking-tight font-light">
               Savor The <br />
@@ -433,7 +433,7 @@ const Hero = () => {
               className="text-zinc-400 max-w-md mr-auto font-light text-[11px] sm:text-xs uppercase tracking-[0.25em] leading-relaxed pt-2 sm:pt-0"
             >
               <span className="hidden sm:inline">
-                An uncompromising commitment to bespoke shoemaking. Crafted solely by hand, single-needle stitched, finished with organic bee wax.
+                An uncompromising handcrafted leather shoes from Pakistan, designed for men who value timeless style, comfort, and exceptional craftsmanship.
               </span>
               <span className="inline sm:hidden">
                 Hand-crafted bespoke shoemaking. Finished with organic wax.
@@ -507,7 +507,7 @@ const Hero = () => {
           <div className="space-y-1">
             <span className="block text-[8px] font-mono tracking-widest text-zinc-600 uppercase">LOCATION</span>
             <span className="block text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
-              LAHORE &bull; KARACHI &bull; ISLAMABAD
+              KARACHI BASED &bull; NATIONWIDE FREE DELIVERY
             </span>
           </div>
         </div>
@@ -589,7 +589,7 @@ const Collection = () => {
             The <span className="italic font-light">Editions</span>
           </h2>
           <p className="text-zinc-500 max-w-sm font-light text-[11px] sm:text-xs uppercase tracking-widest leading-relaxed mb-10">
-            A precise trilogy of shoemaking silhouettes. Each pair holds a legacy and matures distinctively according to your journey.
+            Explore premium Pakistani leather shoes crafted for every occasion, blending timeless elegance with modern sophistication.
           </p>
 
           {/* Clean Segmented Category Tabs with solid touch areas */}
@@ -724,10 +724,10 @@ const AnatomyBento = () => {
         <div className="max-w-3xl mb-12 md:mb-16 mt-16 md:mt-24">
           <span className="text-[9px] font-mono uppercase tracking-[0.6em] text-zinc-500 block mb-3">Structural Sincerity</span>
           <h2 className="serif text-3xl sm:text-5xl leading-tight text-white m-0">
-            The Anatomy of <span className="italic font-light">Pure Form</span>
+            The Art of Fine <span className="italic font-light">Craftsmanship</span>
           </h2>
           <p className="text-zinc-500 max-w-sm text-[11px] uppercase tracking-widest font-light leading-relaxed mt-4">
-            Under the visible calfskin lies a system of hand-lasted biological parts designed to serve your anatomy.
+            Every pair is thoughtfully handcrafted using premium materials to deliver comfort, durability, and refined style.
           </p>
         </div>
 
@@ -742,7 +742,7 @@ const AnatomyBento = () => {
             <div>
               <h3 className="serif text-xl sm:text-2xl text-white mb-2">Natural Cork Inlay</h3>
               <p className="text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed hidden sm:block">
-                A thick bed of biological shredded cork is hot-pressed beneath the insole. Over two weeks, it settles and mirrors your foot arch for standard orthotics.
+                Natural cork cushioning adapts to your stride, providing enhanced comfort and support throughout the day.
               </p>
             </div>
           </div>
@@ -756,7 +756,7 @@ const AnatomyBento = () => {
             <div>
               <h3 className="serif text-xl sm:text-2xl text-white mb-2">Oak-Bark Sole Protection</h3>
               <p className="text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed hidden sm:block">
-                Tanned in traditional pits over nine months. Extremely dense, lightweight, and reinforced with 15 solid brass pegs for enduring posture stability.
+                Durable sole construction engineered for stability, flexibility, and long-lasting performance.
               </p>
             </div>
           </div>
@@ -770,7 +770,7 @@ const AnatomyBento = () => {
             <div>
               <h3 className="serif text-xl sm:text-2xl text-white mb-2">Wood Last Stretching</h3>
               <p className="text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed hidden sm:block">
-                The upper is tensioned over solid beechwood molds for three full weeks. This guarantees the leather fibers memorize their shape and prevent creasing.
+                Traditional shaping techniques ensure a refined fit tailored for everyday wear.
               </p>
             </div>
           </div>
@@ -797,7 +797,7 @@ const FullImageBanner = () => {
 
       {/* Floating details */}
       <div className="absolute top-10 left-6 md:left-12 font-mono text-[8px] sm:text-[9px] tracking-[0.3em] text-zinc-500 uppercase">
-        LOC: Lahore Atelier // 31.5204° N, 74.3587° E
+        LOC: Karachi Atelier // 24.8607° N, 67.0011° E
       </div>
       <div className="absolute top-10 right-6 md:right-12 font-mono text-[8px] sm:text-[9px] tracking-[0.3em] text-zinc-500 uppercase">
         SPECIFICATION ID // BO-2020
@@ -814,12 +814,7 @@ const FullImageBanner = () => {
         <div className="w-12 h-px bg-white/30 mx-auto" />
         
         <p className="text-zinc-400 max-w-lg mx-auto font-light text-[11px] sm:text-xs uppercase tracking-[0.25em] leading-relaxed">
-          <span className="hidden sm:inline">
-            Every wrinkle in our full-grain boxcalf leather represents a choice. No electric heaters, no synthetic glues. Just two hands, pure flax thread, and thirty days of silent devotion.
-          </span>
-          <span className="inline sm:hidden">
-            Handcrafted with flax thread and thirty days of silent devotion.
-          </span>
+          Our handcrafted Pakistani leather shoes are made with dedication, preserving timeless craftsmanship for modern gentlemen.
         </p>
         
         <div className="pt-4">
@@ -827,7 +822,7 @@ const FullImageBanner = () => {
             to="/atelier" 
             className="inline-flex items-center gap-2.5 sm:gap-4 bg-white text-black hover:bg-zinc-200 py-2.5 sm:py-3.5 px-5 sm:px-8 uppercase text-[9px] sm:text-[10px] tracking-[0.3em] sm:tracking-[0.4em] font-bold rounded-sm transition-all whitespace-nowrap"
           >
-            <span>Explore The Atelier</span>
+            <span>Discover Our Story</span>
             <ArrowRight size={10} className="w-2.5 h-2.5 sm:w-3 sm:h-3" strokeWidth={2} />
           </Link>
         </div>
@@ -849,28 +844,28 @@ const EditorialReviews = () => {
   return (
     <section className="bg-luxury-black text-white py-16 md:py-24 px-4 sm:px-6 md:px-10 border-t border-white/5">
       <div className="max-w-7xl mx-auto">
-        <span className="block text-[9px] font-mono tracking-[0.4em] text-zinc-500 uppercase text-center mb-10">Editorial Reviews</span>
+        <span className="block text-[9px] font-mono tracking-[0.4em] text-zinc-500 uppercase text-center mb-10">Patron Testimonials</span>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-14 divide-y md:divide-y-0 md:divide-x divide-white/10">
           <div className="text-center p-4 md:p-6 first:pl-0">
             <p className="serif text-lg sm:text-xl italic text-zinc-300 leading-relaxed mb-6">
-              "The last of a disappearing discipline in bespoke Pakistani handcrafting. An indestructible pair built to serve you for thirty years."
+              "These handcrafted shoes exceeded every expectation. The comfort and finish make them a true investment in style."
             </p>
-            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// SARTORIAL PAKISTAN</span>
+            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// REGISTERED PATRON</span>
           </div>
 
-          <div className="text-center p-4 md:p-6 hidden md:block">
+          <div className="text-center p-4 md:p-6 pt-10 md:pt-6">
             <p className="serif text-lg sm:text-xl italic text-zinc-300 leading-relaxed mb-6">
-              "An flawless, solid heel design. The shred-cork bedding molds itself cleanly to your specific foot geometry inside two weeks of wear."
+              "Elegant design, premium leather, and exceptional craftsmanship define every pair."
             </p>
-            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// SARTORIAL MONTHLY</span>
+            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// ATELIER PATRON</span>
           </div>
 
-          <div className="text-center p-4 md:p-6 last:pr-0 hidden md:block">
+          <div className="text-center p-4 md:p-6 pt-10 md:pt-6 last:pr-0">
             <p className="serif text-lg sm:text-xl italic text-zinc-300 leading-relaxed mb-6">
-              "These are not simply classic dress shoes. They are comfortable posture-stabilizing masterpieces that redefine standard design parameters."
+              "Among the finest formal shoes in Pakistan. Sophisticated, durable, and made to impress."
             </p>
-            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// THE DENTON CHRONICLE</span>
+            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// VERIFIED CUSTOMER</span>
           </div>
         </div>
       </div>
@@ -929,7 +924,7 @@ const Unboxing = () => {
             </div>
 
             <p className="text-zinc-400 font-light text-[11px] sm:text-xs uppercase tracking-widest leading-relaxed">
-              Cotton flannel bags. A vial of Saphir polish. A hand-signed note from the welter who stitched your pair. And zero plastic.
+              Each order arrives with premium packaging designed to elevate your unboxing experience.
             </p>
 
             <div className="pt-2">
@@ -1089,7 +1084,7 @@ const Footer = () => {
         <div className="col-span-1 md:col-span-2">
           <h2 className="serif text-3xl md:text-4xl mb-6 md:mb-8 tracking-wider">ETERNAL</h2>
           <p className="max-w-sm opacity-50 font-light leading-relaxed mb-8 italic text-sm">
-            Join our private circle for early releases and invitations to our trunk shows across Europe and the Americas.
+            Subscribe to receive updates on new arrivals, exclusive offers, and premium footwear collections.
           </p>
           <div className="flex max-w-sm border-b border-white/20 pb-2">
             <input 
@@ -1400,8 +1395,8 @@ const ProductPage = () => {
 
                            {tab === 'Shipping & Returns' && (
                              <div className="text-[11px] leading-relaxed text-zinc-400 uppercase tracking-widest">
-                               <p className="mb-4">Complimentary express shipping across Europe, the Americas, and Asia. Hand-delivered via private courier with full parcel tracking.</p>
-                               <p>Returns accepted within fourteen days of receipt. All protective outsole adhesives and stickers must remain entirely undisturbed for refund eligibility.</p>
+                               <p className="mb-4">Complimentary express delivery all over Pakistan. Hand-delivered via premium private courier with cash on delivery and full tracking.</p>
+                               <p>Returns or exchanges accepted within fourteen days of receipt. Shoes must remain unworn and in original condition for eligibility.</p>
                              </div>
                            )}
 

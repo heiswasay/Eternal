@@ -555,7 +555,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                     type="text"
                     value={formCity}
                     onChange={(e) => setFormCity(e.target.value)}
-                    placeholder="e.g. Lahore"
+                    placeholder="e.g. Karachi"
                     required
                     maxLength={35}
                     className="border border-white/10 focus:border-white/40 rounded-sm bg-black/40 px-3 py-2 text-sm text-white focus:outline-none transition-colors duration-300 placeholder:text-zinc-600"
@@ -644,7 +644,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
           </div>
           <div className="lg:col-span-4 flex justify-start lg:justify-end w-full">
             <Link to="/atelier" className="flex items-center justify-between sm:justify-start gap-6 group hover:text-white text-zinc-400 border border-white/10 px-6 py-4 transition-all hover:bg-white hover:text-black w-full sm:w-auto text-center">
-              <span className="text-[10px] uppercase tracking-[0.4em] font-semibold">Explore The Atelier</span>
+              <span className="text-[10px] uppercase tracking-[0.4em] font-semibold">Discover Our Story</span>
               <ArrowRight size={14} strokeWidth={1} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>

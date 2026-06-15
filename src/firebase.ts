@@ -207,9 +207,9 @@ function fetchReviewsFromLocalStorage(productSlug: string): Review[] {
     {
       productSlug: productSlug,
       initials: "Z. AHMED",
-      city: "Lahore",
+      city: "Karachi",
       rating: "★★★★★",
-      desc: "Acquired this pair after visiting their Lahore workshop. The classic handwelted sole has a beautiful, rich resonance and feels wonderfully broken-in after just two wears.",
+      desc: "Acquired this pair after visiting their Karachi workshop. The classic handwelted sole has a beautiful, rich resonance and feels wonderfully broken-in after just two wears.",
       orderNo: "1 PAIR PURCHASED // ORDER #2180",
       createdAt: new Date("2026-05-28")
     },

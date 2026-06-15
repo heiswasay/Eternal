@@ -245,7 +245,7 @@ export const CheckoutPage: React.FC = () => {
                         required
                         value={formData.city}
                         onChange={handleInputChange}
-                        placeholder="e.g. Islamabad, Lahore, Karachi"
+                        placeholder="e.g. Karachi, Lahore, Islamabad"
                         className="bg-zinc-950 border border-white/10 rounded p-3 text-sm placeholder-zinc-700 outline-none focus:border-white transition-colors text-white"
                       />
                     </div>

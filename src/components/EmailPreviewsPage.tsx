@@ -36,7 +36,7 @@ const INITIAL_ORDER: OrderPayload = {
   customerName: "Wasey Ahmed",
   customerPhone: "+92 300 1234567",
   customerEmail: "wasey351@gmail.com",
-  customerAddress: "House 24-B, Sector H, Phase 5 DHA, Lahore",
+  customerAddress: "House 24-B, Sector H, Phase 5 DHA, Karachi",
   notes: "Please pack with extra tissue layers. Deliver after 2 PM.",
   items: [
     {

@@ -118,17 +118,17 @@ export default function AtelierPage() {
               The <span className="italic font-light">Atelier</span>
             </motion.h1>
             <p className="text-zinc-400 font-light max-w-xl text-[12px] sm:text-[13px] uppercase tracking-widest leading-relaxed">
-              Crafted in the historic heart of Lahore, our master craftsmen construct individual expressions of lasting design over rigorous timelines. Here, compromise has no home.
+              Crafted in the historic heart of Karachi, our master craftsmen construct individual expressions of lasting design over rigorous timelines. Here, compromise has no home.
             </p>
           </div>
           <div className="lg:col-span-4 flex flex-wrap gap-x-8 gap-y-3 font-mono text-[9px] uppercase tracking-widest text-zinc-500 border-l border-white/10 pl-6 lg:pl-8 py-2">
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <MapPin size={10} className="text-zinc-400" />
-              <span>31.520° N, 74.359° E</span>
+              <span>24.861° N, 67.001° E</span>
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <Compass size={10} className="text-zinc-400" />
-              <span>EST. 2020, LAHORE</span>
+              <span>EST. 2020, KARACHI</span>
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <Clock size={10} className="text-zinc-400" />
@@ -364,7 +364,7 @@ export default function AtelierPage() {
             Request an <span className="italic font-light">Atelier Consultation</span>
           </h2>
           <p className="text-zinc-400 font-light max-w-lg mx-auto text-[11px] uppercase tracking-widest leading-relaxed">
-            Direct coordination with a master fitter setup in-person in Lahore, or live via custom visual digital walkthroughs. Enter your preferences to reserve.
+            Direct coordination with a master fitter setup in-person in Karachi, or live via custom visual digital walkthroughs. Enter your preferences to reserve.
           </p>
         </div>
 
@@ -480,7 +480,7 @@ export default function AtelierPage() {
               </div>
               <h3 className="serif text-3xl mb-4 text-white">Inquiry Received</h3>
               <p className="text-zinc-400 font-light uppercase tracking-widest text-[11px] max-w-md mx-auto leading-relaxed mb-8">
-                Your specifications have been logged securely. An Atelier manager from Lahore will coordinate your fit review within 24 working hours.
+                Your specifications have been logged securely. An Atelier manager from Karachi will coordinate your fit review within 24 working hours.
               </p>
               
               <div className="border border-white/5 bg-black/40 rounded-sm max-w-sm mx-auto p-4 font-mono text-[9px] uppercase tracking-wider text-zinc-500 space-y-1 text-left">
@@ -494,7 +494,7 @@ export default function AtelierPage() {
                 </div>
                 <div className="flex justify-between">
                   <span>Atelier:</span>
-                  <span className="text-zinc-300">Lahore Standard, ID #{Math.floor(Math.random() * 9000 + 1000)}</span>
+                  <span className="text-zinc-300">Karachi Standard, ID #{Math.floor(Math.random() * 9000 + 1000)}</span>
                 </div>
               </div>
             </motion.div>
