@@ -160,7 +160,7 @@ export default function AtelierPage() {
             <div className="relative w-full aspect-[4/3] overflow-hidden mb-6 bg-zinc-900 border border-white/5 rounded-sm">
               <img 
                 src={work1}
-                alt="Artisan Cutting Selection"
+                alt="Leather Cutting Selection"
                 onError={(e) => {
                   // Fallback for empty image
                   (e.target as HTMLImageElement).src = IMAGES.cutting;
@@ -210,7 +210,7 @@ export default function AtelierPage() {
               The Tension <span className="italic font-light text-zinc-400">of Wood & Cord</span>
             </h3>
             <p className="text-[11px] uppercase tracking-widest text-zinc-500 font-light leading-relaxed mb-6">
-              The leather is drawn taut across solid beechwood lasts. An artisan tensions the welt with wax-dipped biological linen cords using specialized hand awls.
+              The leather is drawn taut across solid beechwood lasts. Our shoemakers tension the welt with wax-dipped biological linen cords using specialized hand awls.
             </p>
             <div className="mt-auto pt-4 border-t border-white/5 flex justify-between items-center text-[8px] font-mono tracking-widest text-zinc-600">
               <span>9-11 SPI STITCHING</span>

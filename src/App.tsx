@@ -10,6 +10,8 @@ import { BrowserRouter, Routes, Route, Link, useLocation, useParams, useNavigate
 import { ProductStory } from "./components/ProductStory";
 import AtelierPage from "./components/AtelierPage";
 import EmailPreviewsPage from "./components/EmailPreviewsPage";
+import PrivacyPolicyPage from "./components/PrivacyPolicyPage";
+import ShippingReturnsPage from "./components/ShippingReturnsPage";
 import { CartProvider, useCart } from "./context/CartContext";
 import { CartSlideOver } from "./components/CartSlideOver";
 import { MenuSlideOver } from "./components/MenuSlideOver";
@@ -149,7 +151,7 @@ const COLLECTIONS: CollectionItemInfo[] = [
     specs: {
       type: "Wholecut Bespoke Oxford",
       leather: "Ultra-Premium Full-Grain Italian Box-Calf (Tuscan Tannery)",
-      leatherDetail: "Sourced from an antique artisan tannery in Tuscany, Italy. We select only the top 3% of unblemished aniline skins. Naturally supple and highly breathable, this pristine box-calf develops a beautiful deep mirror-like glaze with age.",
+      leatherDetail: "Sourced from an antique tannery in Tuscany, Italy. We select only the top 3% of unblemished aniline skins. Naturally supple and highly breathable, this pristine box-calf develops a beautiful deep mirror-like glaze with age.",
       sole: "Hand-Stitched Closed-Channel Goodyear Welt Outsole with Fiddleback Waist",
       soleDetail: "A multi-layered oak-bark tanned leather outsole with a traditional 270-degree hand-sewn welt. Features a hand-carved, highly defined fiddleback waist and a stacked solid leather heel for maximum stability.",
       laces: "Flat-Braided Waxed Giza Cotton Laces",
@@ -195,7 +197,7 @@ const Nav = () => {
               <Search size={18} className="text-zinc-400 mr-4" strokeWidth={1.5} />
               <input 
                 type="text"
-                placeholder="SEARCH FOR ARTISANAL PIECES..."
+                placeholder="SEARCH FOR EXCLUSIVE PIECES..."
                 className="bg-transparent border-b border-white/30 text-xs tracking-widest outline-none w-full pb-2 uppercase text-white"
                 autoFocus
               />
@@ -261,7 +263,6 @@ const Nav = () => {
                 )}
               </AnimatePresence>
             </div>
-            <Link to="/#heritage" className="hover:opacity-50 transition-opacity py-2 text-white">Bespoke</Link>
             <Link to="/atelier" className="hover:opacity-50 transition-opacity py-2 text-white">The Atelier</Link>
           </div>
         </div>
@@ -346,7 +347,7 @@ const Hero = () => {
       ]
     : [
         { src: hero2Image, fallback: heroImage, alt: "Savor The Luxury - Master Craftsmanship" },
-        { src: hero1Image, fallback: heroImage, alt: "Savor The Luxury - Artisanal Shoemaking" },
+        { src: hero1Image, fallback: heroImage, alt: "Savor The Luxury - Fine Shoemaking" },
         { src: heroImage, fallback: hero1Image, alt: "Savor The Luxury - The Atelier Collection" },
       ];
 
@@ -528,7 +529,7 @@ const Hero = () => {
 
         {/* Right: Copyright info */}
         <div className="text-[9px] uppercase tracking-[0.3em] text-zinc-500 font-mono">
-          © 2026 ETERNAL ARTISANS
+          © 2026 ETERNAL
         </div>
       </footer>
     </div>
@@ -788,7 +789,7 @@ const FullImageBanner = () => {
       <div className="absolute inset-0">
         <img 
           src={img3} 
-          alt="Artisanal shoemaking craftsmanship in the atelier"
+          alt="Shoemaking craftsmanship in the atelier"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover grayscale brightness-[0.35] transition-transform duration-1000 hover:scale-105"
         />
@@ -1103,16 +1104,30 @@ const Footer = () => {
             <h4 className="text-[10px] uppercase tracking-[0.3em] font-semibold mb-6 md:mb-8 opacity-40">Navigation</h4>
             <ul className="flex flex-col gap-4 text-sm font-light">
               <li><button onClick={() => setSizeGuideOpen(true)} className="hover:opacity-50 transition-opacity cursor-pointer text-left bg-transparent border-none p-0 outline-none">Size Guide</button></li>
-              <li><Link to="/#collection" className="hover:opacity-50 transition-opacity">Privacy Policy</Link></li>
-              <li><Link to="/#collection" className="hover:opacity-50 transition-opacity">Shipping & Returns</Link></li>
+              <li><Link to="/privacy" className="hover:opacity-50 transition-opacity">Privacy Policy</Link></li>
+              <li><Link to="/shipping-returns" className="hover:opacity-50 transition-opacity">Shipping & Returns</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-[10px] uppercase tracking-[0.3em] font-semibold mb-6 md:mb-8 opacity-40">Connect</h4>
             <div className="flex gap-6 items-center">
-              <a href="#" className="hover:opacity-50 transition-opacity"><Instagram size={20} strokeWidth={1} /></a>
-              <a href="#" className="hover:opacity-50 transition-opacity"><Facebook size={20} strokeWidth={1} /></a>
+              <a 
+                href="https://www.instagram.com/eternal.com.pk/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:opacity-50 transition-opacity"
+              >
+                <Instagram size={20} strokeWidth={1} />
+              </a>
+              <a 
+                href="https://www.facebook.com/eternal.com.pk" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:opacity-50 transition-opacity"
+              >
+                <Facebook size={20} strokeWidth={1} />
+              </a>
             </div>
           </div>
         </div>
@@ -1120,7 +1135,7 @@ const Footer = () => {
 
       <div className="max-w-7xl mx-auto flex flex-col md:row justify-between items-center pt-8 border-t border-white/5 text-[9px] uppercase tracking-[0.4em] opacity-30 text-center md:text-left">
         <p>© 2024 Eternal. All rights reserved.</p>
-        <p className="mt-4 md:mt-0">Privacy / Terms / Accessibility</p>
+        <p className="mt-4 md:mt-0"><Link to="/privacy" className="hover:underline">Privacy</Link> / Terms / Accessibility</p>
       </div>
     </footer>
   );
@@ -1627,6 +1642,8 @@ export default function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/thank-you" element={<ThankYouPage />} />
             <Route path="/email-designs" element={<EmailPreviewsPage />} />
+            <Route path="/privacy" element={<PrivacyPolicyPage />} />
+            <Route path="/shipping-returns" element={<ShippingReturnsPage />} />
           </Routes>
           <Footer />
           <CartSlideOver />

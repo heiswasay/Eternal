@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
-import { X, ChevronDown, Instagram, Twitter, ArrowRight, Sparkles, Compass, Search } from "lucide-react";
+import { X, ChevronDown, Instagram, Facebook, ArrowRight, Sparkles, Compass, Search } from "lucide-react";
 import { useCart } from "../context/CartContext";
 
 const COLLECTIONS = [
@@ -81,7 +81,7 @@ export const MenuSlideOver: React.FC = () => {
                   <Search size={14} className="text-zinc-400 mr-2.5 animate-pulse" strokeWidth={1.5} />
                   <input
                     type="text"
-                    placeholder="SEARCH ARTISANAL PIECES..."
+                    placeholder="SEARCH EXCLUSIVE PIECES..."
                     className="bg-transparent text-[9px] tracking-[0.25em] outline-none w-full uppercase text-white font-medium placeholder-zinc-600 focus:placeholder-zinc-400 transition-colors"
                   />
                 </div>
@@ -140,17 +140,6 @@ export const MenuSlideOver: React.FC = () => {
                   </AnimatePresence>
                 </div>
 
-                {/* Bespoke Option */}
-                <div className="border-t border-white/5 pt-4">
-                  <Link
-                    onClick={() => setMenuOpen(false)}
-                    to="/#heritage"
-                    className="text-xs uppercase tracking-[0.4em] font-medium text-zinc-300 hover:text-white transition-all block py-2"
-                  >
-                    Bespoke
-                  </Link>
-                </div>
-
                 {/* Atelier Option */}
                 <div className="border-t border-white/5 pt-4">
                   <Link
@@ -167,26 +156,26 @@ export const MenuSlideOver: React.FC = () => {
               <div className="border-t border-white/5 pt-8 mt-auto">
                 <div className="flex gap-6 mb-6">
                   <a
-                    href="https://instagram.com"
+                    href="https://www.instagram.com/eternal.com.pk/"
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="text-zinc-500 hover:text-white transition-colors"
                     aria-label="Instagram"
                   >
                     <Instagram size={18} strokeWidth={1.5} />
                   </a>
                   <a
-                    href="https://twitter.com"
+                    href="https://www.facebook.com/eternal.com.pk"
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="text-zinc-500 hover:text-white transition-colors"
-                    aria-label="Twitter"
+                    aria-label="Facebook"
                   >
-                    <Twitter size={18} strokeWidth={1.5} />
+                    <Facebook size={18} strokeWidth={1.5} />
                   </a>
                 </div>
                 <p className="text-[8px] font-mono uppercase tracking-[0.2em] text-zinc-600">
-                  © 2026 ETERNAL ARTISANS
+                  © 2026 ETERNAL
                 </p>
               </div>
             </div>

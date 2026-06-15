@@ -259,7 +259,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                 />
               </div>
               <div className="absolute top-4 left-4 p-3 md:top-6 md:left-6 md:p-4 bg-black/60 backdrop-blur-md border border-white/10">
-                <span className="text-[8px] font-mono tracking-[0.2em] text-zinc-300">TUSCAN ARTISANAL PROCESS</span>
+                <span className="text-[8px] font-mono tracking-[0.2em] text-zinc-300">TUSCAN CRAFT PROCESS</span>
               </div>
             </div>
 
@@ -639,7 +639,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
               Visit The <span className="italic font-light">Atelier</span>
             </h3>
             <p className="text-zinc-400 max-w-xl leading-relaxed font-light text-[11px] uppercase tracking-wider">
-              We invite you to experience the birthplace of true shoemaking. Visit our atelier to witness our master artisans' dedication, explore our heritage of design, and see how our signature footwear is formed.
+              We invite you to experience the birthplace of true shoemaking. Visit our atelier to witness our master shoemakers' dedication, explore our heritage of design, and see how our signature footwear is formed.
             </p>
           </div>
           <div className="lg:col-span-4 flex justify-start lg:justify-end w-full">
