@@ -186,35 +186,171 @@ export async function handleSendOrderEmail(order) {
 </body>
 </html>`;
 
-    const secureSmtpConfigured = process.env.SMTP_USER && process.env.SMTP_PASS;
+    let smtpUser = (process.env.SMTP_USER || "savortheluxury@gmail.com").trim();
+    let smtpPass = (process.env.SMTP_PASS || "").trim();
+    let smtpHost = (process.env.SMTP_HOST || "smtp.gmail.com").trim();
+    let smtpPort = Number(process.env.SMTP_PORT) || 465;
+    let smtpSecure = process.env.SMTP_SECURE !== "false";
+    let smtpSender = (process.env.SMTP_SENDER || smtpUser).trim();
+
+    // Auto-clean: Remove spaces if the user pasted a 16-character Google App Password with spaces
+    if (smtpHost.includes("gmail.com") && smtpPass.replace(/\s+/g, "").length === 16) {
+      smtpPass = smtpPass.replace(/\s+/g, "");
+    }
+
+    const secureSmtpConfigured = !!smtpPass;
+    let customerMailSent = false;
+    let adminMailSent = false;
+    let customerMailError = null;
+    let adminMailError = null;
+    let sendingMethodsAttempted = [];
 
     if (secureSmtpConfigured) {
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || "smtp.gmail.com",
-        port: Number(process.env.SMTP_PORT) || 465,
-        secure: process.env.SMTP_SECURE !== "false",
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
+      const strategies = [];
+
+      // Strategy 1: Dedicated Gmail service mode (extremely resilient for @gmail.com accounts)
+      if (smtpHost.includes("gmail.com") || smtpUser.includes("@gmail.com")) {
+        strategies.push({
+          name: "Gmail Service (Direct Integration API)",
+          config: {
+            service: "gmail",
+            auth: {
+              user: smtpUser,
+              pass: smtpPass,
+            },
+            tls: {
+              rejectUnauthorized: false
+            },
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 15000,
+          }
+        });
+      }
+
+      // Strategy 2: Absolute exact user config or 465 SSL Direct Secure
+      strategies.push({
+        name: `SMTP Standard SSL (Host: ${smtpHost}, Port: 465)`,
+        config: {
+          host: smtpHost,
+          port: 465,
+          secure: true,
+          auth: {
+            user: smtpUser,
+            pass: smtpPass,
+          },
+          tls: {
+            rejectUnauthorized: false
+          },
+          connectionTimeout: 10000,
+          greetingTimeout: 10000,
+          socketTimeout: 15000,
+        }
       });
 
-      await transporter.sendMail({
-        from: `"Eternal Atelier" <${process.env.SMTP_SENDER || process.env.SMTP_USER}>`,
-        to: clientEmail,
-        subject: `Order Recieved [ID: ${payload.orderId}] - Eternal Workshop`,
-        html: customerEmailHtml,
+      // Strategy 3: SMTP STARTTLS Port 587
+      strategies.push({
+        name: `SMTP STARTTLS (Host: ${smtpHost}, Port: 587)`,
+        config: {
+          host: smtpHost,
+          port: 587,
+          secure: false,
+          auth: {
+            user: smtpUser,
+            pass: smtpPass,
+          },
+          tls: {
+            rejectUnauthorized: false
+          },
+          connectionTimeout: 10000,
+          greetingTimeout: 10000,
+          socketTimeout: 15000,
+        }
       });
 
-      await transporter.sendMail({
-        from: `"Eternal Atelier" <${process.env.SMTP_SENDER || process.env.SMTP_USER}>`,
-        to: adminEmail,
-        subject: `New Order [ID: ${payload.orderId}] - COD - ${payload.customerName}`,
-        html: adminEmailHtml,
-      });
+      // Strategy 4: Fallback to explicit non-standard ports
+      if (smtpPort !== 465 && smtpPort !== 587) {
+        strategies.push({
+          name: `Explicit Custom SMTP (Host: ${smtpHost}, Port: ${smtpPort}, Secure: ${smtpSecure})`,
+          config: {
+            host: smtpHost,
+            port: smtpPort,
+            secure: smtpSecure,
+            auth: {
+              user: smtpUser,
+              pass: smtpPass,
+            },
+            tls: {
+              rejectUnauthorized: false
+            },
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 15000,
+          }
+        });
+      }
+
+      // Run connection and dispatch strategies sequentially until both succeed or strategies are exhausted
+      for (const strategy of strategies) {
+        if (customerMailSent && adminMailSent) {
+          break; // Fully complete!
+        }
+
+        console.log(`[Email Dispatcher] Attempting delivery using strategy: ${strategy.name}`);
+        sendingMethodsAttempted.push(strategy.name);
+
+        try {
+          const transporter = nodemailer.createTransport(strategy.config);
+
+          // Force test socket authentication before invoking heavy emails
+          await transporter.verify();
+          console.log(`[Email Dispatcher] SMTP Socket Verified on strategy: ${strategy.name}`);
+
+          // 1. Dispatch customer email independently so failure here doesn't bypass the administrator
+          if (!customerMailSent) {
+            try {
+              await transporter.sendMail({
+                from: `"Eternal Atelier" <${smtpSender}>`,
+                to: clientEmail,
+                subject: `Order Received [ID: ${payload.orderId}] - Eternal Workshop`,
+                html: customerEmailHtml,
+              });
+              customerMailSent = true;
+              customerMailError = null;
+              console.log(`[Email Dispatcher] Success: Customer email sent to ${clientEmail}`);
+            } catch (clientErr) {
+              console.error(`[Email Dispatcher] Customer email dispatch failed (${clientEmail}):`, clientErr);
+              customerMailError = clientErr.message || String(clientErr);
+            }
+          }
+
+          // 2. Dispatch store administrator notice independently
+          if (!adminMailSent) {
+            try {
+              await transporter.sendMail({
+                from: `"Eternal Atelier" <${smtpSender}>`,
+                to: adminEmail,
+                subject: `New Order [ID: ${payload.orderId}] - COD - ${payload.customerName}`,
+                html: adminEmailHtml,
+              });
+              adminMailSent = true;
+              adminMailError = null;
+              console.log(`[Email Dispatcher] Success: Admin email sent to ${adminEmail}`);
+            } catch (adminErr) {
+              console.error(`[Email Dispatcher] Admin email dispatch failed (${adminEmail}):`, adminErr);
+              adminMailError = adminErr.message || String(adminErr);
+            }
+          }
+
+        } catch (connErr) {
+          console.warn(`[Email Dispatcher] Connection failure on strategy (${strategy.name}):`, connErr.message || connErr);
+          if (!customerMailSent) customerMailError = connErr.message || String(connErr);
+          if (!adminMailSent) adminMailError = connErr.message || String(connErr);
+        }
+      }
     } else {
-      console.log(
-        `[Email] Order ${payload.orderId}: SMTP_USER/SMTP_PASS not set — emails not sent.`
+      console.warn(
+        `[Email Dispatcher] Order ${payload.orderId}: SMTP_PASS is empty. Emails bypassed.`
       );
     }
 
@@ -231,9 +367,19 @@ export async function handleSendOrderEmail(order) {
       status: 200,
       body: {
         success: true,
-        message: "Order email processed successfully.",
+        message: (customerMailSent && adminMailSent)
+          ? "Order processed and confirmation emails successfully sent."
+          : "Order placed. Confirmation emails are pending system authentication.",
         orderId: payload.orderId,
-        sheetsSyncStatus: sheetsSyncStatus
+        sheetsSyncStatus: sheetsSyncStatus,
+        emailDetails: {
+          secureSmtpConfigured,
+          customerMailSent,
+          adminMailSent,
+          customerMailError,
+          adminMailError,
+          sendingMethodsAttempted
+        }
       },
     };
   } catch (e) {
