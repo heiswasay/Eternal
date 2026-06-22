@@ -15,6 +15,10 @@ service cloud.firestore {
       return request.resource.data;
     }
 
+    function existing() {
+      return resource.data;
+    }
+
     function isValidReview(data) {
       return data.keys().hasAll(['productSlug', 'initials', 'city', 'rating', 'desc', 'orderNo', 'createdAt'])
         && data.keys().size() == 7
