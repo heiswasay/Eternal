@@ -17,6 +17,7 @@ import { CartSlideOver } from "./components/CartSlideOver";
 import { MenuSlideOver } from "./components/MenuSlideOver";
 import { CheckoutPage } from "./components/CheckoutPage";
 import { ThankYouPage } from "./components/ThankYouPage";
+import { AdminPortalPage } from "./components/AdminPortalPage";
 import heroImage from "./images/hero3.webp";
 import hero1Image from "./images/hero1.webp";
 import hero2Image from "./images/hero2.webp";
@@ -1641,6 +1642,7 @@ export default function App() {
             <Route path="/atelier" element={<AtelierPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/thank-you" element={<ThankYouPage />} />
+            <Route path="/admin" element={<AdminPortalPage />} />
             <Route path="/email-designs" element={<EmailPreviewsPage />} />
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route path="/shipping-returns" element={<ShippingReturnsPage />} />

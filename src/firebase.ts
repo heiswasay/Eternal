@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, limit } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, limit, updateDoc, doc } from "firebase/firestore";
 // Safely search for applet configuration using Vite glob.
 // This prevents compilation failures on Vercel or local machine if the JSON file is gitignored.
 const configs = (import.meta as any).glob("../firebase-applet-config.json", { eager: true });
@@ -239,3 +239,174 @@ function addReviewToLocalStorage(review: Omit<Review, "id" | "createdAt">): Revi
   localStorage.setItem(`reviews_${review.productSlug}`, JSON.stringify(updated));
   return newReview;
 }
+
+// -------------------------------------------------------------
+// Live Orders Database Access Layer (Firestore + LocalStorage fallbacks)
+// -------------------------------------------------------------
+
+export interface OrderData {
+  id?: string;
+  orderId: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  customerAddress: string;
+  items: any[];
+  totalPrice: string;
+  paymentMethod: string;
+  notes: string;
+  status: "new" | "under process" | "delivered" | "cancel";
+  createdAt?: any;
+}
+
+export async function addOrderToDb(order: Omit<OrderData, "id" | "createdAt">): Promise<OrderData> {
+  if (isFirebaseConfigured && db) {
+    const path = "orders";
+    try {
+      // Secure generate auto-ID from addDoc, conforming to strict firestore.rules
+      const docRef = await addDoc(collection(db, path), {
+        orderId: order.orderId,
+        customerName: order.customerName,
+        customerPhone: order.customerPhone,
+        customerEmail: order.customerEmail,
+        customerAddress: order.customerAddress,
+        items: order.items,
+        totalPrice: order.totalPrice,
+        paymentMethod: order.paymentMethod,
+        notes: order.notes || "",
+        status: order.status || "new",
+        createdAt: serverTimestamp(),
+      });
+      console.log("Order written securely to Firestore backend ledger:", docRef.id);
+      return {
+        ...order,
+        id: docRef.id,
+        createdAt: new Date(),
+      };
+    } catch (error: any) {
+      if (error?.code === 'permission-denied' || error?.message?.includes('permissions')) {
+        try {
+          handleFirestoreError(error, OperationType.CREATE, path);
+        } catch (specError) {
+          console.error("Firestore spec permission error logged:", specError);
+        }
+      }
+      console.error("Firestore order write error. Falling back to LocalStorage:", error);
+      return addOrderToLocalStorage(order);
+    }
+  } else {
+    return addOrderToLocalStorage(order);
+  }
+}
+
+export async function fetchOrdersFromDb(): Promise<OrderData[]> {
+  if (isFirebaseConfigured && db) {
+    const path = "orders";
+    try {
+      const q = query(
+        collection(db, path),
+        orderBy("createdAt", "desc"),
+        limit(200)
+      );
+      const snapshot = await getDocs(q);
+      const ordersList: OrderData[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        ordersList.push({
+          id: doc.id,
+          orderId: data.orderId,
+          customerName: data.customerName,
+          customerPhone: data.customerPhone,
+          customerEmail: data.customerEmail,
+          customerAddress: data.customerAddress,
+          items: data.items || [],
+          totalPrice: data.totalPrice,
+          paymentMethod: data.paymentMethod,
+          notes: data.notes || "",
+          status: data.status || "new",
+          createdAt: data.createdAt?.toDate() || new Date(),
+        });
+      });
+      return ordersList;
+    } catch (error: any) {
+      if (error?.code === 'permission-denied' || error?.message?.includes('permissions')) {
+        try {
+          handleFirestoreError(error, OperationType.LIST, path);
+        } catch (specError) {
+          console.error("Firestore spec list error logged:", specError);
+        }
+      }
+      console.error("Firestore orders read error. Falling back to LocalStorage:", error);
+      return fetchOrdersFromLocalStorage();
+    }
+  } else {
+    return fetchOrdersFromLocalStorage();
+  }
+}
+
+export async function updateOrderStatusInDb(id: string, status: "new" | "under process" | "delivered" | "cancel"): Promise<boolean> {
+  if (isFirebaseConfigured && db && !id.startsWith("local_")) {
+    const path = `orders/${id}`;
+    try {
+      const docRef = doc(db, "orders", id);
+      await updateDoc(docRef, {
+        status: status,
+      });
+      console.log(`Order ${id} status updated to ${status} in Firestore.`);
+      return true;
+    } catch (error: any) {
+      if (error?.code === 'permission-denied' || error?.message?.includes('permissions')) {
+        try {
+          handleFirestoreError(error, OperationType.UPDATE, path);
+        } catch (specError) {
+          console.error("Firestore spec update error logged:", specError);
+        }
+      }
+      console.error("Firestore order update error. Attempting LocalStorage update:", error);
+      return updateOrderStatusInLocalStorage(id, status);
+    }
+  } else {
+    return updateOrderStatusInLocalStorage(id, status);
+  }
+}
+
+function fetchOrdersFromLocalStorage(): OrderData[] {
+  const saved = localStorage.getItem("orders_ledger");
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      return parsed.map((item: any) => ({
+        ...item,
+        createdAt: item.createdAt ? new Date(item.createdAt) : new Date(),
+      }));
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return [];
+}
+
+function addOrderToLocalStorage(order: Omit<OrderData, "id" | "createdAt" | "status"> & { status?: any }): OrderData {
+  const existing = fetchOrdersFromLocalStorage();
+  const newOrder: OrderData = {
+    ...order,
+    id: `local_ord_${Date.now()}`,
+    status: order.status || "new",
+    createdAt: new Date()
+  };
+  const updated = [newOrder, ...existing];
+  localStorage.setItem("orders_ledger", JSON.stringify(updated));
+  return newOrder;
+}
+
+function updateOrderStatusInLocalStorage(id: string, status: "new" | "under process" | "delivered" | "cancel"): boolean {
+  const existing = fetchOrdersFromLocalStorage();
+  const index = existing.findIndex((o) => o.id === id);
+  if (index !== -1) {
+    existing[index].status = status;
+    localStorage.setItem("orders_ledger", JSON.stringify(existing));
+    return true;
+  }
+  return false;
+}
+

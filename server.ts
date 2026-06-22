@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { handleSendOrderEmail } from "./api/send-order-email.js";
+import { appendOrderToSheet } from "./api/google-sheets.js";
 
 async function startServer() {
   const app = express();
@@ -15,6 +16,16 @@ async function startServer() {
   app.post("/api/send-order-email", async (req, res) => {
     const result = await handleSendOrderEmail(req.body);
     return res.status(result.status).json(result.body);
+  });
+
+  app.post("/api/test-sheets-sync", async (req, res) => {
+    try {
+      const order = req.body;
+      const result = await appendOrderToSheet(order);
+      return res.status(200).json(result);
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message || String(err) });
+    }
   });
 
   // Serve static assets in production, otherwise mount Vite Dev server

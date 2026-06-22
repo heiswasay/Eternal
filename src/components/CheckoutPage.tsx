@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { RotateCw, ChevronLeft, ShoppingBag } from "lucide-react";
 import { useCart, formatPrice, parsePrice } from "../context/CartContext";
+import { addOrderToDb } from "../firebase";
 
 export const CheckoutPage: React.FC = () => {
   const { cartItems, formattedSubtotal, clearCart } = useCart();
@@ -104,21 +105,44 @@ export const CheckoutPage: React.FC = () => {
       }
     } catch (err) {
       console.error("Error dispatching transaction emails:", err);
-    } finally {
-      // Commit the order summary to local persistence for visual Thank You billing card
-      const completeOrderSummary = {
-        ...orderSummary,
-        sheetsSyncStatus
-      };
-      localStorage.setItem("latest_eternal_order", JSON.stringify(completeOrderSummary));
-      
-      // Clear cart
-      clearCart();
-      setIsSubmitting(false);
-
-      // Navigate to separate Thank You page
-      navigate("/thank-you");
     }
+
+    try {
+      // Store order securely in Firestore connected live ledger
+      await addOrderToDb({
+        orderId: orderSummary.orderId,
+        customerName: orderSummary.customerName,
+        customerPhone: orderSummary.customerPhone,
+        customerEmail: orderSummary.customerEmail,
+        customerAddress: orderSummary.customerAddress,
+        items: orderSummary.items,
+        totalPrice: orderSummary.totalPrice,
+        paymentMethod: orderSummary.paymentMethod,
+        notes: orderSummary.notes || "",
+        status: "new"
+      });
+      console.log("Secure order trace initialized in dynamic Cloud Firestore ledger.");
+    } catch (dbErr) {
+      console.error("Firestore database write skipped or bypassed:", dbErr);
+    }
+
+    try {
+      // Clear cart and finish up
+    } catch (dummy) {}
+
+    // Commit the order summary to local persistence for visual Thank You billing card
+    const completeOrderSummary = {
+      ...orderSummary,
+      sheetsSyncStatus
+    };
+    localStorage.setItem("latest_eternal_order", JSON.stringify(completeOrderSummary));
+    
+    // Clear cart
+    clearCart();
+    setIsSubmitting(false);
+
+    // Navigate to separate Thank You page
+    navigate("/thank-you");
   };
 
   if (cartItems.length === 0) {

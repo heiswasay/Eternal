@@ -1,7 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
-import { ShieldCheck, Truck, Receipt, Home, Calendar, Clipboard } from "lucide-react";
+import { 
+  ShieldCheck, 
+  Truck, 
+  Receipt, 
+  Home, 
+  Calendar, 
+  Clipboard,
+  Database,
+  RefreshCw,
+  AlertTriangle,
+  CheckCircle,
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+  Info,
+  Lock
+} from "lucide-react";
 
 interface OrderedItem {
   name: string;
@@ -44,11 +60,19 @@ export const ThankYouPage: React.FC = () => {
   const [order, setOrder] = useState<OrderSummary | null>(null);
   const navigate = useNavigate();
 
+  const [syncStatus, setSyncStatus] = useState<any>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [showConfigGuide, setShowConfigGuide] = useState(false);
+
   useEffect(() => {
     try {
       const stored = localStorage.getItem("latest_eternal_order");
       if (stored) {
-        setOrder(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        setOrder(parsed);
+        if (parsed.sheetsSyncStatus) {
+          setSyncStatus(parsed.sheetsSyncStatus);
+        }
       } else {
         navigate("/");
       }
@@ -56,6 +80,45 @@ export const ThankYouPage: React.FC = () => {
       navigate("/");
     }
   }, [navigate]);
+
+  const handleRetrySync = async () => {
+    if (!order) return;
+    setIsRetrying(true);
+    try {
+      const resp = await fetch("/api/test-sheets-sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(order),
+      });
+      if (resp.ok) {
+        const result = await resp.json();
+        setSyncStatus(result);
+        
+        // Save back to localStorage so the state persists nicely
+        const updatedOrder = {
+          ...order,
+          sheetsSyncStatus: result
+        };
+        localStorage.setItem("latest_eternal_order", JSON.stringify(updatedOrder));
+        setOrder(updatedOrder);
+      } else {
+        const errText = await resp.text();
+        setSyncStatus({
+          success: false,
+          reason: "connection_error",
+          error: `HTTP ${resp.status}: ${errText}`
+        });
+      }
+    } catch (err: any) {
+      setSyncStatus({
+        success: false,
+        reason: "fetch_thrown_exception",
+        error: err.message || String(err)
+      });
+    } finally {
+      setIsRetrying(false);
+    }
+  };
 
   if (!order) {
     return (
@@ -217,6 +280,165 @@ export const ThankYouPage: React.FC = () => {
                   <span className="text-white text-base font-mono">{order.totalPrice}</span>
                 </div>
               </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* GOOGLE SHEETS INTEGRATION CONTROL HUB */}
+        <div className="border border-white/10 bg-zinc-900/40 p-6 md:p-8 rounded-md space-y-4 relative overflow-hidden backdrop-blur-sm">
+          <div className="absolute top-0 right-0 w-[200px] h-[100px] bg-amber-500/5 rounded-full blur-2xl pointer-events-none" />
+
+          {/* Title Row */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 border border-white/10 bg-zinc-950 rounded text-amber-500">
+                <Database size={20} />
+              </div>
+              <div>
+                <h3 className="text-base font-medium text-white">Google Sheets Integration Panel</h3>
+                <p className="text-xs text-zinc-400">Atelier's secure order logging ledger diagnostics</p>
+              </div>
+            </div>
+
+            <button
+              onClick={handleRetrySync}
+              disabled={isRetrying}
+              className="px-4 py-2 border border-white/10 bg-zinc-950 hover:bg-zinc-900 text-zinc-300 hover:text-white transition-all text-xs font-medium rounded flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              <RefreshCw size={12} className={isRetrying ? "animate-spin" : ""} />
+              <span>{isRetrying ? "Syncing..." : "Test & Retry Sync"}</span>
+            </button>
+          </div>
+
+          {/* Sync Status Badge details */}
+          <div className="space-y-4 text-sm">
+            {(!syncStatus || !syncStatus.success) ? (
+              <div className="p-4 bg-amber-950/10 border border-amber-500/20 rounded flex items-start gap-3">
+                <AlertTriangle size={18} className="text-amber-500 shrink-0 mt-0.5" />
+                <div className="space-y-1 w-full">
+                  <span className="font-medium text-amber-400">Sync Status: Failed / Verification Required</span>
+                  <p className="text-xs text-zinc-300 leading-relaxed font-light">
+                    The automated Google Sheets logging script failed or was skipped. Because of this, this order has not been written to your Google Spreadsheet.
+                  </p>
+                  
+                  {syncStatus && (
+                    <div className="mt-3 bg-black/60 p-3 rounded font-mono text-xs text-zinc-400 border border-white/5 max-h-[160px] overflow-auto w-full">
+                      <div className="text-amber-500 font-semibold mb-1">Reason: {syncStatus.reason || "unknown"}</div>
+                      {syncStatus.message && (
+                        <div className="text-zinc-300 mb-2 font-sans text-xs leading-normal bg-zinc-950/40 p-2 rounded border border-white/5 whitespace-pre-line">{syncStatus.message}</div>
+                      )}
+                      {syncStatus.error && <div className="mb-1 text-rose-400">Error Message: {syncStatus.error}</div>}
+                      {syncStatus.details && <div className="mb-1">Details: {JSON.stringify(syncStatus.details)}</div>}
+                      {syncStatus.diagnostics && (
+                        <div className="mt-2 pt-2 border-t border-white/5 text-[10px] space-y-0.5">
+                          <div className="text-zinc-500">DIAGNOSTICS STATE:</div>
+                          <div>- has_webappUrl: {syncStatus.diagnostics.has_webappUrl ? "Yes" : "No"}</div>
+                          <div>- isValidEmail: {syncStatus.diagnostics.isValidEmail ? "Yes" : "No"}</div>
+                          <div>- isValidPrivateKey: {syncStatus.diagnostics.isValidPrivateKey ? "Yes" : "No"}</div>
+                          {syncStatus.diagnostics.webappWarning && <div className="text-amber-500">- WebApp Warning: {syncStatus.diagnostics.webappWarning}</div>}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 bg-emerald-950/10 border border-emerald-500/20 rounded flex items-start gap-3 animate-fade-in">
+                <CheckCircle size={18} className="text-emerald-400 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <span className="font-medium text-emerald-400">Sync Status: Active & Secured</span>
+                  <p className="text-xs text-zinc-300 leading-relaxed font-light">
+                    This order has been successfully appended to your centralized Google Sheet via standard {syncStatus.method === "webapp" ? "Apps Script WebApp API" : "Google Cloud Service Account API"}.
+                  </p>
+                  {syncStatus.clientEmail && (
+                    <span className="text-[11px] font-mono text-zinc-500 block">Authenticated client: {syncStatus.clientEmail}</span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Instruction Toggle & Panel */}
+            <div className="border border-white/5 rounded overflow-hidden">
+              <button
+                onClick={() => setShowConfigGuide(!showConfigGuide)}
+                className="w-full px-4 py-3 bg-zinc-950 hover:bg-zinc-900/60 transition-colors flex items-center justify-between text-xs font-semibold text-zinc-300 uppercase tracking-wider cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <Info size={14} className="text-amber-500" />
+                  <span>How to connect your private Google Sheet</span>
+                </span>
+                {showConfigGuide ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
+
+              {showConfigGuide && (
+                <div className="p-5 md:p-6 bg-zinc-950/40 border-t border-white/5 space-y-6 text-xs text-zinc-300 leading-relaxed max-h-[450px] overflow-y-auto">
+                  
+                  {/* Option 1 */}
+                  <div className="space-y-2">
+                    <h4 className="font-bold text-white text-sm flex items-center gap-1.5 uppercase tracking-wide border-b border-white/5 pb-1">
+                      <span className="w-5 h-5 bg-amber-500/10 text-amber-400 font-mono rounded flex items-center justify-center text-xs">A</span>
+                      <span>Easiest Method: Google Apps Script Web App</span>
+                    </h4>
+                    <p className="font-light">
+                      Apps Script acts as a public proxy webhook that appends incoming posts automatically.
+                    </p>
+                    <ol className="list-decimal pl-5 space-y-2 font-light text-zinc-400">
+                      <li>Open your target Google Sheet in your web browser.</li>
+                      <li>In the top menu bar, click <strong>Extensions &gt; Apps Script</strong>.</li>
+                      <li>Erase any existing code and paste the following snippet precisely:
+                        <pre className="bg-black/80 p-3 rounded font-mono text-[10px] text-zinc-300 overflow-auto mt-1.5 border border-white/5 select-all">
+{`function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    var doc = SpreadsheetApp.openById(data.spreadsheetId);
+    var sheet = doc.getSheets()[0];
+    sheet.appendRow(data.rowValues);
+    return ContentService.createTextOutput(JSON.stringify({success: true}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({success: false, error: err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}`}
+                        </pre>
+                      </li>
+                      <li>Click the <strong>Save</strong> disk icon, then click <strong>Deploy &gt; New Deployment</strong> (top right).</li>
+                      <li>Click the gear icon next to "Select type", and select <strong>Web App</strong>.</li>
+                      <li>Configure exactly as follows:
+                        <ul className="list-disc pl-5 mt-1 text-zinc-300 space-y-0.5 font-medium">
+                          <li>Execute as: <span className="text-amber-400">Me</span></li>
+                          <li>Who has access: <span className="text-amber-400">Anyone</span></li>
+                        </ul>
+                      </li>
+                      <li>Click <strong>Deploy</strong>, authorize permissions, and copy the generated <strong>Web App URL</strong> (which ends in /exec).</li>
+                      <li>Paste this URL as your secret environment variable <code className="font-mono bg-zinc-900 px-1 border border-white/10">GOOGLE_SHEETS_WEBAPP_URL</code> using the Secrets/Settings menu in the AI Studio editor sidebar.</li>
+                    </ol>
+                  </div>
+
+                  {/* Option 2 */}
+                  <div className="space-y-2 border-t border-white/5 pt-4">
+                    <h4 className="font-bold text-white text-sm flex items-center gap-1.5 uppercase tracking-wide border-b border-white/5 pb-1">
+                      <span className="w-5 h-5 bg-amber-500/10 text-amber-400 font-mono rounded flex items-center justify-center text-xs">B</span>
+                      <span>Alternative Method: Google Cloud Service Account API</span>
+                    </h4>
+                    <p className="font-light">
+                      Writes directly to your Spreadsheet using an official Google Service Account.
+                    </p>
+                    <ol className="list-decimal pl-5 space-y-1.5 font-light text-zinc-400">
+                      <li>Create a project in the Google Cloud Console, enable the <strong>Google Sheets API</strong>, and create a Service Account.</li>
+                      <li>Generate a new <strong>JSON Key file</strong> for the Service Account.</li>
+                      <li>Copy the entire JSON string from the key file and set it as <code className="font-mono text-zinc-300">GOOGLE_SERVICE_ACCOUNT_KEY</code> in your environment parameters.
+                        <br /><em>Or set <code className="font-mono text-zinc-300">GOOGLE_CLIENT_EMAIL</code> and <code className="font-mono text-zinc-300">GOOGLE_PRIVATE_KEY</code> individually.</em>
+                      </li>
+                      <li className="text-zinc-200 font-medium">
+                        <strong>CRITICAL FINAL STEP:</strong> Open your Google Sheet, click the blue <strong>"Share"</strong> button in the top-right corner, and add your Service Account's email address (ending in <code className="font-mono bg-zinc-900">.gserviceaccount.com</code>) as an <strong>Editor</strong>.
+                      </li>
+                    </ol>
+                  </div>
+
+                </div>
+              )}
             </div>
 
           </div>

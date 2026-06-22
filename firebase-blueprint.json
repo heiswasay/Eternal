@@ -44,12 +44,81 @@
         "orderNo",
         "createdAt"
       ]
+    },
+    "Order": {
+      "title": "Customer Order",
+      "description": "An order details ledger submitted by a customer",
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "string",
+          "description": "Unique identifier for the order"
+        },
+        "customerName": {
+          "type": "string",
+          "description": "Full name of the customer"
+        },
+        "customerPhone": {
+          "type": "string",
+          "description": "Contact phone number of the customer"
+        },
+        "customerEmail": {
+          "type": "string",
+          "description": "Email address of the customer"
+        },
+        "customerAddress": {
+          "type": "string",
+          "description": "Shipping address"
+        },
+        "items": {
+          "type": "array",
+          "description": "List of ordered footwear items and specifications"
+        },
+        "totalPrice": {
+          "type": "string",
+          "description": "Formatted total price paid"
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "COD or other payment modes"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Special delivery notes or size requests"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["new", "under process", "delivered", "cancel"],
+          "description": "Workflow phase status of the order"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when order was stored in Firestore"
+        }
+      },
+      "required": [
+        "orderId",
+        "customerName",
+        "customerPhone",
+        "customerEmail",
+        "customerAddress",
+        "items",
+        "totalPrice",
+        "paymentMethod",
+        "status",
+        "createdAt"
+      ]
     }
   },
   "firestore": {
     "reviews/{reviewId}": {
       "schema": "Review",
       "description": "Global list of all customer reviews across products"
+    },
+    "orders/{orderId}": {
+      "schema": "Order",
+      "description": "Central ledger storing all placed customer orders"
     }
   }
 }
