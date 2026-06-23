@@ -1,8 +1,5 @@
-import { createRequire } from "node:module";
+import nodemailer from "nodemailer";
 import { appendOrderToSheet } from "./google-sheets.js";
-
-const require = createRequire(import.meta.url);
-const nodemailer = require("nodemailer");
 
 export async function handleSendOrderEmail(order) {
   try {
