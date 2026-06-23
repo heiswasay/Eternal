@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, limit, updateDoc, doc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, limit, updateDoc, doc, onSnapshot } from "firebase/firestore";
 // Safely search for applet configuration using Vite glob.
 // This prevents compilation failures on Vercel or local machine if the JSON file is gitignored.
 const configs = (import.meta as any).glob("../firebase-applet-config.json", { eager: true });
@@ -24,8 +24,8 @@ let db: any = null;
 if (isFirebaseConfigured) {
   try {
     const app = initializeApp(firebaseConfig);
-    // CRITICAL: Connect directly to the provisioned database ID
-    db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+    // CRITICAL: Connect directly to the provisioned database ID safely
+    db = firebaseConfig.firestoreDatabaseId ? getFirestore(app, firebaseConfig.firestoreDatabaseId) : getFirestore(app);
     console.log("Firebase initialized successfully. Operating secure live cloud ledger.");
   } catch (error) {
     console.error("Failed to initialize Firebase:", error);
@@ -99,11 +99,11 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
 export async function fetchReviewsFromDb(productSlug: string): Promise<Review[]> {
   if (isFirebaseConfigured && db) {
     const path = "reviews";
-    try {
+
+    const fetchPromise = (async () => {
       const q = query(
         collection(db, path),
         where("productSlug", "==", productSlug),
-        orderBy("createdAt", "desc"),
         limit(50)
       );
       const snapshot = await getDocs(q);
@@ -121,9 +121,30 @@ export async function fetchReviewsFromDb(productSlug: string): Promise<Review[]>
           createdAt: data.createdAt?.toDate() || new Date(),
         });
       });
+
+      // Sort in-memory descending by createdAt
+      reviewsList.sort((a, b) => {
+        const tA = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt).getTime();
+        const tB = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt).getTime();
+        return tB - tA;
+      });
       return reviewsList;
+    })();
+
+    // 3 seconds timeout
+    let timeoutId: any;
+    const timeoutPromise = new Promise<Review[]>((_, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(new Error("Firestore review load timed out (3000ms)"));
+      }, 3000);
+    });
+
+    try {
+      const result = await Promise.race([fetchPromise, timeoutPromise]);
+      clearTimeout(timeoutId);
+      return result;
     } catch (error: any) {
-      // If permission error, raise it with spec-compliant wrapper
+      clearTimeout(timeoutId);
       if (error?.code === 'permission-denied' || error?.message?.includes('permissions')) {
         try {
           handleFirestoreError(error, OperationType.GET, path);
@@ -131,11 +152,55 @@ export async function fetchReviewsFromDb(productSlug: string): Promise<Review[]>
           console.error("Firestore spec permission error logged:", specError);
         }
       }
-      console.error("Firestore read error. Falling back to LocalStorage:", error);
+      console.warn("Firestore read error or query timed out. Falling back to LocalStorage:", error);
       return fetchReviewsFromLocalStorage(productSlug);
     }
   } else {
     return fetchReviewsFromLocalStorage(productSlug);
+  }
+}
+
+export function subscribeToReviews(productSlug: string, callback: (reviews: Review[]) => void): () => void {
+  if (isFirebaseConfigured && db) {
+    const path = "reviews";
+    const q = query(
+      collection(db, path),
+      where("productSlug", "==", productSlug),
+      limit(50)
+    );
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const reviewsList: Review[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        reviewsList.push({
+          id: doc.id,
+          productSlug: data.productSlug,
+          initials: data.initials,
+          city: data.city,
+          rating: typeof data.rating === "number" ? getStarsString(data.rating) : data.rating,
+          desc: data.desc,
+          orderNo: data.orderNo,
+          createdAt: data.createdAt?.toDate() || new Date(),
+        });
+      });
+
+      // Sort in-memory descending by createdAt
+      reviewsList.sort((a, b) => {
+        const tA = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt).getTime();
+        const tB = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt).getTime();
+        return tB - tA;
+      });
+      callback(reviewsList);
+    }, (error) => {
+      console.warn("Firestore live subscription error, loading from database once:", error);
+      fetchReviewsFromDb(productSlug).then(callback);
+    });
+
+    return unsubscribe;
+  } else {
+    callback(fetchReviewsFromLocalStorage(productSlug));
+    return () => {};
   }
 }
 
@@ -193,39 +258,7 @@ function fetchReviewsFromLocalStorage(productSlug: string): Review[] {
     }
   }
 
-  // Pre-seed some beautiful, highly thematic initial reviews
-  const defaultReviews: Review[] = [
-    {
-      productSlug: productSlug,
-      initials: "K. HASHMI",
-      city: "Karachi",
-      rating: "★★★★★",
-      desc: "My first pair of Oxfords from this atelier and I am completely blown away. The leather aroma, the precise unboxing presentation, and the snug fit are of international caliber. Wore them to an executive dinner and felt a class apart.",
-      orderNo: "1 PAIR PURCHASED // ORDER #1042",
-      createdAt: new Date("2026-05-15")
-    },
-    {
-      productSlug: productSlug,
-      initials: "Z. AHMED",
-      city: "Karachi",
-      rating: "★★★★★",
-      desc: "Acquired this pair after visiting their Karachi workshop. The classic handwelted sole has a beautiful, rich resonance and feels wonderfully broken-in after just two wears.",
-      orderNo: "1 PAIR PURCHASED // ORDER #2180",
-      createdAt: new Date("2026-05-28")
-    },
-    {
-      productSlug: productSlug,
-      initials: "A. REHMAN",
-      city: "Islamabad",
-      rating: "★★★★★",
-      desc: "Incredible attention to detail. From the heavy felted presentation box to the high-density cork bed cushioning. This is easily the most superior leather shoe in my wardrobe.",
-      orderNo: "1 PAIR PURCHASED // ORDER #3095",
-      createdAt: new Date("2026-06-01")
-    }
-  ];
-
-  localStorage.setItem(`reviews_${productSlug}`, JSON.stringify(defaultReviews));
-  return defaultReviews;
+  return [];
 }
 
 function addReviewToLocalStorage(review: Omit<Review, "id" | "createdAt">): Review {
@@ -255,7 +288,7 @@ export interface OrderData {
   totalPrice: string;
   paymentMethod: string;
   notes: string;
-  status: "new" | "under process" | "delivered" | "cancel";
+  status: "new" | "under process" | "delivered" | "cancel" | "refund" | "exchange";
   createdAt?: any;
 }
 
@@ -344,7 +377,7 @@ export async function fetchOrdersFromDb(): Promise<OrderData[]> {
   }
 }
 
-export async function updateOrderStatusInDb(id: string, status: "new" | "under process" | "delivered" | "cancel"): Promise<boolean> {
+export async function updateOrderStatusInDb(id: string, status: "new" | "under process" | "delivered" | "cancel" | "refund" | "exchange"): Promise<boolean> {
   if (isFirebaseConfigured && db && !id.startsWith("local_")) {
     const path = `orders/${id}`;
     try {
@@ -356,14 +389,10 @@ export async function updateOrderStatusInDb(id: string, status: "new" | "under p
       return true;
     } catch (error: any) {
       if (error?.code === 'permission-denied' || error?.message?.includes('permissions')) {
-        try {
-          handleFirestoreError(error, OperationType.UPDATE, path);
-        } catch (specError) {
-          console.error("Firestore spec update error logged:", specError);
-        }
+        handleFirestoreError(error, OperationType.UPDATE, path);
       }
-      console.error("Firestore order update error. Attempting LocalStorage update:", error);
-      return updateOrderStatusInLocalStorage(id, status);
+      console.error("Firestore order update error:", error);
+      throw error;
     }
   } else {
     return updateOrderStatusInLocalStorage(id, status);
@@ -399,7 +428,7 @@ function addOrderToLocalStorage(order: Omit<OrderData, "id" | "createdAt" | "sta
   return newOrder;
 }
 
-function updateOrderStatusInLocalStorage(id: string, status: "new" | "under process" | "delivered" | "cancel"): boolean {
+function updateOrderStatusInLocalStorage(id: string, status: "new" | "under process" | "delivered" | "cancel" | "refund" | "exchange"): boolean {
   const existing = fetchOrdersFromLocalStorage();
   const index = existing.findIndex((o) => o.id === id);
   if (index !== -1) {

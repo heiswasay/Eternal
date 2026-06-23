@@ -2,8 +2,8 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
-import { handleSendOrderEmail } from "./api/send-order-email.js";
-import { appendOrderToSheet } from "./api/google-sheets.js";
+import { handleSendOrderEmail, handleSendStatusEmail } from "./api/send-order-email.js";
+import { appendOrderToSheet, syncOrderStatusToSheet } from "./api/google-sheets.js";
 
 async function startServer() {
   const app = express();
@@ -18,10 +18,26 @@ async function startServer() {
     return res.status(result.status).json(result.body);
   });
 
+  app.post("/api/send-status-email", async (req, res) => {
+    const { order, status } = req.body;
+    const result = await handleSendStatusEmail(order, status);
+    return res.status(result.status).json(result.body);
+  });
+
   app.post("/api/test-sheets-sync", async (req, res) => {
     try {
       const order = req.body;
       const result = await appendOrderToSheet(order);
+      return res.status(200).json(result);
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message || String(err) });
+    }
+  });
+
+  app.post("/api/sync-sheets-status", async (req, res) => {
+    try {
+      const { orderId, status } = req.body;
+      const result = await syncOrderStatusToSheet(orderId, status);
       return res.status(200).json(result);
     } catch (err: any) {
       return res.status(500).json({ success: false, error: err.message || String(err) });

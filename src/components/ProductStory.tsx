@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles, Layers, ShieldCheck, Compass, Eye, Database } from "lucide-react";
 import layersboImage from "../images/layersbo.png";
 import layersmImage from "../images/layersm.png";
-import { fetchReviewsFromDb, addReviewToDb, Review, getStarsString, isFirebaseConfigured } from "../firebase";
+import { fetchReviewsFromDb, addReviewToDb, subscribeToReviews, Review, getStarsString, isFirebaseConfigured } from "../firebase";
 
 interface SpecType {
   type: string;
@@ -55,24 +55,13 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
-    let active = true;
     setLoadingReviews(true);
-    fetchReviewsFromDb(product.slug)
-      .then((data) => {
-        if (active) {
-          setReviewsList(data);
-          setLoadingReviews(false);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to load reviews:", err);
-        if (active) {
-          setLoadingReviews(false);
-        }
-      });
-
+    const unsubscribe = subscribeToReviews(product.slug, (data) => {
+      setReviewsList(data);
+      setLoadingReviews(false);
+    });
     return () => {
-      active = false;
+      unsubscribe();
     };
   }, [product.slug]);
 

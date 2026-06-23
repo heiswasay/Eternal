@@ -1643,6 +1643,7 @@ export default function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/thank-you" element={<ThankYouPage />} />
             <Route path="/admin" element={<AdminPortalPage />} />
+            <Route path="/emails" element={<EmailPreviewsPage />} />
             <Route path="/email-designs" element={<EmailPreviewsPage />} />
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route path="/shipping-returns" element={<ShippingReturnsPage />} />

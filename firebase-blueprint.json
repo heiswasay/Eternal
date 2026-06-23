@@ -88,7 +88,7 @@
         },
         "status": {
           "type": "string",
-          "enum": ["new", "under process", "delivered", "cancel"],
+          "enum": ["new", "under process", "delivered", "cancel", "refund", "exchange"],
           "description": "Workflow phase status of the order"
         },
         "createdAt": {

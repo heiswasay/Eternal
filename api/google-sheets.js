@@ -37,7 +37,8 @@ export async function appendOrderToSheet(order) {
     itemsList,
     order.totalPrice || "",
     order.notes || "",
-    order.paymentMethod || "Cash on Delivery"
+    order.paymentMethod || "Cash on Delivery",
+    order.status || "new"
   ];
 
   let webappWarning = null;
@@ -80,6 +81,7 @@ export async function appendOrderToSheet(order) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          action: "append",
           spreadsheetId,
           timestamp,
           orderId: order.orderId,
@@ -91,6 +93,7 @@ export async function appendOrderToSheet(order) {
           totalPrice: order.totalPrice,
           notes: order.notes,
           paymentMethod: order.paymentMethod || "Cash on Delivery",
+          status: order.status || "new",
           rowValues: rowValues
         })
       });
@@ -210,7 +213,7 @@ export async function appendOrderToSheet(order) {
       try {
         response = await sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: "Sheet1!A:J",
+          range: "Sheet1!A:K",
           valueInputOption: "RAW",
           insertDataOption: "INSERT_ROWS",
           requestBody: {
@@ -218,10 +221,10 @@ export async function appendOrderToSheet(order) {
           },
         });
       } catch (rangeErr) {
-        console.warn("[Google Sheets] Range 'Sheet1!A:J' failed or Sheet1 name unrecognized, attempting generic sheet range 'A:J'...");
+        console.warn("[Google Sheets] Range 'Sheet1!A:K' failed or Sheet1 name unrecognized, attempting generic sheet range 'A:K'...");
         response = await sheets.spreadsheets.values.append({
           spreadsheetId,
-          range: "A:J",
+          range: "A:K",
           valueInputOption: "RAW",
           insertDataOption: "INSERT_ROWS",
           requestBody: {
@@ -274,4 +277,202 @@ export async function appendOrderToSheet(order) {
     diagnostics,
     message: errorMsg
   };
+}
+
+/**
+ * Searches the Sheet's column B for a matching orderId and updates column K with the new status
+ */
+export async function syncOrderStatusToSheet(orderId, status) {
+  if (!orderId) {
+    console.error("[Google Sheets Update] Missing Order ID.");
+    return { success: false, reason: "missing_order_id" };
+  }
+
+  let spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID || "1ertgMyPoqyMSwv2Zj9xA-MoaCCP1ry-XGncK-5X5q9s";
+  let webappUrl = process.env.GOOGLE_SHEETS_WEBAPP_URL ? process.env.GOOGLE_SHEETS_WEBAPP_URL.trim() : "";
+
+  // Helper check for placeholders
+  const isPlaceholder = (val) => {
+    if (!val) return true;
+    const clean = String(val).trim();
+    if (clean === "") return true;
+    const lower = clean.toLowerCase();
+    return (
+      lower.startsWith("your_") ||
+      lower.startsWith("placeholder") ||
+      lower === "null" ||
+      lower === "undefined" ||
+      lower.includes("example.com") ||
+      lower.includes("your-client-email") ||
+      lower.includes("your-private-key")
+    );
+  };
+
+  if (webappUrl) {
+    const sheetUrlMatch = webappUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+    if (sheetUrlMatch) {
+      spreadsheetId = sheetUrlMatch[1];
+      webappUrl = "";
+    }
+  }
+
+  // Method 1: Web App URL update trigger
+  if (webappUrl && !isPlaceholder(webappUrl)) {
+    try {
+      console.log("[Google Sheets Update] Signaling status change via Web App URL...");
+      const response = await fetch(webappUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "update_status",
+          spreadsheetId,
+          orderId,
+          status
+        })
+      });
+
+      if (response.ok) {
+        console.log("[Google Sheets Update] Successfully sent status update via Apps Script Web App.");
+        return { success: true, method: "webapp" };
+      }
+    } catch (webappErr) {
+      console.error("[Google Sheets Update] Web App status call failed:", webappErr);
+    }
+  }
+
+  // Method 2: Service Account direct values.update API call
+  let auth = null;
+  const saKeyJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+  let clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
+  const privateKey = process.env.GOOGLE_PRIVATE_KEY;
+
+  let effectiveEmail = "";
+  let cleanPrivateKey = "";
+
+  if (saKeyJson && saKeyJson.trim().startsWith("{") && !isPlaceholder(saKeyJson)) {
+    try {
+      const keys = JSON.parse(saKeyJson.trim());
+      effectiveEmail = keys.client_email || "";
+      cleanPrivateKey = keys.private_key || "";
+    } catch (parseErr) {
+      console.error("[Google Sheets Update] Error parsing GOOGLE_SERVICE_ACCOUNT_KEY:", parseErr);
+    }
+  }
+
+  if (!effectiveEmail || isPlaceholder(effectiveEmail)) {
+    effectiveEmail = clientEmail || "";
+  }
+  if ((!effectiveEmail || isPlaceholder(effectiveEmail)) && saKeyJson && saKeyJson.includes("@") && !saKeyJson.trim().startsWith("{")) {
+    effectiveEmail = saKeyJson.trim();
+  }
+
+  if (!cleanPrivateKey || isPlaceholder(cleanPrivateKey)) {
+    cleanPrivateKey = privateKey || "";
+  }
+
+  if (cleanPrivateKey) {
+    cleanPrivateKey = cleanPrivateKey.trim();
+    if (cleanPrivateKey.startsWith('"') && cleanPrivateKey.endsWith('"')) {
+      cleanPrivateKey = cleanPrivateKey.substring(1, cleanPrivateKey.length - 1);
+    }
+    if (cleanPrivateKey.startsWith("'") && cleanPrivateKey.endsWith("'")) {
+      cleanPrivateKey = cleanPrivateKey.substring(1, cleanPrivateKey.length - 1);
+    }
+    cleanPrivateKey = cleanPrivateKey.replace(/\\n/g, "\n");
+  }
+
+  const isValidEmail = effectiveEmail && effectiveEmail.includes("@") && !isPlaceholder(effectiveEmail);
+  const isValidPrivateKey = cleanPrivateKey && cleanPrivateKey.includes("-----BEGIN PRIVATE KEY-----") && !isPlaceholder(cleanPrivateKey);
+
+  if (isValidEmail && isValidPrivateKey) {
+    try {
+      auth = new google.auth.JWT(
+        effectiveEmail.trim(),
+        null,
+        cleanPrivateKey,
+        ["https://www.googleapis.com/auth/spreadsheets"]
+      );
+      clientEmail = effectiveEmail;
+    } catch (jwtBuildErr) {
+      console.error("[Google Sheets Update] Invalid JWT constructor config:", jwtBuildErr);
+    }
+  }
+
+  if (auth) {
+    try {
+      console.log(`[Google Sheets Update] Locating Row for ID "${orderId}" using Service Account...`);
+      const sheets = google.sheets({ version: "v4", auth });
+      
+      let rows = [];
+      try {
+        const getResponse = await sheets.spreadsheets.values.get({
+          spreadsheetId,
+          range: "Sheet1!A:K"
+        });
+        rows = getResponse.data.values || [];
+      } catch (getErr) {
+        console.warn("[Google Sheets Update] Sheet1 range failed, reading direct A:K...");
+        const getResponse = await sheets.spreadsheets.values.get({
+          spreadsheetId,
+          range: "A:K"
+        });
+        rows = getResponse.data.values || [];
+      }
+
+      if (rows && rows.length > 0) {
+        let rowIndex = -1;
+        // Search Column B (index 1) for Order ID match
+        for (let i = 0; i < rows.length; i++) {
+          if (rows[i] && rows[i][1] && String(rows[i][1]).trim() === String(orderId).trim()) {
+            rowIndex = i + 1; // Convert to 1-based Row coordinate
+            break;
+          }
+        }
+
+        if (rowIndex !== -1) {
+          console.log(`[Google Sheets Update] Sheet order match at row ${rowIndex}. Mutating Column K to: "${status}".`);
+          
+          let rangeToUse = `Sheet1!K${rowIndex}`;
+          try {
+            await sheets.spreadsheets.values.update({
+              spreadsheetId,
+              range: rangeToUse,
+              valueInputOption: "RAW",
+              requestBody: {
+                values: [[status]]
+              }
+            });
+          } catch (updateErr) {
+            console.warn(`[Google Sheets Update] Standard range failed, writing cell K${rowIndex}...`);
+            await sheets.spreadsheets.values.update({
+              spreadsheetId,
+              range: `K${rowIndex}`,
+              valueInputOption: "RAW",
+              requestBody: {
+                values: [[status]]
+              }
+            });
+          }
+
+          console.log(`[Google Sheets Update] Row ${rowIndex} successfully synchronized to status: "${status}"`);
+          return { success: true, method: "service_account", row: rowIndex };
+        } else {
+          console.warn(`[Google Sheets Update] Order ID "${orderId}" has no matching row found in the connected sheet.`);
+          return { success: false, reason: "order_not_found_in_sheet" };
+        }
+      } else {
+        return { success: false, reason: "spreadsheet_empty" };
+      }
+    } catch (saErr) {
+      console.error("[Google Sheets Update] Sync rejected by Google API:", saErr);
+      return {
+        success: false,
+        reason: "credentials_rejected",
+        error: saErr.message || String(saErr)
+      };
+    }
+  }
+
+  console.log(`📊 [Google Sheets Offline Run] Status synced locally. Please link Service Account JSON credential or Google WebApp to sync directly to Spreadsheet. Order: ${orderId} -> ${status}`);
+  return { success: false, reason: "offline_fallback_active" };
 }

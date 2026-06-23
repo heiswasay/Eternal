@@ -8,7 +8,7 @@ service cloud.firestore {
 
     // Helper functions
     function isValidId(id) {
-      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+      return id is string && id.size() <= 128;
     }
 
     function incoming() {
@@ -43,7 +43,7 @@ service cloud.firestore {
         && data.totalPrice is string && data.totalPrice.size() <= 50
         && data.paymentMethod is string && data.paymentMethod.size() <= 50
         && data.notes is string && data.notes.size() <= 1000
-        && data.status in ['new', 'under process', 'delivered', 'cancel']
+        && data.status in ['new', 'under process', 'delivered', 'cancel', 'refund', 'exchange']
         && data.createdAt == request.time;
     }
 
@@ -58,10 +58,9 @@ service cloud.firestore {
     match /orders/{orderId} {
       allow get, list: if true; // The admin portal at /admin queries this collection
       allow create: if isValidId(orderId) && isValidOrder(incoming());
-      // Admin only modifies state status, all other fields immutable
+      // Admin only modifies state status
       allow update: if isValidId(orderId) 
-        && incoming().diff(existing()).affectedKeys().hasOnly(['status'])
-        && incoming().status in ['new', 'under process', 'delivered', 'cancel'];
+        && incoming().status in ['new', 'under process', 'delivered', 'cancel', 'refund', 'exchange'];
       allow delete: if false; // Deletes strictly prohibited
     }
   }
