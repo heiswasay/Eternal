@@ -14,14 +14,30 @@ async function startServer() {
   app.use(express.urlencoded({ extended: true }));
 
   app.post("/api/send-order-email", async (req, res) => {
-    const result = await handleSendOrderEmail(req.body);
-    return res.status(result.status).json(result.body);
+    try {
+      const result = await handleSendOrderEmail(req.body);
+      return res.status(result.status).json(result.body);
+    } catch (err: any) {
+      console.error("[POST /api/send-order-email Error]:", err);
+      return res.status(500).json({
+        success: false,
+        error: err.message || String(err),
+      });
+    }
   });
 
   app.post("/api/send-status-email", async (req, res) => {
-    const { order, status } = req.body;
-    const result = await handleSendStatusEmail(order, status);
-    return res.status(result.status).json(result.body);
+    try {
+      const { order, status } = req.body;
+      const result = await handleSendStatusEmail(order, status);
+      return res.status(result.status).json(result.body);
+    } catch (err: any) {
+      console.error("[POST /api/send-status-email Error]:", err);
+      return res.status(500).json({
+        success: false,
+        error: err.message || String(err),
+      });
+    }
   });
 
   app.post("/api/test-sheets-sync", async (req, res) => {
