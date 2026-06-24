@@ -25,7 +25,7 @@ service cloud.firestore {
         && data.productSlug is string && data.productSlug.size() <= 100
         && data.initials is string && data.initials.size() <= 50
         && data.city is string && data.city.size() <= 50
-        && data.rating is int && data.rating >= 1 && data.rating <= 5
+        && data.rating >= 1 && data.rating <= 5
         && data.desc is string && data.desc.size() <= 1000
         && data.orderNo is string && data.orderNo.size() <= 50
         && data.createdAt == request.time;

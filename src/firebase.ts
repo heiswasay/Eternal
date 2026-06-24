@@ -273,6 +273,115 @@ function addReviewToLocalStorage(review: Omit<Review, "id" | "createdAt">): Revi
   return newReview;
 }
 
+// Global reviews helpers to fetch across all products
+export function fetchAllReviewsFromLocalStorage(): Review[] {
+  const reviews: Review[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith("reviews_")) {
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            reviews.push(...parsed);
+          }
+        } catch (e) {
+          console.error("Error parsing local reviews", e);
+        }
+      }
+    }
+  }
+  // Sort descending by date
+  reviews.sort((a, b) => {
+    const tA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const tB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return tB - tA;
+  });
+  return reviews;
+}
+
+export async function fetchAllReviewsFromDb(): Promise<Review[]> {
+  if (isFirebaseConfigured && db) {
+    const path = "reviews";
+    try {
+      const q = query(
+        collection(db, path),
+        limit(50)
+      );
+      const snapshot = await getDocs(q);
+      const reviewsList: Review[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        reviewsList.push({
+          id: doc.id,
+          productSlug: data.productSlug || "",
+          initials: data.initials || "Anonymous",
+          city: data.city || "Pakistan",
+          rating: typeof data.rating === "number" ? getStarsString(data.rating) : (data.rating || "★★★★★"),
+          desc: data.desc || "",
+          orderNo: data.orderNo || "VERIFIED CUSTOMER",
+          createdAt: data.createdAt?.toDate() || new Date(),
+        });
+      });
+      reviewsList.sort((a, b) => {
+        const tA = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt).getTime();
+        const tB = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt).getTime();
+        return tB - tA;
+      });
+      return reviewsList;
+    } catch (error) {
+      console.warn("Error fetching all reviews from Firestore:", error);
+      return fetchAllReviewsFromLocalStorage();
+    }
+  } else {
+    return fetchAllReviewsFromLocalStorage();
+  }
+}
+
+export function subscribeToAllReviews(callback: (reviews: Review[]) => void): () => void {
+  if (isFirebaseConfigured && db) {
+    const path = "reviews";
+    const q = query(
+      collection(db, path),
+      limit(50)
+    );
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const reviewsList: Review[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        reviewsList.push({
+          id: doc.id,
+          productSlug: data.productSlug || "",
+          initials: data.initials || "Anonymous",
+          city: data.city || "Pakistan",
+          rating: typeof data.rating === "number" ? getStarsString(data.rating) : (data.rating || "★★★★★"),
+          desc: data.desc || "",
+          orderNo: data.orderNo || "VERIFIED CUSTOMER",
+          createdAt: data.createdAt?.toDate() || new Date(),
+        });
+      });
+
+      // Sort in-memory descending by createdAt
+      reviewsList.sort((a, b) => {
+        const tA = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt).getTime();
+        const tB = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt).getTime();
+        return tB - tA;
+      });
+      callback(reviewsList);
+    }, (error) => {
+      console.warn("Firestore live subscription for all reviews error:", error);
+      fetchAllReviewsFromDb().then(callback);
+    });
+
+    return unsubscribe;
+  } else {
+    callback(fetchAllReviewsFromLocalStorage());
+    return () => {};
+  }
+}
+
 // -------------------------------------------------------------
 // Live Orders Database Access Layer (Firestore + LocalStorage fallbacks)
 // -------------------------------------------------------------

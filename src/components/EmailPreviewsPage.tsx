@@ -34,7 +34,7 @@ const displaySize = (size: string) => {
 const INITIAL_ORDER: OrderPayload = {
   orderId: "ETN-2026-8804",
   customerName: "Wasey Ahmed",
-  customerPhone: "+92 300 1234567",
+  customerPhone: "+92 318 0105860",
   customerEmail: "wasey351@gmail.com",
   customerAddress: "House 24-B, Sector H, Phase 5 DHA, Karachi",
   notes: "Please pack with extra tissue layers. Deliver after 2 PM.",

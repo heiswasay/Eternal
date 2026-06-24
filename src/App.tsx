@@ -8,6 +8,7 @@ import { ArrowRight, ChevronDown, Instagram, Facebook, Menu, X, Search, ShieldCh
 import React, { useState, useRef, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import { ProductStory } from "./components/ProductStory";
+import { subscribeToAllReviews, Review } from "./firebase";
 import AtelierPage from "./components/AtelierPage";
 import EmailPreviewsPage from "./components/EmailPreviewsPage";
 import PrivacyPolicyPage from "./components/PrivacyPolicyPage";
@@ -502,7 +503,7 @@ const Hero = () => {
           <div className="space-y-1">
             <span className="block text-[8px] font-mono tracking-widest text-zinc-600 uppercase">ATELIER CONTACTS</span>
             <span className="block text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
-              +92 (042) 111-2020-01 &bull; savortheluxury@gmail.com
+              +92 318 0105860 &bull; savortheluxury@gmail.com
             </span>
           </div>
           <div className="hidden sm:block w-px h-6 bg-white/10" />
@@ -842,33 +843,72 @@ const FullImageBanner = () => {
 };
 
 // NEW SECTION: Editorial Reviews wall
+const DEFAULT_EDITORIAL_REVIEWS: Review[] = [
+  {
+    productSlug: "brown-oxford-leather",
+    orderNo: "VERIFIED CUSTOMER",
+    initials: "REGISTERED PATRON",
+    city: "Pakistan",
+    desc: "These handcrafted shoes exceeded every expectation. The comfort and finish make them a true investment in style.",
+    rating: "★★★★★",
+  },
+  {
+    productSlug: "monk-strap",
+    orderNo: "VERIFIED CUSTOMER",
+    initials: "ATELIER PATRON",
+    city: "Pakistan",
+    desc: "Elegant design, premium leather, and exceptional craftsmanship define every pair.",
+    rating: "★★★★★",
+  },
+  {
+    productSlug: "black-oxford-leather",
+    orderNo: "VERIFIED CUSTOMER",
+    initials: "VERIFIED CUSTOMER",
+    city: "Pakistan",
+    desc: "Among the finest formal shoes in Pakistan. Sophisticated, durable, and made to impress.",
+    rating: "★★★★★",
+  }
+];
+
 const EditorialReviews = () => {
+  const [reviews, setReviews] = useState<any[]>([]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToAllReviews((data) => {
+      // Use real reviews if any exist, fill up to 3 using default static reviews
+      const displayReviews = [...data];
+      if (displayReviews.length < 3) {
+        const needed = 3 - displayReviews.length;
+        for (let i = 0; i < needed; i++) {
+          displayReviews.push(DEFAULT_EDITORIAL_REVIEWS[i % DEFAULT_EDITORIAL_REVIEWS.length]);
+        }
+      }
+      setReviews(displayReviews.slice(0, 3));
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
     <section className="bg-luxury-black text-white py-16 md:py-24 px-4 sm:px-6 md:px-10 border-t border-white/5">
       <div className="max-w-7xl mx-auto">
         <span className="block text-[9px] font-mono tracking-[0.4em] text-zinc-500 uppercase text-center mb-10">Patron Testimonials</span>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-14 divide-y md:divide-y-0 md:divide-x divide-white/10">
-          <div className="text-center p-4 md:p-6 first:pl-0">
-            <p className="serif text-lg sm:text-xl italic text-zinc-300 leading-relaxed mb-6">
-              "These handcrafted shoes exceeded every expectation. The comfort and finish make them a true investment in style."
-            </p>
-            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// REGISTERED PATRON</span>
-          </div>
-
-          <div className="text-center p-4 md:p-6 pt-10 md:pt-6">
-            <p className="serif text-lg sm:text-xl italic text-zinc-300 leading-relaxed mb-6">
-              "Elegant design, premium leather, and exceptional craftsmanship define every pair."
-            </p>
-            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// ATELIER PATRON</span>
-          </div>
-
-          <div className="text-center p-4 md:p-6 pt-10 md:pt-6 last:pr-0">
-            <p className="serif text-lg sm:text-xl italic text-zinc-300 leading-relaxed mb-6">
-              "Among the finest formal shoes in Pakistan. Sophisticated, durable, and made to impress."
-            </p>
-            <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">// VERIFIED CUSTOMER</span>
-          </div>
+          {reviews.map((rev, index) => (
+            <div key={index} className="text-center p-4 md:p-6 pt-10 md:pt-6 first:pt-4 flex flex-col justify-between min-h-[160px]">
+              <div>
+                <p className="serif text-lg sm:text-xl italic text-zinc-300 leading-relaxed mb-4">
+                  "{rev.desc}"
+                </p>
+                <div className="text-xs text-yellow-500/90 mb-4 select-none">
+                  {rev.rating}
+                </div>
+              </div>
+              <span className="text-[8px] font-mono tracking-widest uppercase text-zinc-500">
+                // {rev.initials} — <span className="opacity-60">{rev.city}</span>
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </section>
