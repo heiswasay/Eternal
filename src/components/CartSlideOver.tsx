@@ -181,7 +181,7 @@ export const CartSlideOver: React.FC = () => {
 
                 <div className="flex items-center justify-center gap-2 mt-2 opacity-50">
                   <ShieldCheck size={11} className="text-zinc-400" />
-                  <span className="text-[8px] uppercase tracking-[0.25em] text-zinc-400">10-Year Lifetime Repair Warranty Included</span>
+                  <span className="text-[8px] uppercase tracking-[0.25em] text-zinc-400">Secure Checkout</span>
                 </div>
               </div>
             )}
