@@ -113,29 +113,29 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
   const anatomyPoints = [
     {
       id: 1,
-      title: "Aniline Full-Grain Upper",
+      title: "Full-Grain Leather Upper",
       coord: { x: "25%", y: "30%" },
-      desc: "Selected from the premium 3% of French skins, left uncorrected to breathe and patina gracefully with age."
+      desc: "Made from premium full-grain leather, left natural to breathe and develop a rich patina with age."
     },
     {
       id: 2,
-      title: `${product.specs.construction} Welt`,
+      title: product.slug === 'monk-strap' ? "Durable Stitched Construction" : "Durable Welted Construction",
       coord: { x: "40%", y: "65%" },
-      desc: "Stitched with wax-infused flax thread to form an enduring, moisture-resistant barrier."
+      desc: product.slug === 'monk-strap'
+        ? "Carefully stitched and sealed for a secure, lasting bond between the upper and sole."
+        : "Carefully stitched and sealed to form an enduring, water-resistant bond between the upper and sole."
     },
     {
       id: 3,
-      title: "Granulated Oak Cork Bed",
+      title: "Natural Cork Footbed",
       coord: { x: "65%", y: "45%" },
-      desc: "A pure organic cork midfill that custom-molds perfectly to your footprint over time."
+      desc: "A natural cork insole that gradually molds to your foot for personalized comfort over time."
     },
     {
       id: 4,
-      title: product.slug === 'monk-strap' ? "Stacked Solid Heel" : "Stacked Solid Leather Heel",
+      title: "Stacked Leather Heel",
       coord: { x: "85%", y: "75%" },
-      desc: product.slug === 'monk-strap' 
-        ? "Individually hand-stacked lifts anchored securely with solid high-tensile brass pegs."
-        : "Individually hand-stacked leather lifts anchored securely with solid high-tensile brass pegs."
+      desc: "A layered leather heel, securely built for stability and a clean, classic finish."
     }
   ];
 
@@ -225,7 +225,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
             Pristine <span className="italic font-light">Materials</span>
           </h2>
           <p className="text-[11px] uppercase tracking-widest text-zinc-400 font-light max-w-lg mx-auto leading-relaxed">
-            Beautiful creations are born of nature's premium masterpieces. We select only pristine elements containing natural characteristics and unmatched structural resilience.
+            EVERY PAIR BEGINS WITH CAREFULLY CHOSEN MATERIALS. WE SELECT QUALITY FULL-GRAIN LEATHER AND NATURAL COMPONENTS FOR THEIR CHARACTER, COMFORT, AND LASTING DURABILITY.
           </p>
         </div>
 
@@ -258,7 +258,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                 {product.slug === 'monk-strap' ? "SPEC COMPONENT // COGNAC SPECIALTY" : "SPEC COMPONENT // LEATHER"}
               </span>
               <h3 className="serif text-3xl md:text-4xl mb-6 tracking-tight leading-none text-white">
-                {product.slug === 'monk-strap' ? "Signature Museum Calfskin" : "Calf Skin Leather"}
+                {(product.slug === 'black-oxford-leather' || product.slug === 'brown-oxford-leather') ? "Full-Grain Leather" : (product.slug === 'monk-strap' ? "Signature Museum Leather" : "Calf Skin Leather")}
               </h3>
               <div className="w-12 h-px bg-white/20 mb-8" />
               <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-[0.2em] mb-6">
@@ -276,7 +276,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
             <div className="order-2 lg:order-1 flex flex-col md:pr-6">
               <span className="text-[8px] font-mono tracking-[0.4em] text-zinc-500 uppercase mb-4">SPEC COMPONENT // THE SOLE</span>
               <h3 className="serif text-3xl md:text-4xl mb-6 tracking-tight leading-none text-white">
-                {product.slug === 'monk-strap' ? "The Hand-Welted Sole" : "The Leather Sole"}
+                The Leather Sole
               </h3>
               <div className="w-12 h-px bg-white/20 mb-8" />
               <p className="text-[11px] text-zinc-400 font-light leading-relaxed uppercase tracking-[0.2em] mb-6">
@@ -399,30 +399,26 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
               <span className="text-[9px] uppercase tracking-[0.4em] text-zinc-500 border-l border-white/20 pl-4 block mb-2 font-mono">Structural Composition Callout</span>
               
               <div className="flex flex-col border-t border-white/5">
-                {[
+                 {[
                   {
                     level: "Level 1",
-                    name: "Aniline Box-Calf Upper Skin",
-                    desc: "Sourced from premier European tanneries, left entirely uncorrected to age with natural elegance and deep patina."
+                    name: "Full-Grain Leather Upper",
+                    desc: "Premium full-grain leather, left natural to age with elegance and develop a deep, individual patina."
                   },
                   {
                     level: "Level 2",
-                    name: product.slug === 'monk-strap' ? "Curried Double-Calf Insole" : "Curried Double-Leather Insole",
-                    desc: product.slug === 'monk-strap' 
-                      ? "An organic 5mm vegetable-tanned shoulder that channels moisture and anchors the entire welt."
-                      : "An organic 5mm vegetable-tanned leather shoulder that channels moisture and anchors the entire welt."
+                    name: "Leather Insole",
+                    desc: "A genuine leather insole that breathes, manages moisture, and anchors the sole securely."
                   },
                   {
                     level: "Level 3",
-                    name: "Granulated Portuguese Cork Fill",
-                    desc: "A hand-packed cavity formulation that dynamically heat-molds to your foot contour for natural padding."
+                    name: "Natural Cork Fill",
+                    desc: "A natural cork layer that molds to your foot over time for personalized, cushioned comfort."
                   },
                   {
                     level: "Level 4",
-                    name: product.slug === 'monk-strap' ? "Oak-Bark Tanned Outsole" : "Oak-Bark Tanned Leather Outsole",
-                    desc: product.slug === 'monk-strap'
-                      ? "Pressed and wax-infused ground-contact surface pit-tanned for 12 months. Incredible resilience and flexibility."
-                      : "Pressed and wax-infused ground-contact leather pit-tanned for 12 months. Incredible resilience and flexibility."
+                    name: "Leather Outsole",
+                    desc: "A durable, wax-finished leather outsole built for resilience, flexibility, and long-lasting wear."
                   }
                 ].map((layer, index) => (
                   <motion.div 

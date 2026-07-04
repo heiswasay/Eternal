@@ -107,12 +107,12 @@ const COLLECTIONS: CollectionItemInfo[] = [
     description: "Handcrafted brown Oxford shoes made from premium leather for effortless sophistication and lasting comfort.",
     specs: {
       type: "Semi-Brogue Captoe Oxford",
-      leather: "Mahogany Burnished Alpine Calfskin",
-      leatherDetail: "Full-grain textured French Box-Calf leather featuring a magnificent, deep mahogany burnish. Selected for its highly resilient, dense grain structure that holds up wonderfully to moist weather.",
-      sole: "Double-Leather Oak Bark Outsole with Brass Pin Protection",
-      soleDetail: "Ultra-durable double-thickness sole, constructed of genuine oak-bark bend leather. Reinforced with 15 hand-driven solid brass pegs on the shank and a beautiful flush gold-plated steel toe-cap protection.",
-      laces: "Round-Braided Corded Egyptian Cotton Waxed Laces",
-      lacesDetail: "Meticulously braided round Egyptian cotton laces, deeply impregnated with natural wax. Slides smoothly and cleanly through nickel-plated metal eyelets without binding.",
+      leather: "Mahogany Burnished Full-Grain Leather",
+      leatherDetail: "Premium full-grain leather with a rich, hand-applied mahogany burnish. Chosen for its resilient, dense grain that holds up beautifully to everyday wear.",
+      sole: "Durable Double-Leather Sole",
+      soleDetail: "A sturdy double-thickness leather sole reinforced for durability, with a clean protective toe finish and a supportive stacked heel.",
+      laces: "Round Waxed Cotton Laces",
+      lacesDetail: "Neatly braided round waxed cotton laces that glide smoothly through the metal eyelets and hold a secure, lasting knot.",
       lining: "Butter-Soft Full-Grain Tan Calf Lining",
       construction: "270-Degree Goodyear Welt"
     }
@@ -128,12 +128,12 @@ const COLLECTIONS: CollectionItemInfo[] = [
     description: "Elegant monk strap shoes crafted in Pakistan for men seeking modern style with timeless appeal.",
     specs: {
       type: "Double Monk Strap Dress Shoe",
-      leather: "Aniline-Dyed Museum Calfskin (Cognac Brown Patina)",
-      leatherDetail: "Individually hand-burnished aniline-dyed calfskin with a distinctive marbleized museum effect. Prepared using organic tree bark extracts and finished with countless hand-applied layers of mineral cream wax.",
-      sole: "Hand-Welted Italian Oak-Bark Outsole with Stacked Specialty Heel",
-      soleDetail: "Double-tanned dense oak-bark outsole that offers exceptional shock absorption and orthopedic flexibility. Hand-cut and polished edges with subtle hand-stamped decorative detailing on the waist.",
+      leather: "Hand-Burnished Full-Grain Leather (Cognac Brown Patina)",
+      leatherDetail: "Individually hand-burnished full-grain leather with a distinctive marbled, multi-tonal finish, built up through layers of hand-applied cream and wax for depth and shine.",
+      sole: "Durable Leather Sole with Stacked Heel",
+      soleDetail: "A dense, durable leather sole offering good flexibility and support, with hand-finished, polished edges and subtle decorative detailing.",
       laces: "Double Brass Buckle Straps with Hidden Elastic Anchor Guards",
-      lacesDetail: "Instead of standard laces, this masterpiece is secured with two adjustable solid brass buckles individually cast in Florence, held securely by soft, heavy-grade hidden elastic segments to optimize standard flex.",
+      lacesDetail: "Instead of laces, each pair is secured with two adjustable solid brass buckles, backed by discreet hidden elastic for an easy, secure, and comfortable fit.",
       lining: "Hand-Selected Glove-Grade Milled Sheepskin Lining",
       construction: "Rapid Blake stitch",
       leatherImage: m10Image,
@@ -152,12 +152,12 @@ const COLLECTIONS: CollectionItemInfo[] = [
     description: "Classic black leather dress shoes designed for formal occasions and everyday confidence.",
     specs: {
       type: "Wholecut Bespoke Oxford",
-      leather: "Ultra-Premium Full-Grain Italian Box-Calf (Tuscan Tannery)",
-      leatherDetail: "Sourced from an antique tannery in Tuscany, Italy. We select only the top 3% of unblemished aniline skins. Naturally supple and highly breathable, this pristine box-calf develops a beautiful deep mirror-like glaze with age.",
-      sole: "Hand-Stitched Closed-Channel Goodyear Welt Outsole with Fiddleback Waist",
-      soleDetail: "A multi-layered oak-bark tanned leather outsole with a traditional 270-degree hand-sewn welt. Features a hand-carved, highly defined fiddleback waist and a stacked solid leather heel for maximum stability.",
-      laces: "Flat-Braided Waxed Giza Cotton Laces",
-      lacesDetail: "Tightly-braided, extra-long-staple Egyptian Giza cotton fibres treated with an ultra-thin coating of natural organic beeswax for high tensile strength, fray prevention, and an enduring secure knot.",
+      leather: "Premium Full-Grain Leather",
+      leatherDetail: "Made from carefully selected premium full-grain leather. Naturally supple and breathable, it develops a beautiful deep shine and character with wear and proper care.",
+      sole: "Durable Hand-Finished Leather Sole",
+      soleDetail: "A sturdy, hand-finished leather sole built for durability and a refined profile, paired with a stacked leather heel for everyday stability and support.",
+      laces: "Flat Waxed Cotton Laces",
+      lacesDetail: "Tightly braided waxed cotton laces with a light protective finish for strength, fray resistance, and a secure, lasting knot.",
       lining: "Hand-Dyed Glove-Grade Italian Calf-Lining",
       construction: "Handwelted Goodyear",
       leatherImage: boo6Image,
@@ -436,7 +436,7 @@ const Hero = () => {
               className="text-zinc-400 max-w-md mr-auto font-light text-[11px] sm:text-xs uppercase tracking-[0.25em] leading-relaxed pt-2 sm:pt-0"
             >
               <span className="hidden sm:inline">
-                An uncompromising handcrafted leather shoes from Pakistan, designed for men who value timeless style, comfort, and exceptional craftsmanship.
+                UNCOMPROMISING, HANDCRAFTED LEATHER SHOES FROM PAKISTAN — DESIGNED FOR MEN WHO VALUE TIMELESS STYLE, LASTING COMFORT, AND EXCEPTIONAL CRAFTSMANSHIP.
               </span>
               <span className="inline sm:hidden">
                 Hand-crafted bespoke shoemaking. Finished with organic wax.
@@ -547,13 +547,15 @@ const SartorialPledgeTicker = () => {
         <div className="flex animate-scroll whitespace-nowrap gap-16 items-center">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="flex gap-16 items-center shrink-0">
-              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">Traditional Handsewn Goodyear Welt</span>
+              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">Handcrafted In Pakistan</span>
               <div className="w-1 h-1 rounded-full bg-white opacity-25" />
-              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">100% Vegetable-Tanned Full-Grain Hides</span>
+              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">Premium Full-Grain Leather</span>
               <div className="w-1 h-1 rounded-full bg-white opacity-25" />
-              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">Custom Cork Bed Cushioning</span>
+              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">Natural Cork Footbed Cushioning</span>
               <div className="w-1 h-1 rounded-full bg-white opacity-25" />
-              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">Anatomical Walnut Wood Lasting</span>
+              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">Wood-Lasted For A Refined Fit</span>
+              <div className="w-1 h-1 rounded-full bg-white opacity-25" />
+              <span className="serif italic text-base md:text-lg text-zinc-400 opacity-60">Nationwide Free Delivery</span>
               <div className="w-1 h-1 rounded-full bg-white opacity-25" />
             </div>
           ))}
@@ -759,7 +761,7 @@ const AnatomyBento = () => {
             <div>
               <h3 className="serif text-xl sm:text-2xl text-white mb-2">Oak-Bark Sole Protection</h3>
               <p className="text-[11px] text-zinc-400 font-light uppercase tracking-widest leading-relaxed hidden sm:block">
-                Durable sole construction engineered for stability, flexibility, and long-lasting performance.
+                Durable sole construction built for stability, flexibility, and long-lasting everyday performance.
               </p>
             </div>
           </div>
@@ -1342,7 +1344,10 @@ const ProductPage = () => {
                   "{product.description}"
                 </p>
                 <p className="text-[10px] md:text-[11px] text-zinc-500 leading-relaxed font-light max-w-sm">
-                  Lovingly hand-crafted over forty-eight hours with a {product.specs.construction} system. Every design element represents an uncompromising dedication to bespoke luxury shoemaking.
+                  {product.slug === 'black-oxford-leather' || product.slug === 'brown-oxford-leather' || product.slug === 'monk-strap'
+                    ? "Carefully handcrafted in Pakistan by skilled artisans. Every detail reflects our dedication to timeless design, quality leather, and refined everyday shoemaking."
+                    : `Lovingly hand-crafted over forty-eight hours with a ${product.specs.construction} system. Every design element represents an uncompromising dedication to bespoke luxury shoemaking.`
+                  }
                 </p>
               </div>
 
