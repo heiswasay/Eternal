@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "motion/react";
 import {
   RotateCw,
@@ -29,6 +30,8 @@ import {
 import { fetchOrdersFromDb, updateOrderStatusInDb, OrderData } from "../firebase";
 
 export const AdminPortalPage: React.FC = () => {
+  const location = useLocation();
+  const canonicalUrl = `https://eternal.com.pk${location.pathname}`;
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
@@ -333,6 +336,12 @@ export const AdminPortalPage: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center px-4 relative overflow-hidden text-zinc-100 font-sans selection:bg-amber-500 selection:text-black">
+        <Helmet>
+          <title>Admin Operations Center — Savor the Luxury | Eternal</title>
+          <meta name="description" content="Eternal's operations center for managing bespoke shoe orders and customer specifications." />
+          <link rel="canonical" href={canonicalUrl} />
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
         {/* Subtle glowing focal ambient circle */}
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -420,6 +429,12 @@ export const AdminPortalPage: React.FC = () => {
   // -------------------------------------------------------------
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-300 font-sans pt-28 pb-24 px-4 sm:px-6 md:px-8 selection:bg-amber-500 selection:text-black">
+      <Helmet>
+        <title>Admin Operations Center — Savor the Luxury | Eternal</title>
+        <meta name="description" content="Eternal's operations center for managing bespoke shoe orders and customer specifications." />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* TOP STATUS CONTROL BAR */}

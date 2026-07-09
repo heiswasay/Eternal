@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "motion/react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { 
   ShieldCheck, 
   ArrowLeft, 
@@ -19,6 +20,8 @@ import {
 } from "lucide-react";
 
 export default function PrivacyPolicyPage() {
+  const location = useLocation();
+  const canonicalUrl = `https://eternal.com.pk${location.pathname}`;
   const lastUpdated = "June 16, 2026";
 
   const sections = [
@@ -365,6 +368,16 @@ export default function PrivacyPolicyPage() {
 
   return (
     <div className="bg-luxury-black text-luxury-white min-h-screen">
+      <Helmet>
+        <title>Privacy Policy — Savor the Luxury | Eternal</title>
+        <meta name="description" content="Read Eternal's privacy policy to understand how we collect, use, and protect your personal information when visiting eternal.com.pk." />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Privacy Policy — Savor the Luxury | Eternal" />
+        <meta property="og:description" content="Read Eternal's privacy policy to understand how we collect, use, and protect your personal information when visiting eternal.com.pk." />
+        <meta property="og:image" content="https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=800" />
+        <meta property="og:url" content={canonicalUrl} />
+      </Helmet>
+
       {/* Visual Header / Hero Accent */}
       <div className="relative pt-32 pb-16 md:pb-24 overflow-hidden border-b border-white/5">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-transparent to-transparent opacity-40 pointer-events-none" />

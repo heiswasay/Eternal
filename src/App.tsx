@@ -8,6 +8,7 @@ import { ArrowRight, ChevronDown, Instagram, Facebook, Menu, X, Search, ShieldCh
 import React, { useState, useRef, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link, useLocation, useParams, useNavigate } from "react-router-dom";
 import { ProductStory } from "./components/ProductStory";
+import { Helmet } from "react-helmet-async";
 import { subscribeToAllReviews, Review } from "./firebase";
 import AtelierPage from "./components/AtelierPage";
 import EmailPreviewsPage from "./components/EmailPreviewsPage";
@@ -1186,6 +1187,8 @@ const Footer = () => {
 
 const ProductPage = () => {
   const { slug } = useParams();
+  const location = useLocation();
+  const canonicalUrl = `https://eternal.com.pk${location.pathname}`;
   const product = COLLECTIONS.find(p => p.slug === slug) || COLLECTIONS[0];
   const [activeImg, setActiveImg] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -1210,8 +1213,46 @@ const ProductPage = () => {
     setActiveImg((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
   };
 
+  const absoluteImageUrl = product.image.startsWith("http")
+    ? product.image
+    : `https://eternal.com.pk${product.image}`;
+
+  const pageTitle = `${product.name} — Savor the Luxury | Eternal`;
+  const pageDescription = `${product.description} Meticulously handcrafted from premium full-grain leather, featuring a comfortable fit and lasting durability. Free delivery across Pakistan.`;
+
+  const schemaJsonLd = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": product.name,
+    "image": absoluteImageUrl,
+    "description": product.description,
+    "brand": {
+      "@type": "Brand",
+      "name": "Eternal"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": canonicalUrl,
+      "priceCurrency": "PKR",
+      "price": 5950,
+      "availability": "https://schema.org/InStock"
+    }
+  };
+
   return (
     <div className="bg-luxury-black text-luxury-white min-h-screen">
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content={absoluteImageUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <script type="application/ld+json">
+          {JSON.stringify(schemaJsonLd)}
+        </script>
+      </Helmet>
       <div className="pt-24 md:pt-32 pb-20 md:pb-32 max-w-7xl mx-auto px-6 md:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
           
@@ -1485,8 +1526,20 @@ const ProductPage = () => {
 };
 
 const HomePage = () => {
+  const location = useLocation();
+  const canonicalUrl = `https://eternal.com.pk${location.pathname}`;
+
   return (
     <>
+      <Helmet>
+        <title>Eternal — Savor the Luxury | Premium Handcrafted Leather Shoes</title>
+        <meta name="description" content="Explore Eternal's collection of premium handcrafted leather shoes in Pakistan. Uncompromising luxury, meticulously built over 48 hours for timeless sophistication." />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Eternal — Savor the Luxury | Premium Handcrafted Shoes" />
+        <meta property="og:description" content="Explore Eternal's collection of premium handcrafted leather shoes in Pakistan. Uncompromising luxury, meticulously built over 48 hours for timeless sophistication." />
+        <meta property="og:image" content={heroImage} />
+        <meta property="og:url" content={canonicalUrl} />
+      </Helmet>
       <Hero />
       <SartorialPledgeTicker />
       <Collection />

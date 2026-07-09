@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 import { 
   Compass, 
   Clock, 
@@ -27,6 +29,8 @@ const IMAGES = {
 };
 
 export default function AtelierPage() {
+  const location = useLocation();
+  const canonicalUrl = `https://eternal.com.pk${location.pathname}`;
   const [bookingStep, setBookingStep] = useState<number>(1);
   const [formData, setFormData] = useState({
     name: "",
@@ -59,6 +63,15 @@ export default function AtelierPage() {
 
   return (
     <div className="bg-luxury-black text-white min-h-screen pt-24 md:pt-32 pb-20 px-4 sm:px-6 md:px-10 overflow-hidden font-sans">
+      <Helmet>
+        <title>The Atelier — Handcrafted Luxury Shoemaking in Pakistan | Eternal</title>
+        <meta name="description" content="Step into Eternal's Karachi atelier. Explore our handcrafted footwear journey, where premium materials and meticulous artisanal methods create timeless luxury leather shoes." />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="The Atelier — Handcrafted Luxury Shoemaking | Eternal" />
+        <meta property="og:description" content="Step into Eternal's Karachi atelier. Explore our handcrafted footwear journey, where premium materials and meticulous artisanal methods create timeless luxury leather shoes." />
+        <meta property="og:image" content={IMAGES.showroom} />
+        <meta property="og:url" content={canonicalUrl} />
+      </Helmet>
       
       {/* 1. Atelier Header Frame */}
       <div className="max-w-7xl mx-auto border-b border-white/5 pb-10 md:pb-16 mb-12 md:mb-20">

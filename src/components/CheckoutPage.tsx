@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { RotateCw, ChevronLeft, ShoppingBag } from "lucide-react";
 import { useCart, formatPrice, parsePrice } from "../context/CartContext";
 import { addOrderToDb } from "../firebase";
 
 export const CheckoutPage: React.FC = () => {
+  const location = useLocation();
+  const canonicalUrl = `https://eternal.com.pk${location.pathname}`;
   const { cartItems, formattedSubtotal, clearCart } = useCart();
   const navigate = useNavigate();
 
@@ -158,6 +161,15 @@ export const CheckoutPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white pt-24 pb-20 px-6 md:px-12 lg:px-24">
+      <Helmet>
+        <title>Secure Checkout — Savor the Luxury | Eternal</title>
+        <meta name="description" content="Complete your custom footwear order securely. Cash on delivery and free express shipping available all over Pakistan." />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Secure Checkout — Savor the Luxury | Eternal" />
+        <meta property="og:description" content="Complete your custom footwear order securely. Cash on delivery and free express shipping available all over Pakistan." />
+        <meta property="og:image" content="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800" />
+        <meta property="og:url" content={canonicalUrl} />
+      </Helmet>
       <div className="max-w-6xl mx-auto">
         
         {/* Navigation Link */}

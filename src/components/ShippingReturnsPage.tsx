@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "motion/react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { 
   Heart, 
   ArrowLeft, 
@@ -19,6 +20,8 @@ import {
 } from "lucide-react";
 
 export default function ShippingReturnsPage() {
+  const location = useLocation();
+  const canonicalUrl = `https://eternal.com.pk${location.pathname}`;
   const lastUpdated = "June 16, 2026";
 
   const sections = [
@@ -359,6 +362,16 @@ export default function ShippingReturnsPage() {
 
   return (
     <div className="bg-luxury-black text-luxury-white min-h-screen">
+      <Helmet>
+        <title>Shipping & Returns — Hassle-Free Exchange & Refund | Eternal</title>
+        <meta name="description" content="Read Eternal's 15-day refund and hassle-free exchange policy on our signature handcrafted leather shoes. Free express shipping across Pakistan." />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Shipping & Returns — Hassle-Free Exchange & Refund | Eternal" />
+        <meta property="og:description" content="Read Eternal's 15-day refund and hassle-free exchange policy on our signature handcrafted leather shoes. Free express shipping across Pakistan." />
+        <meta property="og:image" content="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=800" />
+        <meta property="og:url" content={canonicalUrl} />
+      </Helmet>
+
       {/* Visual Header / Hero Accent */}
       <div className="relative pt-32 pb-16 md:pb-24 overflow-hidden border-b border-white/5">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-transparent to-transparent opacity-40 pointer-events-none" />

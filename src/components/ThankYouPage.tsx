@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion } from "motion/react";
 import { 
   ShieldCheck, 
@@ -31,6 +32,8 @@ interface OrderSummary {
 }
 
 export const ThankYouPage: React.FC = () => {
+  const location = useLocation();
+  const canonicalUrl = `https://eternal.com.pk${location.pathname}`;
   const [order, setOrder] = useState<OrderSummary | null>(null);
   const navigate = useNavigate();
 
@@ -65,6 +68,15 @@ export const ThankYouPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white pt-24 pb-20 px-6 md:px-12 lg:px-24">
+      <Helmet>
+        <title>Order Confirmed — Savor the Luxury | Eternal</title>
+        <meta name="description" content="Thank you for choosing Eternal. Your order has been placed successfully and is being processed by our master craftsmen." />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content="Order Confirmed — Savor the Luxury | Eternal" />
+        <meta property="og:description" content="Thank you for choosing Eternal. Your order has been placed successfully and is being processed by our master craftsmen." />
+        <meta property="og:image" content="https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800" />
+        <meta property="og:url" content={canonicalUrl} />
+      </Helmet>
       {/* Background element */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
 

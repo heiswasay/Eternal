@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Mail, Shield, User, HelpCircle, RefreshCw, Eye, Edit3, Settings } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -58,6 +59,8 @@ const INITIAL_ORDER: OrderPayload = {
 };
 
 export default function EmailPreviewsPage() {
+  const location = useLocation();
+  const canonicalUrl = `https://eternal.com.pk${location.pathname}`;
   const [order, setOrder] = useState<OrderPayload>(INITIAL_ORDER);
   const [activeTab, setActiveTab] = useState<
     | "confirmation"
@@ -575,6 +578,12 @@ export default function EmailPreviewsPage() {
 
   return (
     <div className="bg-luxury-black text-white min-h-screen pt-24 pb-16 px-4 md:px-12 font-sans">
+      <Helmet>
+        <title>Email Designs & Previews — Savor the Luxury | Eternal</title>
+        <meta name="description" content="Preview transactional emails and customer notifications dispatched by Eternal's operations department." />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="max-w-7xl mx-auto">
         {/* Breadcrumb back navigation */}
         <div className="mb-8 flex justify-between items-center">
