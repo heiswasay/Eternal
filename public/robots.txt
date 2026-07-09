@@ -1,7 +1,23 @@
 User-agent: *
-Allow: /
 
-# Block internal/API routes from being indexed
-Disallow: /api/
+# Allow uploads
+Allow: /wp-content/uploads/
+Allow: /wp-admin/admin-ajax.php
+
+# Block WordPress system files
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+Disallow: /xmlrpc.php
+
+# Block internal search
+Disallow: /?s=
+Disallow: /search/
+
+# Block duplicate URL parameters
+Disallow: /*?replytocom=
+Disallow: /*?utm_
+Disallow: /*?fbclid=
+Disallow: /*?orderby=
+Disallow: /*?filter=
 
 Sitemap: https://eternal.com.pk/sitemap.xml
