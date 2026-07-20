@@ -55,6 +55,28 @@ export function getStarsString(rating: number): string {
   return "★".repeat(rating) + "☆".repeat(5 - rating);
 }
 
+// Helper to normalize any rating value (number, string, or star pattern) to exactly 5 stars formatted string
+export function normalizeRating(rating: any): string {
+  if (rating === undefined || rating === null) {
+    return "★★★★★";
+  }
+  if (typeof rating === "number") {
+    return getStarsString(Math.min(5, Math.max(1, Math.round(rating))));
+  }
+  if (typeof rating === "string") {
+    const parsed = parseInt(rating, 10);
+    if (!isNaN(parsed)) {
+      return getStarsString(Math.min(5, Math.max(1, parsed)));
+    }
+    const blackStars = rating.match(/★/g)?.length;
+    if (typeof blackStars === "number" && blackStars > 0) {
+      return "★".repeat(Math.min(5, blackStars)) + "☆".repeat(Math.max(0, 5 - blackStars));
+    }
+    return rating;
+  }
+  return "★★★★★";
+}
+
 // -------------------------------------------------------------
 // SECURE ERROR HANDLING LAYER (Required by Firebase Skill Guide)
 // -------------------------------------------------------------
@@ -115,7 +137,7 @@ export async function fetchReviewsFromDb(productSlug: string): Promise<Review[]>
           productSlug: data.productSlug,
           initials: data.initials,
           city: data.city,
-          rating: typeof data.rating === "number" ? getStarsString(data.rating) : data.rating,
+          rating: normalizeRating(data.rating),
           desc: data.desc,
           orderNo: data.orderNo,
           createdAt: data.createdAt?.toDate() || new Date(),
@@ -178,7 +200,7 @@ export function subscribeToReviews(productSlug: string, callback: (reviews: Revi
           productSlug: data.productSlug,
           initials: data.initials,
           city: data.city,
-          rating: typeof data.rating === "number" ? getStarsString(data.rating) : data.rating,
+          rating: normalizeRating(data.rating),
           desc: data.desc,
           orderNo: data.orderNo,
           createdAt: data.createdAt?.toDate() || new Date(),
@@ -210,11 +232,19 @@ export async function addReviewToDb(review: Omit<Review, "id" | "createdAt" | "p
   if (typeof review.rating === "number") {
     ratingNum = review.rating;
   } else if (typeof review.rating === "string") {
-    const blackStars = review.rating.match(/★/g)?.length;
-    ratingNum = typeof blackStars === "number" ? blackStars : 5;
+    const parsed = parseInt(review.rating, 10);
+    if (!isNaN(parsed)) {
+      ratingNum = parsed;
+    } else {
+      const blackStars = review.rating.match(/★/g)?.length;
+      ratingNum = typeof blackStars === "number" ? blackStars : 5;
+    }
   }
 
-  const ratingStr = typeof review.rating === "number" ? getStarsString(review.rating) : review.rating;
+  // Bound between 1 and 5
+  ratingNum = Math.min(5, Math.max(1, ratingNum));
+
+  const ratingStr = getStarsString(ratingNum);
 
   const reviewToSave: Omit<Review, "id" | "createdAt"> = {
     productSlug: review.productSlug,
@@ -335,7 +365,7 @@ export async function fetchAllReviewsFromDb(): Promise<Review[]> {
           productSlug: data.productSlug || "",
           initials: data.initials || "Anonymous",
           city: data.city || "Pakistan",
-          rating: typeof data.rating === "number" ? getStarsString(data.rating) : (data.rating || "★★★★★"),
+          rating: normalizeRating(data.rating),
           desc: data.desc || "",
           orderNo: data.orderNo || "VERIFIED CUSTOMER",
           createdAt: data.createdAt?.toDate() || new Date(),
@@ -373,7 +403,7 @@ export function subscribeToAllReviews(callback: (reviews: Review[]) => void): ()
           productSlug: data.productSlug || "",
           initials: data.initials || "Anonymous",
           city: data.city || "Pakistan",
-          rating: typeof data.rating === "number" ? getStarsString(data.rating) : (data.rating || "★★★★★"),
+          rating: normalizeRating(data.rating),
           desc: data.desc || "",
           orderNo: data.orderNo || "VERIFIED CUSTOMER",
           createdAt: data.createdAt?.toDate() || new Date(),
