@@ -204,9 +204,26 @@ export function subscribeToReviews(productSlug: string, callback: (reviews: Revi
   }
 }
 
-export async function addReviewToDb(review: Omit<Review, "id" | "createdAt" | "productSlug"> & { productSlug: string }): Promise<Review> {
-  // Map stars to number format or string format
-  const ratingNum = review.rating.match(/★/g)?.length || 5;
+export async function addReviewToDb(review: Omit<Review, "id" | "createdAt" | "productSlug" | "rating"> & { productSlug: string; rating: string | number }): Promise<Review> {
+  // Map stars to number format or string format safely
+  let ratingNum = 5;
+  if (typeof review.rating === "number") {
+    ratingNum = review.rating;
+  } else if (typeof review.rating === "string") {
+    const blackStars = review.rating.match(/★/g)?.length;
+    ratingNum = typeof blackStars === "number" ? blackStars : 5;
+  }
+
+  const ratingStr = typeof review.rating === "number" ? getStarsString(review.rating) : review.rating;
+
+  const reviewToSave: Omit<Review, "id" | "createdAt"> = {
+    productSlug: review.productSlug,
+    initials: review.initials,
+    city: review.city,
+    rating: ratingStr,
+    desc: review.desc,
+    orderNo: review.orderNo,
+  };
 
   if (isFirebaseConfigured && db) {
     const path = "reviews";
@@ -222,7 +239,7 @@ export async function addReviewToDb(review: Omit<Review, "id" | "createdAt" | "p
       });
       console.log("Written securely to Firestore backend ledger.", docRef.id);
       return {
-        ...review,
+        ...reviewToSave,
         id: docRef.id,
         createdAt: new Date(),
       };
@@ -235,10 +252,10 @@ export async function addReviewToDb(review: Omit<Review, "id" | "createdAt" | "p
         }
       }
       console.error("Firestore write error. Falling back to LocalStorage:", error);
-      return addReviewToLocalStorage(review);
+      return addReviewToLocalStorage(reviewToSave);
     }
   } else {
-    return addReviewToLocalStorage(review);
+    return addReviewToLocalStorage(reviewToSave);
   }
 }
 

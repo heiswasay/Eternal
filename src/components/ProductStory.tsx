@@ -45,6 +45,7 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
 
   const [reviewsList, setReviewsList] = useState<Review[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
+  const [visibleReviewsCount, setVisibleReviewsCount] = useState(5);
 
   const [formInitials, setFormInitials] = useState("");
   const [formCity, setFormCity] = useState("");
@@ -75,13 +76,12 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
     setErrorMsg("");
     setSuccessMsg("");
 
-    const stars = getStarsString(formRating);
     const orderNum = Math.floor(Math.random() * 8999) + 1000;
     const reviewData = {
       productSlug: product.slug,
       initials: formInitials.toUpperCase().trim(),
       city: formCity.trim(),
-      rating: stars,
+      rating: formRating,
       desc: formDesc.trim(),
       orderNo: `1 PAIR PURCHASED // ORDER #${orderNum}`
     };
@@ -477,25 +477,39 @@ export const ProductStory: React.FC<ProductStoryProps> = ({ product, images }) =
                 // No testimonials registered on the ledger yet.
               </div>
             ) : (
-              reviewsList.map((item, idx) => (
-                <div key={idx} className="flex flex-col border-b border-white/5 pb-8 last:border-b-0 last:pb-0 group cursor-default">
-                  <div className="flex flex-col sm:flex-row justify-between sm:items-baseline gap-2 mb-3">
-                    <span className="serif text-lg italic text-zinc-300 group-hover:text-white transition-colors duration-500">
-                      {item.initials} — <span className="text-sm not-italic opacity-60 font-light">{item.city}</span>
-                    </span>
-                    <span className="text-xs text-yellow-500/90 font-bold select-none tracking-normal">
-                      {item.rating}
-                    </span>
+              <div className="space-y-10">
+                {reviewsList.slice(0, visibleReviewsCount).map((item, idx) => (
+                  <div key={idx} className="flex flex-col border-b border-white/5 pb-8 last:border-b-0 last:pb-0 group cursor-default">
+                    <div className="flex flex-col sm:flex-row justify-between sm:items-baseline gap-2 mb-3">
+                      <span className="serif text-lg italic text-zinc-300 group-hover:text-white transition-colors duration-500">
+                        {item.initials} — <span className="text-sm not-italic opacity-60 font-light">{item.city}</span>
+                      </span>
+                      <span className="text-xs text-yellow-500/90 font-bold select-none tracking-normal">
+                        {item.rating}
+                      </span>
+                    </div>
+                    <p className="text-sm text-zinc-300 font-light leading-relaxed mb-4">
+                      "{item.desc}"
+                    </p>
+                    <div className="flex items-center gap-3 text-zinc-500 group-hover:text-zinc-400 transition-all">
+                      <span className="text-[9px] font-mono uppercase tracking-wider font-medium">{item.orderNo}</span>
+                      <ShieldCheck size={11} className="text-emerald-500/70" />
+                    </div>
                   </div>
-                  <p className="text-sm text-zinc-300 font-light leading-relaxed mb-4">
-                    "{item.desc}"
-                  </p>
-                  <div className="flex items-center gap-3 text-zinc-500 group-hover:text-zinc-400 transition-all">
-                    <span className="text-[9px] font-mono uppercase tracking-wider font-medium">{item.orderNo}</span>
-                    <ShieldCheck size={11} className="text-emerald-500/70" />
+                ))}
+
+                {reviewsList.length > visibleReviewsCount && (
+                  <div className="pt-6 flex justify-center lg:justify-start">
+                    <button
+                      type="button"
+                      onClick={() => setVisibleReviewsCount((prev) => prev + 5)}
+                      className="px-8 py-3 border border-white/10 hover:border-white text-[10px] uppercase tracking-[0.3em] font-mono font-bold text-zinc-400 hover:text-white transition-all rounded-sm cursor-pointer"
+                    >
+                      View More
+                    </button>
                   </div>
-                </div>
-              ))
+                )}
+              </div>
             )}
           </div>
 
